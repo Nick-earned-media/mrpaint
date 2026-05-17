@@ -429,10 +429,12 @@ async function handleDiscard(fromWa) {
 }
 
 async function sendPreviewMessage(fromWa, { summary, branch }) {
-  // GitHub compare URL — always correct, shows the diff. (Vercel preview URLs
-  // are unpredictable for long branch names; switch to Vercel API later if we
-  // want visual previews instead of diffs.)
-  const diffUrl = `https://github.com/${GITHUB_REPO}/compare/main...${branch}`;
+  // GitHub compare URL — always correct, shows the diff. Slashes in the
+  // branch name must be URL-encoded as %2F or GitHub parses the path wrong
+  // and 404s. (Switch to the Vercel deployments API later if we want
+  // visual previews instead of diffs.)
+  const encodedBranch = branch.replace(/\//g, "%2F");
+  const diffUrl = `https://github.com/${GITHUB_REPO}/compare/main...${encodedBranch}`;
   await sendMessage(fromWa,
     `✅ ${summary}\n\n` +
     `Branch: \`${branch}\`\n` +
