@@ -27,11 +27,13 @@ const TWILIO_FROM = process.env.TWILIO_FROM || "whatsapp:+14155238886";
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
 const GITHUB_REPO = process.env.GITHUB_REPO || "Nick-earned-media/mrpaint";
+const VERCEL_TOKEN = process.env.VERCEL_TOKEN || "";
+const VERCEL_PROJECT_SLUG = process.env.VERCEL_PROJECT_SLUG || "mrpaint";
+const VERCEL_TEAM_ID = process.env.VERCEL_TEAM_ID || ""; // optional, only needed for team-scoped tokens
 const ALLOWED_PHONES = (process.env.ALLOWED_PHONES || "")
   .split(",").map((s) => s.trim()).filter(Boolean);
 const SKIP_SIGNATURE_CHECK = process.env.SKIP_SIGNATURE_CHECK === "1";
 
-const VERCEL_PROJECT_SLUG = "mrpaint";
 const VERCEL_TEAM_SLUG = "nick-brogdens-projects";
 
 module.exports = async function handler(req, res) {
@@ -429,18 +431,69 @@ async function handleDiscard(fromWa) {
 }
 
 async function sendPreviewMessage(fromWa, { summary, branch, sha }) {
-  // Link to the commit SHA, not the branch. Commit URLs work even after
-  // the branch is deleted (post-merge) and don't choke on slashes in branch
-  // names the way compare URLs do.
   const diffUrl = sha
     ? `https://github.com/${GITHUB_REPO}/commit/${sha}`
     : `https://github.com/${GITHUB_REPO}/tree/${branch.replace(/\//g, "%2F")}`;
+
+  // Acknowledge the commit first so the user knows we're working.
   await sendMessage(fromWa,
     `✅ ${summary}\n\n` +
-    `Branch: \`${branch}\`\n` +
-    `Diff: ${diffUrl}\n\n` +
-    `Reply YES to publish, NO to discard.`
+    `Diff (code): ${diffUrl}\n\n` +
+    `🛠 Building preview… (~30-60s)`
   );
+
+  // If we have a Vercel token, poll for the branch's auto-built preview URL
+  // and send a follow-up with the rendered page link. Otherwise fall back
+  // to just the diff URL + YES/NO prompt now.
+  if (VERCEL_TOKEN && sha) {
+    try {
+      const previewUrl = await findVercelPreviewUrl({ commitSha: sha });
+      if (previewUrl) {
+        return sendMessage(fromWa,
+          `🌐 Preview ready:\n${previewUrl}\n\n` +
+          `Reply YES to publish, NO to discard.`
+        );
+      }
+      return sendMessage(fromWa,
+        `⏰ Preview build is taking longer than expected — try the diff link above, or wait a minute and refresh.\n\n` +
+        `Reply YES to publish, NO to discard.`
+      );
+    } catch (err) {
+      console.error("vercel preview poll failed:", err);
+      return sendMessage(fromWa,
+        `⚠️ Couldn't get a preview URL (${truncate(String(err.message || err), 120)}). Use the diff link above.\n\n` +
+        `Reply YES to publish, NO to discard.`
+      );
+    }
+  }
+
+  await sendMessage(fromWa, `Reply YES to publish, NO to discard.`);
+}
+
+// Poll Vercel's Deployments API until the branch preview is READY (or fail).
+async function findVercelPreviewUrl({ commitSha, timeoutMs = 90000, intervalMs = 5000 }) {
+  const start = Date.now();
+  const teamQuery = VERCEL_TEAM_ID ? `&teamId=${encodeURIComponent(VERCEL_TEAM_ID)}` : "";
+  const url = `https://api.vercel.com/v6/deployments?projectId=${encodeURIComponent(VERCEL_PROJECT_SLUG)}&meta-githubCommitSha=${encodeURIComponent(commitSha)}&limit=1${teamQuery}`;
+
+  while (Date.now() - start < timeoutMs) {
+    const r = await fetch(url, { headers: { Authorization: `Bearer ${VERCEL_TOKEN}` } });
+    if (r.ok) {
+      const data = await r.json();
+      const dep = (data.deployments || [])[0];
+      if (dep) {
+        const state = dep.readyState || dep.state;
+        if (state === "READY") return `https://${dep.url}`;
+        if (state === "ERROR" || state === "CANCELED") {
+          throw new Error(`Vercel build ${state}`);
+        }
+      }
+    } else if (r.status === 401 || r.status === 403) {
+      throw new Error(`Vercel auth ${r.status} — check VERCEL_TOKEN scope`);
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  return null; // timed out
 }
 
 // ─── Anthropic helper ─────────────────────────────────────────────────────
