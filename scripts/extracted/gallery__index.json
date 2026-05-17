@@ -1,0 +1,23 @@
+{
+  "file": "gallery/index.html",
+  "url": "/gallery/",
+  "title": "Painting Portfolio - View Our Top Work - MrPaint",
+  "description": "MrPaint is a local, family-run painting company in Cairns, and has been servicing Australia for over ten years. View our painting portfolio and check out our work.",
+  "canonical": "../index.html%3Fp=547.html",
+  "ogImage": "",
+  "headings": [
+    {
+      "tag": "h1",
+      "text": "Before and after gallery"
+    }
+  ],
+  "paragraphs": [
+    "High Quality Painting Service for the Cairns Region"
+  ],
+  "images": [
+    {
+      "src": "../wp-content/uploads/2019/04/mrpaint-logo-163x98.png",
+      "alt": "MrPaint"
+    }
+  ]
+}

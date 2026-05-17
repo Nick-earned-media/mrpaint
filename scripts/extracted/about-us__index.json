@@ -1,0 +1,38 @@
+{
+  "file": "about-us/index.html",
+  "url": "/about-us/",
+  "title": "About Us - MrPaint",
+  "description": "MrPaint is a local, family-run painting company, and has been servicing Sydney for over ten years. Find out more info about our friendly team.",
+  "canonical": "../index.html%3Fp=10.html",
+  "ogImage": "https://mrpaint.com.au/wp-content/uploads/2023/07/1-576x1024.png",
+  "headings": [
+    {
+      "tag": "h1",
+      "text": "about us"
+    },
+    {
+      "tag": "h2",
+      "text": "An established family company, MrPaint is a local business you can trust."
+    }
+  ],
+  "paragraphs": [
+    "High Quality Painting Service for the Cairns Region",
+    "A contemporary company, MrPaint initially established itself as one of Cairns’ most sought after and popular Painting & Decorating contractors; a reputation that has stemmed from a philosophy of customer focus, superior workmanship, affordability, and professionalism.",
+    "At the start of 2024 we have relocated the family to Cairns and are now exclusively available to the good people of Cairns (and we couldn’t be happier!)",
+    "We can deliver everything from the simplest painting tasks to complex and intricate special finishes. MrPaint approaches every project, irrelevant of cost or size, with the aim to ensure we deliver a hassle free service from quoting to completion.",
+    "MrPaint achieves this through solid communication with clients, and a strong background in Project Management.",
+    "MrPaint has built an enviable reputation amongst the industry for consistently delivering high quality, Painting, Decorating, and Handyman services, across the Cairns.",
+    "The success of MrPaint is due to an awareness of what’s in vogue with market trends and a solid client focus. MrPaint reinforces this through blogging and solid marketing strategies that cater to customer needs.",
+    "MrPaint is fully insured and Work, Health and Safety compliant."
+  ],
+  "images": [
+    {
+      "src": "../wp-content/uploads/2019/04/mrpaint-logo-163x98.png",
+      "alt": "MrPaint"
+    },
+    {
+      "src": "../wp-content/uploads/2023/07/1-576x1024.png",
+      "alt": ""
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "h1": "About MrPaint",
+  "h2": "An established family company you can trust",
+  "intro": "MrPaint is a local, family-run painting company that has been delivering quality finishes for over a decade. Founded by Adrian Tucci in 2014, MrPaint has built a reputation for superior workmanship, fair pricing and genuine local service.",
+  "paragraphs": [
+    "A hands-on businessman with 20+ years of painting experience, Adrian Tucci founded MrPaint with a simple philosophy: customer focus, superior workmanship, affordability and professionalism.",
+    "We deliver everything from the simplest painting tasks to complex and intricate special finishes. Every project — irrespective of size or budget — gets the same hassle-free service from quoting through to completion.",
+    "Specialising in residential, commercial and strata, MrPaint takes on a broad spectrum of work — from simple repaints to the kind of elaborate special-finish projects only experienced master craftsmen can deliver.",
+    "Our client list includes award-winning builders, boutique agents and Australian corporate companies. We partner with each client to understand the vision and deliver against it.",
+    "At the start of 2024 we relocated the family to Cairns and are now exclusively serving the good people of Cairns and surrounds. We couldn't be happier with the move.",
+    "MrPaint is fully insured and Work, Health and Safety compliant."
+  ],
+  "why_us": {
+    "h": "Why choose MrPaint?",
+    "pillars": [
+      {
+        "title": "Certified experts",
+        "body": "At the core of MrPaint is a team of experienced, qualified tradesmen — most of whom learned their craft in Europe. There is no goal out of reach for our clients."
+      },
+      {
+        "title": "Quality services",
+        "body": "MrPaint always aims to exceed client expectations by delivering a better finish, on time, at a competitive price. We assign a supervisor who reports directly to the business owner to ensure our quality standards. We only use the best quality paints available."
+      },
+      {
+        "title": "Affordable pricing",
+        "body": "We have structures in place to meet most budget requirements. Speak to Adrian today about your painting project and we'll work out an honest, competitive price."
+      }
+    ]
+  }
+}

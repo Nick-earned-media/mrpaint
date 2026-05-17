@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "residential",
+    "url": "/painter-cairns/",
+    "title": "Residential Painting",
+    "summary": "MrPaint provides a comprehensive range of interior and exterior painting, plastering and special finish services for all your residential needs in Cairns.",
+    "more_label": "Read More →",
+    "icon": "house"
+  },
+  {
+    "slug": "commercial",
+    "url": "/commercial-painter-cairns/",
+    "title": "Commercial Painting",
+    "summary": "MrPaint provides a full commercial painting service including interior and exterior painting, line marking, graffiti removal, and floor coating systems.",
+    "more_label": "Read More →",
+    "icon": "building"
+  },
+  {
+    "slug": "industrial",
+    "url": "/industrial-painting/",
+    "title": "Industrial Painting",
+    "summary": "MrPaint provides an industrial painting service including but not limited to epoxy finishes, 2-pacs and solvents. We cover all of Cairns and surrounds.",
+    "more_label": "Read More →",
+    "icon": "factory"
+  }
+]

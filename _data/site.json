@@ -1,0 +1,30 @@
+{
+  "name": "MrPaint",
+  "name_full": "MrPaint Cairns",
+  "tagline": "Quality painting, fair prices, local family team.",
+  "tagline_long": "A trustworthy painting company, delivering only the best finishes.",
+  "trust_line": "Professional painting service for over 10 years",
+  "owner": "Adrian Tucci",
+  "founded": 2014,
+  "phone": "0478 659 766",
+  "phone_link": "tel:+61478659766",
+  "phone_display": "0478 659 766",
+  "email": "adrian@mrpaint.com.au",
+  "address": {
+    "street": "123 Oleander St",
+    "suburb": "Holloways Beach",
+    "city": "Cairns",
+    "state": "QLD",
+    "postcode": "4878",
+    "country": "AU"
+  },
+  "service_area": "Cairns and surrounds",
+  "service_area_long": "Cairns, Holloways Beach, Edge Hill, Smithfield, Trinity Beach, Palm Cove, Gordonvale and the wider Cairns region.",
+  "hours": "Mon–Fri 7am–5pm",
+  "social": {
+    "facebook": "",
+    "instagram": "",
+    "google_business": ""
+  },
+  "url": "https://www.mrpaint.com.au"
+}

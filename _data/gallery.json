@@ -1,0 +1,110 @@
+[
+  {
+    "image": "/assets/images/work-outdoor.png",
+    "alt": "Weatherboard exterior repaint",
+    "title": "Weatherboard exterior repaint",
+    "category": "residential",
+    "location": "Edge Hill",
+    "postcode": "4870",
+    "note": "Strip back, lead-safe prep, full UV-rated exterior system."
+  },
+  {
+    "image": "/assets/images/work-orange-roof.png",
+    "alt": "Terracotta tile roof",
+    "title": "Terracotta tile roof & facade",
+    "category": "roof",
+    "location": "Trinity Beach",
+    "postcode": "4879",
+    "note": "Pressure clean, tile repair, prime, two-coat spray."
+  },
+  {
+    "image": "/assets/images/work-residential-door.png",
+    "alt": "Heritage stained-glass door",
+    "title": "Heritage entry restoration",
+    "category": "residential",
+    "location": "Edge Hill",
+    "postcode": "4870",
+    "note": "Period stained-glass entry, surrounding architraves, vestibule walls."
+  },
+  {
+    "image": "/assets/images/work-major-upgrade.png",
+    "alt": "Commercial fit-out",
+    "title": "Commercial fit-out — bathroom block",
+    "category": "commercial",
+    "location": "CBD",
+    "postcode": "4870",
+    "note": "Render-look feature finish, ceiling, lighting alcove. After-hours over 4 nights."
+  },
+  {
+    "image": "/assets/images/work-ceiling.png",
+    "alt": "Tobacco-stained ceiling restored",
+    "title": "Heritage pressed ceiling",
+    "category": "residential",
+    "location": "Manunda",
+    "postcode": "4870",
+    "note": "Tobacco-stained pressed-metal ceiling. Stain block, prime, two-coat ceiling white."
+  },
+  {
+    "image": "/assets/images/work-door.png",
+    "alt": "Weathered front door",
+    "title": "Front door & surround",
+    "category": "residential",
+    "location": "Palm Cove",
+    "postcode": "4879",
+    "note": "Weather-rotted timber door, full strip, repair, primer + 2-pack enamel."
+  },
+  {
+    "image": "/assets/images/work-major-upgrade.png",
+    "alt": "Strata exterior",
+    "title": "14-unit strata exterior",
+    "category": "commercial",
+    "location": "Cairns North",
+    "postcode": "4870",
+    "note": "Render, balustrades, doors and number plates. Three weeks around the residents."
+  },
+  {
+    "image": "/assets/images/work-stained-glass.png",
+    "alt": "Stained-glass entry",
+    "title": "Period entry & sidelights",
+    "category": "residential",
+    "location": "Edge Hill",
+    "postcode": "4870",
+    "note": "Original 1920s entry, hand-cut leaded glass surrounds. Patient prep, semi-gloss enamel."
+  },
+  {
+    "image": "/assets/images/work-outdoor.png",
+    "alt": "Café exterior",
+    "title": "Café exterior & awnings",
+    "category": "commercial",
+    "location": "Smithfield",
+    "postcode": "4878",
+    "note": "Strip back, anti-mould wash, weather-rated exterior system. Started Sat 6am, open Mon."
+  },
+  {
+    "image": "/assets/images/work-orange-roof.png",
+    "alt": "Warehouse roof",
+    "title": "Warehouse roof — heat-reflective",
+    "category": "industrial",
+    "location": "Portsmith",
+    "postcode": "4870",
+    "note": "1,200m² Colorbond. De-rust, prime, 2-pack heat-reflective topcoat."
+  },
+  {
+    "image": "/assets/images/work-ceiling.png",
+    "alt": "Bedroom ceiling",
+    "title": "Master bedroom & ensuite",
+    "category": "residential",
+    "location": "Edmonton",
+    "postcode": "4869",
+    "note": "Walls, ceiling, trim and wardrobe respray. Two days in and out."
+  },
+  {
+    "image": "/assets/images/work-major-upgrade.png",
+    "alt": "Hallway transformation",
+    "title": "Hallway & living transformation",
+    "category": "residential",
+    "location": "Holloways",
+    "postcode": "4878",
+    "note": "Render-effect feature walls and ceilings, integrated lighting. Family in residence."
+  }
+]

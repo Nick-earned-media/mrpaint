@@ -1,0 +1,15 @@
+{
+  "name": "mrpaint",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static rebuild of mrpaint.com.au — Eleventy + Vercel. Content lives in _data/ JSON and blog/*.md so it can be edited programmatically (e.g. via a WhatsApp bot).",
+  "scripts": {
+    "build": "eleventy",
+    "dev": "eleventy --serve --quiet",
+    "clean": "rm -rf _site"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "cheerio": "^1.2.0"
+  }
+}

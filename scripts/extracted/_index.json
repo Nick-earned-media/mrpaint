@@ -1,0 +1,452 @@
+[
+  {
+    "url": "/about-us/",
+    "title": "About Us - MrPaint",
+    "description": "MrPaint is a local, family-run painting company, and has been servicing Sydney for over ten years. Find out more info about our friendly team.",
+    "headings": 2,
+    "paragraphs": 8,
+    "images": 2,
+    "file": "about-us/index.html"
+  },
+  {
+    "url": "/blog/10-diy-painting-hacks-that-you-need-to-know/",
+    "title": "10 DIY Painting Hacks That You Need To Know - MrPaint",
+    "description": "Painting for the first time? Here are some do's and don'ts that will help you get started on your painting journey.",
+    "headings": 12,
+    "paragraphs": 17,
+    "images": 2,
+    "file": "blog/10-diy-painting-hacks-that-you-need-to-know/index.html"
+  },
+  {
+    "url": "/blog/5-easy-paint-waste-disposal-tips/",
+    "title": "5 Easy Paint Waste Disposal Tips - MrPaint",
+    "description": "Paint waste can seriously harm the environment. Here are five easy paint waste disposal tips to help you eliminate and safely dispose of paint waste.",
+    "headings": 10,
+    "paragraphs": 25,
+    "images": 2,
+    "file": "blog/5-easy-paint-waste-disposal-tips/index.html"
+  },
+  {
+    "url": "/blog/5-ways-to-save-on-house-painting/",
+    "title": "5 Ways To Save On House Painting - MrPaint",
+    "description": "Find out how to save costs on painting your house here, like comparing quotes, doing it yourself, or offering to share the workload with a professional painter.",
+    "headings": 6,
+    "paragraphs": 12,
+    "images": 2,
+    "file": "blog/5-ways-to-save-on-house-painting/index.html"
+  },
+  {
+    "url": "/blog/are-tenants-obligated-to-have-a-rental-repainted/",
+    "title": "Are Tenants Obligated To Have A Rental Repainted? - MrPaint",
+    "description": "",
+    "headings": 5,
+    "paragraphs": 17,
+    "images": 2,
+    "file": "blog/are-tenants-obligated-to-have-a-rental-repainted/index.html"
+  },
+  {
+    "url": "/blog/backyard-design-ideas/",
+    "title": "5 Tips To Up Your Backyard’s Design Chill Potential - MrPaint",
+    "description": "Here are 5 backyard design ideas that you can use to add value to your home, plus give it that a cool, fresh modern look.",
+    "headings": 6,
+    "paragraphs": 20,
+    "images": 2,
+    "file": "blog/backyard-design-ideas/index.html"
+  },
+  {
+    "url": "/blog/best-exterior-house-colours/",
+    "title": "What Are The Best Exterior House Colours? - MrPaint",
+    "description": "The colour on the exterior of a house can make all the difference in boosting curb appeal and value. Neutral tones are safe and popular choices for longevity.",
+    "headings": 6,
+    "paragraphs": 14,
+    "images": 2,
+    "file": "blog/best-exterior-house-colours/index.html"
+  },
+  {
+    "url": "/blog/best-garden-features/",
+    "title": "The Best Garden Features To Increase The Value Of Your Home - MrPaint",
+    "description": "When you are selling your home, the garden is often overlooked. Here are five of the best garden features that can add value to your home.",
+    "headings": 6,
+    "paragraphs": 13,
+    "images": 2,
+    "file": "blog/best-garden-features/index.html"
+  },
+  {
+    "url": "/blog/budget-ideas-bathroom/",
+    "title": "4 Budget Ideas To Give Your Bathroom A Refresh - MrPaint",
+    "description": "There are plenty of low-cost bathroom upgrades and with plenty of affordable ideas to choose from you don't have to worry about blowing your budget.",
+    "headings": 5,
+    "paragraphs": 13,
+    "images": 2,
+    "file": "blog/budget-ideas-bathroom/index.html"
+  },
+  {
+    "url": "/blog/concrete-cancer/",
+    "title": "All You Need To Know About Concrete Cancer - MrPaint",
+    "description": "Understanding concrete cancer can be integral to protecting your investment in a property and the safety of any occupants. Here's what you need to know.",
+    "headings": 10,
+    "paragraphs": 28,
+    "images": 2,
+    "file": "blog/concrete-cancer/index.html"
+  },
+  {
+    "url": "/blog/covid-19-how-the-pandemic-is-shaping-interior-design/",
+    "title": "COVID-19: How The Pandemic Is Shaping Interior Design - MrPaint",
+    "description": "Just like everything else, from fashion to footwear, trends for interior design are always coming into and going out of style each year.",
+    "headings": 6,
+    "paragraphs": 16,
+    "images": 2,
+    "file": "blog/covid-19-how-the-pandemic-is-shaping-interior-design/index.html"
+  },
+  {
+    "url": "/blog/energy-efficiency-multi-storey-building-guide/",
+    "title": "A Guide To Energy Efficiency In Multi-storey Buildings - MrPaint",
+    "description": "Today, commercial mulit-storey buildings and homes are going green to reduce their carbon footprint. Here's what you need to know.",
+    "headings": 8,
+    "paragraphs": 18,
+    "images": 2,
+    "file": "blog/energy-efficiency-multi-storey-building-guide/index.html"
+  },
+  {
+    "url": "/blog/home-decor-trends/",
+    "title": "4 Home Decor Trends In 2021 - MrPaint",
+    "description": "Here are some of the top home decor trends in 2021 that you need to know.",
+    "headings": 5,
+    "paragraphs": 15,
+    "images": 2,
+    "file": "blog/home-decor-trends/index.html"
+  },
+  {
+    "url": "/blog/home-design-safety-tips-for-seniors/",
+    "title": "Safety Tips For Seniors Aging At Home - MrPaint",
+    "description": "Here are 4 ways to avoid accidental falls or serious injuries by prioritising accessibility, safety, and convenience.",
+    "headings": 5,
+    "paragraphs": 18,
+    "images": 2,
+    "file": "blog/home-design-safety-tips-for-seniors/index.html"
+  },
+  {
+    "url": "/blog/home-renovation-budget-tips/",
+    "title": "How To Budget For Your Home Renovation? - MrPaint",
+    "description": "Are you planning your next major home renovation project? If so, then here are some tips that wiill help you budget for your next home renovation.",
+    "headings": 6,
+    "paragraphs": 16,
+    "images": 2,
+    "file": "blog/home-renovation-budget-tips/index.html"
+  },
+  {
+    "url": "/blog/how-do-you-know-when-its-time-to-replace-your-roof/",
+    "title": "How do you know when it's time to replace your roof? - MrPaint",
+    "description": "Sooner or later, your roof is going to require repairs. So, how do you know if your roof needs to be restored or replaced?",
+    "headings": 6,
+    "paragraphs": 16,
+    "images": 2,
+    "file": "blog/how-do-you-know-when-its-time-to-replace-your-roof/index.html"
+  },
+  {
+    "url": "/blog/how-much-does-it-cost-to-paint-a-house/",
+    "title": "How Much Does It Cost To Paint A House In 2024? - MrPaint",
+    "description": "In this guide, you'll learn how much it costs to paint a house (including interior, exterior, units, roof painting, two and three-storey buildings).",
+    "headings": 16,
+    "paragraphs": 54,
+    "images": 2,
+    "file": "blog/how-much-does-it-cost-to-paint-a-house/index.html"
+  },
+  {
+    "url": "/blog/how-to-choose-a-color-palette-for-your-house/",
+    "title": "Choosing A Colour Palette For Your Whole House - MrPaint",
+    "description": "Most people will often struggle with choosing which colours to paint their walls. The colour palette is how you will set the mood for each room.",
+    "headings": 8,
+    "paragraphs": 16,
+    "images": 2,
+    "file": "blog/how-to-choose-a-color-palette-for-your-house/index.html"
+  },
+  {
+    "url": "/blog/how-to-decorate-your-home-on-a-budget/",
+    "title": "How To Decorate Your Home On A Budget? - MrPaint",
+    "description": "Decorating your home on a tight budget can be a challenge. Here are some tips on how best to decorate your home and make your home look beautiful.",
+    "headings": 6,
+    "paragraphs": 15,
+    "images": 2,
+    "file": "blog/how-to-decorate-your-home-on-a-budget/index.html"
+  },
+  {
+    "url": "/blog/how-to-make-a-small-space-seem-big/",
+    "title": "How To Make A Small Space Seem Big? - MrPaint",
+    "description": "Here are some tips on how to increase the size of a room and make a small space seem big, without having to waste time or effort in actually doing so.",
+    "headings": 6,
+    "paragraphs": 12,
+    "images": 2,
+    "file": "blog/how-to-make-a-small-space-seem-big/index.html"
+  },
+  {
+    "url": "/blog/how-to-move-a-washing-machine-without-hiring-a-mover/",
+    "title": "How To Move A Washing Machine Without Hiring A Mover - MrPaint",
+    "description": "",
+    "headings": 4,
+    "paragraphs": 19,
+    "images": 2,
+    "file": "blog/how-to-move-a-washing-machine-without-hiring-a-mover/index.html"
+  },
+  {
+    "url": "/blog/how-to-paint-a-wall/",
+    "title": "How To Paint A Wall? - MrPaint",
+    "description": "Read our in-depth guide that will teach you all of the ins and outs of how to paint walls including vertical walls, ceilings, arches, plus more.",
+    "headings": 12,
+    "paragraphs": 45,
+    "images": 2,
+    "file": "blog/how-to-paint-a-wall/index.html"
+  },
+  {
+    "url": "/blog/how-to-save-money-on-your-next-diy-project/",
+    "title": "Here Are Some Tips To Save Money On Your Next DIY Project - MrPaint",
+    "description": "With the right DIY project, you can make your home feel more personal and add value to your home and attract new buyers.",
+    "headings": 5,
+    "paragraphs": 14,
+    "images": 2,
+    "file": "blog/how-to-save-money-on-your-next-diy-project/index.html"
+  },
+  {
+    "url": "/blog/how-to-save-your-lawn-from-dead-and-dormant-spots/",
+    "title": "How To Save Your Lawn From Dead And Dormant Spots - MrPaint",
+    "description": "Luscious green grass makes a beautiful addition to your home. But, differentiating between dead and inactive patches can be hard work.",
+    "headings": 7,
+    "paragraphs": 21,
+    "images": 2,
+    "file": "blog/how-to-save-your-lawn-from-dead-and-dormant-spots/index.html"
+  },
+  {
+    "url": "/blog/",
+    "title": "Blog - MrPaint",
+    "description": "",
+    "headings": 31,
+    "paragraphs": 31,
+    "images": 31,
+    "file": "blog/index.html"
+  },
+  {
+    "url": "/blog/inside-interior-design-how-to-match-blinds-to-decor/",
+    "title": "Inside Interior Design: How To Match Blinds To Decor? - MrPaint",
+    "description": "",
+    "headings": 9,
+    "paragraphs": 12,
+    "images": 2,
+    "file": "blog/inside-interior-design-how-to-match-blinds-to-decor/index.html"
+  },
+  {
+    "url": "/blog/painting-tips-to-help-sell-your-house/",
+    "title": "Painting Tips to Help Sell Your House - MrPaint",
+    "description": "",
+    "headings": 8,
+    "paragraphs": 10,
+    "images": 2,
+    "file": "blog/painting-tips-to-help-sell-your-house/index.html"
+  },
+  {
+    "url": "/blog/popular-interior-decorating-styles/",
+    "title": "Popular Interior Decorating Styles And Trends - MrPaint",
+    "description": "Are you looking for some popular interior decorating styles and trends? With put together a list of the latest trends that you need to know.",
+    "headings": 9,
+    "paragraphs": 23,
+    "images": 2,
+    "file": "blog/popular-interior-decorating-styles/index.html"
+  },
+  {
+    "url": "/blog/renovation-project-tips/",
+    "title": "Questions To Ask Before Your Next Renovation Project - MrPaint",
+    "description": "Renovations often become very expensive very quickly when things don’t go to plan. And, as a result, they can become a disaster when there’s no plan at all.",
+    "headings": 6,
+    "paragraphs": 14,
+    "images": 2,
+    "file": "blog/renovation-project-tips/index.html"
+  },
+  {
+    "url": "/blog/rental-property-tips/",
+    "title": "Tips For Choosing The Best Property For Investment - MrPaint",
+    "description": "Here are some useful tips that'll help you find the perfect rental property that'll show not only what to avoid, but also what to do instead.",
+    "headings": 8,
+    "paragraphs": 19,
+    "images": 2,
+    "file": "blog/rental-property-tips/index.html"
+  },
+  {
+    "url": "/blog/six-awesome-snacks-for-boosting-your-brainpower/",
+    "title": "Six Awesome Snacks for Boosting Your Brainpower - MrPaint",
+    "description": "",
+    "headings": 9,
+    "paragraphs": 16,
+    "images": 2,
+    "file": "blog/six-awesome-snacks-for-boosting-your-brainpower/index.html"
+  },
+  {
+    "url": "/blog/the-benefits-of-tiny-house-living/",
+    "title": "The Benefits Of Tiny House Living - MrPaint",
+    "description": "Tiny house living has grown in popularity. As well as being more affordable, the tiny house movement represents a creative alternative to eco-friendly and flexible living arrangements.",
+    "headings": 8,
+    "paragraphs": 17,
+    "images": 2,
+    "file": "blog/the-benefits-of-tiny-house-living/index.html"
+  },
+  {
+    "url": "/blog/top-tips-for-a-refreshing-restroom-renovation/",
+    "title": "Top Tips For A Refreshing Restroom Renovation - MrPaint",
+    "description": "",
+    "headings": 5,
+    "paragraphs": 15,
+    "images": 2,
+    "file": "blog/top-tips-for-a-refreshing-restroom-renovation/index.html"
+  },
+  {
+    "url": "/blog/trending-tiny-houses-as-work-from-home-garden-offices/",
+    "title": "Tiny Houses Garden Offices - MrPaint",
+    "description": "",
+    "headings": 6,
+    "paragraphs": 16,
+    "images": 2,
+    "file": "blog/trending-tiny-houses-as-work-from-home-garden-offices/index.html"
+  },
+  {
+    "url": "/blog/what-is-curb-appeal/",
+    "title": "How To ‘Add Curb’ Appeal To Your Home - MrPaint",
+    "description": "Simply put, curb appeal is what any prospective buyer will see when they first look at a house from the outside.",
+    "headings": 7,
+    "paragraphs": 14,
+    "images": 2,
+    "file": "blog/what-is-curb-appeal/index.html"
+  },
+  {
+    "url": "/commercial-painter-cairns/",
+    "title": "Commercial Painter Cairns - High Quality Fair Price - MrPaint",
+    "description": "MrPaint is a local commercial painter, family-run painting company, and has been servicing Cairns for over ten years. Get a free quote.",
+    "headings": 8,
+    "paragraphs": 32,
+    "images": 1,
+    "file": "commercial-painter-cairns/index.html"
+  },
+  {
+    "url": "/commercial-painter-sydney/",
+    "title": "Commercial Painter Cairns - High Quality Fair Price - MrPaint",
+    "description": "MrPaint is a local commercial painter, family-run painting company, and has been servicing Cairns for over ten years. Get a free quote.",
+    "headings": 8,
+    "paragraphs": 32,
+    "images": 1,
+    "file": "commercial-painter-sydney/index.html"
+  },
+  {
+    "url": "/contact-us",
+    "title": "Contact Us - MrPaint",
+    "description": "MrPaint is a local, family-run painting company, and has been servicing Sydney for over ten years. Get in touch with our friendly team.",
+    "headings": 1,
+    "paragraphs": 4,
+    "images": 1,
+    "file": "contact-us.html"
+  },
+  {
+    "url": "/contact/",
+    "title": "Contact Us - MrPaint",
+    "description": "MrPaint is a local, family-run painting company, and has been servicing Sydney for over ten years. Get in touch with our friendly team.",
+    "headings": 1,
+    "paragraphs": 4,
+    "images": 1,
+    "file": "contact/index.html"
+  },
+  {
+    "url": "/gallery/",
+    "title": "Painting Portfolio - View Our Top Work - MrPaint",
+    "description": "MrPaint is a local, family-run painting company in Cairns, and has been servicing Australia for over ten years. View our painting portfolio and check out our work.",
+    "headings": 1,
+    "paragraphs": 1,
+    "images": 1,
+    "file": "gallery/index.html"
+  },
+  {
+    "url": "/index",
+    "title": "Quality Residential And Commercial Painting - MrPaint",
+    "description": "MrPaint is a local, family-run painting company, and has been operating for over ten years. Get a free painting quote today.",
+    "headings": 34,
+    "paragraphs": 48,
+    "images": 26,
+    "file": "index.html"
+  },
+  {
+    "url": "/industrial-painting/",
+    "title": "Industrial Painting Cairns- Tailored Solutions - MrPaint",
+    "description": "MrPaint industrial painting is a local, family-run painting company, and has been servicing Cairns for over ten years. Get a free quote.",
+    "headings": 5,
+    "paragraphs": 6,
+    "images": 1,
+    "file": "industrial-painting/index.html"
+  },
+  {
+    "url": "/painter-cairns/",
+    "title": "Painter Cairns - Professional Work - Free Advice - MrPaint",
+    "description": "MrPaint is a local, family-run painting company, and has been working in the industry for over ten years. Get a free painting quote today.",
+    "headings": 7,
+    "paragraphs": 31,
+    "images": 2,
+    "file": "painter-cairns/index.html"
+  },
+  {
+    "url": "/painter/eastern-suburbs/",
+    "title": "Painter Cairns - Professional Work - Free Advice - MrPaint",
+    "description": "MrPaint is a local, family-run painting company, and has been working in the industry for over ten years. Get a free painting quote today.",
+    "headings": 7,
+    "paragraphs": 31,
+    "images": 2,
+    "file": "painter/eastern-suburbs/index.html"
+  },
+  {
+    "url": "/painter/",
+    "title": "Quality Residential And Commercial Painting - MrPaint",
+    "description": "MrPaint is a local, family-run painting company, and has been operating for over ten years. Get a free painting quote today.",
+    "headings": 34,
+    "paragraphs": 48,
+    "images": 26,
+    "file": "painter/index.html"
+  },
+  {
+    "url": "/painter/northern-beaches/avalon/",
+    "title": "Painter Cairns - Professional Work - Free Advice - MrPaint",
+    "description": "MrPaint is a local, family-run painting company, and has been working in the industry for over ten years. Get a free painting quote today.",
+    "headings": 7,
+    "paragraphs": 31,
+    "images": 2,
+    "file": "painter/northern-beaches/avalon/index.html"
+  },
+  {
+    "url": "/painter/northern-beaches/manly",
+    "title": "Painter Cairns - Professional Work - Free Advice - MrPaint",
+    "description": "MrPaint is a local, family-run painting company, and has been working in the industry for over ten years. Get a free painting quote today.",
+    "headings": 7,
+    "paragraphs": 31,
+    "images": 2,
+    "file": "painter/northern-beaches/manly.html"
+  },
+  {
+    "url": "/painter/northern-beaches/newport",
+    "title": "Painter Cairns - Professional Work - Free Advice - MrPaint",
+    "description": "MrPaint is a local, family-run painting company, and has been working in the industry for over ten years. Get a free painting quote today.",
+    "headings": 7,
+    "paragraphs": 31,
+    "images": 2,
+    "file": "painter/northern-beaches/newport.html"
+  },
+  {
+    "url": "/painter/northern-beaches/palm-beach",
+    "title": "Painter Cairns - Professional Work - Free Advice - MrPaint",
+    "description": "MrPaint is a local, family-run painting company, and has been working in the industry for over ten years. Get a free painting quote today.",
+    "headings": 7,
+    "paragraphs": 31,
+    "images": 2,
+    "file": "painter/northern-beaches/palm-beach.html"
+  },
+  {
+    "url": "/roof-painter-sydney/",
+    "title": "Roof Painter Cairns - Get A Free Quote Today - MrPaint",
+    "description": "MrPaint is a local roof painting, family-run company, and has been servicing Cairns for over ten years. Get in touch with our friendly team.",
+    "headings": 11,
+    "paragraphs": 37,
+    "images": 1,
+    "file": "roof-painter-sydney/index.html"
+  }
+]

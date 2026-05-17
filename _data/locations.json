@@ -1,0 +1,9 @@
+[
+  { "name": "Cairns CBD",     "highlighted": false },
+  { "name": "Trinity Beach",  "highlighted": false },
+  { "name": "Palm Cove",      "highlighted": false },
+  { "name": "Edge Hill",      "highlighted": false },
+  { "name": "Holloways · HQ", "highlighted": true  },
+  { "name": "Edmonton",       "highlighted": false },
+  { "name": "Port Douglas",   "highlighted": false }
+]

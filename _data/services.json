@@ -1,0 +1,78 @@
+[
+  {
+    "slug": "commercial-painter-cairns",
+    "url_alias": "/commercial-painter-cairns/",
+    "title": "Commercial Painting",
+    "nav_title": "Commercial",
+    "h1": "Commercial Painter Cairns",
+    "summary": "Full commercial painting — interior, exterior, line marking, graffiti removal and floor coatings.",
+    "intro": "MrPaint provides a complete commercial painting service for offices, retail fitouts, body corporate, shopfronts and more — across Cairns and surrounds.",
+    "trust_line": "After-hours and weekend work available so your business downtime is minimal.",
+    "sections": [
+      {
+        "h": "Commercial painting that respects your business",
+        "p": "Attention to detail matters, and so does staying out of your way. Having work completed by a professional team means a high-quality paint job that brings a tired space back to life — without disrupting trading hours. Our team can work outside regular hours to keep your downtime to a minimum."
+      },
+      {
+        "h": "Scope of work",
+        "p": "Interior and exterior commercial painting, line marking, graffiti removal, floor coating systems, and ongoing maintenance painting for retail, hospitality, body corporate and office buildings."
+      },
+      {
+        "h": "OH&S and compliance",
+        "p": "MrPaint is fully insured and Work, Health and Safety compliant. We work to site rules, induction requirements, and any specific compliance your premises requires."
+      },
+      {
+        "h": "Reporting and quality control",
+        "p": "We assign a supervisor who reports directly to the business owner so our quality standards are met on every job, every time."
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Can you work after hours so we don't have to close?",
+        "a": "Yes. After-hours and weekend work is a regular part of our commercial offering. We'll plan the schedule around your operating hours."
+      },
+      {
+        "q": "Do you handle line marking and floor coatings?",
+        "a": "Yes — line marking and protective floor coating systems are part of our commercial scope."
+      },
+      {
+        "q": "Are you set up for body corporate and strata work?",
+        "a": "Yes. We work regularly with body corporate, agents and strata managers across Cairns."
+      }
+    ]
+  },
+  {
+    "slug": "industrial-painting",
+    "url_alias": "/industrial-painting/",
+    "title": "Industrial Painting",
+    "nav_title": "Industrial",
+    "h1": "Industrial Painting Cairns",
+    "summary": "Industrial painting including epoxy finishes, 2-pacs, solvent-based coatings and protective systems.",
+    "intro": "MrPaint covers the full industrial painting spectrum — warehouses, factories, plant and protective coatings — across Cairns and the wider region.",
+    "trust_line": "Spray equipment, specialised coatings and a team trained in industrial finishes.",
+    "sections": [
+      {
+        "h": "Scope of industrial work",
+        "p": "Warehouse repaints, factory interiors and exteriors, structural steel, plant rooms, epoxy floor systems, 2-pac finishes and solvent-based protective coatings."
+      },
+      {
+        "h": "Protective coatings",
+        "p": "Industrial environments demand more than standard paint. We specify and apply protective coating systems — epoxy, 2-pac, solvent-borne — matched to the substrate and the conditions the surface will live in."
+      },
+      {
+        "h": "Safety & site compliance",
+        "p": "Fully insured, Work, Health and Safety compliant, and willing to work to your site's specific induction, PPE and compliance requirements."
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Can you handle epoxy floor coatings?",
+        "a": "Yes — epoxy floor systems for warehouses, plant rooms and workshops are part of our industrial scope."
+      },
+      {
+        "q": "Do you do 2-pac and solvent-based coatings?",
+        "a": "Yes. We're set up for 2-pac finishes and solvent-borne protective coatings where the job requires it."
+      }
+    ]
+  }
+]

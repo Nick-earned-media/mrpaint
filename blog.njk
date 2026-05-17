@@ -1,0 +1,139 @@
+---
+layout: base.njk
+title: Blog — Painting Tips & Local Stories
+description: Painting tips, before/after stories and advice from MrPaint, a family-run painting company in Cairns.
+permalink: /blog/
+canonical: /blog/
+---
+
+<style>
+.page-hero{ padding: clamp(48px,7vw,80px) 0 clamp(24px,3vw,40px) }
+.page-hero h1{ font-size: clamp(48px, 6vw, 92px); }
+
+.feat-post{ background:var(--bg-soft) }
+.feat-grid{ display:grid; grid-template-columns: 1.2fr 1fr; gap: clamp(28px,4vw,64px); align-items:center }
+.feat-img{ aspect-ratio: 5/4; border-radius: var(--radius-l); overflow:hidden; border:1px solid var(--rule); background:#fff }
+.feat-img img{ width:100%; height:100%; object-fit:cover }
+.feat-post .tag{ display:inline-flex; align-items:center; gap:8px; padding:6px 12px; background:var(--yellow); color:var(--ink); border-radius:999px; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase }
+.feat-post h2{ margin-top:14px }
+@media (max-width: 900px){ .feat-grid{ grid-template-columns: 1fr } }
+
+.posts{ background:#fff }
+.post-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px }
+.post{
+  background:#fff; border:1px solid var(--rule); border-radius:var(--radius);
+  overflow:hidden; display:flex; flex-direction:column;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.post:hover{ transform:translateY(-2px); box-shadow: var(--shadow); border-color: var(--ink) }
+.post .ph{ aspect-ratio: 16/10; background: var(--bg-soft); overflow:hidden }
+.post .ph img{ width:100%; height:100%; object-fit:cover; transition: transform .4s ease }
+.post:hover .ph img{ transform: scale(1.03) }
+.post .body{ padding: 20px; display:flex; flex-direction:column; gap:10px; flex:1 }
+.post .meta-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; color: var(--muted); font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase }
+.post h4{ font-size: 21px; line-height:1.25; letter-spacing:-.015em }
+.post p{ color:var(--ink-2); font-size:14.5px; flex:1 }
+.post .more{ font-weight:500; color:var(--ink); border-bottom: 2px solid var(--yellow); padding-bottom:1px; align-self:flex-start; font-size:14px }
+@media (max-width: 1000px){ .post-grid{ grid-template-columns: 1fr 1fr } }
+@media (max-width: 600px){ .post-grid{ grid-template-columns: 1fr } }
+
+.subscribe{ background:var(--ink); color:#fff }
+.sub-grid{ display:grid; grid-template-columns: 1.1fr 1fr; gap: clamp(28px,4vw,64px); align-items:center }
+.sub-grid h2{ color:#fff }
+.sub-form{ display:flex; gap:10px; margin-top:24px; max-width: 460px }
+.sub-form input{ flex:1; padding:14px 16px; border-radius:999px; border:1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.05); color:#fff; font:inherit }
+.sub-form input::placeholder{ color: rgba(255,255,255,.4) }
+.sub-form input:focus{ outline:none; border-color: var(--yellow) }
+@media (max-width: 900px){ .sub-grid{ grid-template-columns: 1fr } }
+</style>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow">From the brush</span>
+    <h1 style="margin-top:14px">Painting tips, local stories<br/>and the occasional rant.</h1>
+    <p class="lede" style="margin-top:22px;max-width:62ch">
+      Things we've learned on Cairns rooftops, render walls and timber doors. Mostly useful, occasionally opinionated.
+    </p>
+  </div>
+</section>
+
+{% set posts = collections.posts %}
+{% set featured = posts[0] if posts.length else null %}
+
+{% if featured %}
+<section class="feat-post">
+  <div class="wrap">
+    <div class="feat-grid">
+      <div class="feat-img">
+        <img src="/assets/images/work-orange-roof.png" alt="Featured post" />
+      </div>
+      <div>
+        <span class="tag">★ Featured</span>
+        <h2 style="font-size: clamp(28px, 3.4vw, 48px)">{{ featured.data.title }}</h2>
+        {% if featured.data.summary %}
+        <p class="lede" style="margin-top: 18px">{{ featured.data.summary }}</p>
+        {% endif %}
+        <div class="meta-row" style="display:flex;gap:14px;align-items:center;margin-top:22px;color:var(--muted);font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase">
+          <span>{{ featured.date | isoDate }}</span>
+        </div>
+        <div style="margin-top:24px"><a class="btn" href="{{ featured.url }}">Read the full post <span class="arr">→</span></a></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="posts">
+  <div class="wrap">
+    <div class="sec-head split">
+      <div>
+        <span class="eyebrow">All posts</span>
+        <h2>The full back catalogue.</h2>
+      </div>
+      <div class="right">
+        <p class="lede">Tropical paint tips, local jobs, and notes from the field. Nothing sponsored.</p>
+      </div>
+    </div>
+    {% if posts.length > 1 %}
+      <div class="post-grid">
+        {% for post in posts.slice(1) %}
+        <article class="post">
+          <div class="ph"><img src="/assets/images/work-major-upgrade.png" alt=""/></div>
+          <div class="body">
+            <div class="meta-row"><span>Post</span><span>{{ post.date | isoDate }}</span></div>
+            <h4>{{ post.data.title }}</h4>
+            {% if post.data.summary %}<p>{{ post.data.summary }}</p>{% endif %}
+            <a class="more" href="{{ post.url }}">Read post →</a>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="color:var(--muted);text-align:center;font-size:15px">More posts coming soon. Subscribe below to be the first to know.</p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="subscribe">
+  <div class="wrap">
+    <div class="sub-grid">
+      <div>
+        <span class="eyebrow" style="color:rgba(255,255,255,.7)">Stay in the loop</span>
+        <h2 style="margin-top:14px">One useful email,<br/>once a month.</h2>
+        <p class="lede" style="color:rgba(255,255,255,.82);margin-top:22px;max-width:50ch">
+          Tropical paint tips, recent jobs, the occasional discount. No spam. Unsubscribe in one click.
+        </p>
+        <form class="sub-form" action="/api/subscribe" method="POST">
+          <input type="email" name="email" placeholder="your@email.com.au" required />
+          <button class="btn btn--yellow" type="submit">Subscribe <span class="arr">→</span></button>
+        </form>
+      </div>
+      <div style="aspect-ratio:1/1;border-radius: var(--radius-l);overflow:hidden;background: var(--yellow); display:flex; align-items:center; justify-content:center; padding: 40px">
+        <div style="text-align:center">
+          <div style="font-family:var(--display);font-weight:700;font-size: clamp(64px, 7vw, 120px); line-height:1; color: var(--ink)">12</div>
+          <div style="font-family:var(--display);font-weight:500;font-size: clamp(20px,2vw,28px); color:var(--ink); margin-top: 14px">posts a year.<br/>That's it.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

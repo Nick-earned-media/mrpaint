@@ -1,0 +1,160 @@
+---
+layout: base.njk
+title: About — A family-run painting company in Cairns
+description: MrPaint is a contemporary, family-run painting and decorating company that relocated to Cairns in 2024. Read our story.
+permalink: /about/
+canonical: /about/
+---
+
+<style>
+.page-hero{ padding: clamp(48px,7vw,90px) 0 clamp(28px,4vw,56px) }
+.page-hero h1{ font-size: clamp(48px, 6vw, 88px); }
+.values-grid{ display:grid; grid-template-columns: repeat(4,1fr); gap: 14px }
+.value{ background:var(--bg-soft); border:1px solid var(--rule); border-radius: var(--radius); padding: 24px; display:flex; flex-direction:column; gap: 12px }
+.value .n{ font-family:var(--display); font-weight:600; font-size: 36px; color: var(--ink); letter-spacing:-.02em; line-height:1 }
+.value h4{ font-size: 18px }
+.value p{ color:var(--ink-2); font-size:14.5px }
+@media (max-width: 1000px){ .values-grid{ grid-template-columns: 1fr 1fr } }
+@media (max-width: 540px){ .values-grid{ grid-template-columns: 1fr } }
+.story{ background:#fff }
+.story .grid{ display:grid; grid-template-columns: 1fr 1.1fr; gap: clamp(28px,4vw,72px); align-items:center }
+.story .img{ aspect-ratio: 4/5; border-radius: var(--radius-l); overflow:hidden; border:1px solid var(--rule) }
+.story .img img{ width:100%; height:100%; object-fit:cover; display:block }
+.story blockquote{
+  margin: 28px 0 0; padding: 22px 26px;
+  background: var(--yellow); color: var(--ink);
+  border-radius: var(--radius);
+  font-family: var(--display); font-weight:500; font-size: clamp(20px, 1.9vw, 26px); line-height:1.35; letter-spacing:-.01em;
+}
+.story blockquote cite{ display:block; font-style:normal; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color: rgba(22,20,19,.7); margin-top: 12px }
+@media (max-width: 860px){ .story .grid{ grid-template-columns: 1fr } }
+</style>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow">About {{ site.name }}</span>
+    <h1 style="margin-top:14px">A contemporary, family-run<br/>painting company in Cairns.</h1>
+    <p class="lede" style="margin-top:22px;max-width:62ch">
+      {{ site.name }} built its reputation as one of Sydney's most sought-after painting and decorating contractors — rooted in customer focus, superior workmanship, affordability, and professionalism. In 2024 we relocated the family to Cairns. We couldn't be happier.
+    </p>
+  </div>
+</section>
+
+<div class="trust" aria-hidden="true">
+  <div class="track">
+    <span>Family-run business</span><span class="dot"></span>
+    <span>Trade-qualified painters</span><span class="dot"></span>
+    <span>Fully licensed &amp; insured</span><span class="dot"></span>
+    <span>Free on-site quotes</span><span class="dot"></span>
+    <span>Dulux &amp; Wattyl approved products</span><span class="dot"></span>
+    <span>Residential · Commercial · Industrial</span><span class="dot"></span>
+    <span>Family-run business</span><span class="dot"></span>
+    <span>Trade-qualified painters</span><span class="dot"></span>
+    <span>Fully licensed &amp; insured</span><span class="dot"></span>
+    <span>Free on-site quotes</span><span class="dot"></span>
+    <span>Dulux &amp; Wattyl approved products</span><span class="dot"></span>
+    <span>Residential · Commercial · Industrial</span><span class="dot"></span>
+  </div>
+</div>
+
+<section class="story">
+  <div class="wrap">
+    <div class="grid">
+      <div class="img">
+        <img src="/assets/images/work-major-upgrade.png" alt="{{ site.owner }} on the tools" />
+      </div>
+      <div>
+        <span class="eyebrow">Our story</span>
+        <h2 style="margin-top:14px">From Sydney to Cairns —<br/>with the same playbook.</h2>
+        <p class="lede" style="margin-top:22px">
+          {{ site.name }} started as a small Sydney outfit and grew up on the kind of word-of-mouth you can't buy. We can deliver everything from the simplest painting tasks to complex and intricate special finishes — and we approach every project, irrespective of cost or size, with the aim of delivering a hassle-free service from quoting to completion.
+        </p>
+        <p class="lede" style="margin-top:14px">
+          We achieve that through solid communication with clients and a strong background in project management. Smaller team. Tighter standards. Same family running it.
+        </p>
+        <blockquote>
+          "Sound advice, expert professional painters, tried &amp; tested materials, and good old-fashioned quality service — come standard when working with {{ site.name }}."
+          <cite>— {{ site.owner.split(' ')[0] }}, {{ site.name }}</cite>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--bg-soft)">
+  <div class="wrap">
+    <div class="sec-head split">
+      <div>
+        <span class="eyebrow">What we stand for</span>
+        <h2>The four things we<br/>refuse to negotiate.</h2>
+      </div>
+      <div class="right">
+        <p class="lede">Trade businesses get easy to pick from once you know what they care about. Here's what we care about.</p>
+      </div>
+    </div>
+    <div class="values-grid">
+      <div class="value">
+        <span class="n">01</span>
+        <h4>Customer focus</h4>
+        <p>{{ site.owner.split(' ')[0] }} picks up the phone. Foreman you can text. You're never chasing us.</p>
+      </div>
+      <div class="value">
+        <span class="n">02</span>
+        <h4>Superior workmanship</h4>
+        <p>Prep done properly, premium products, two coats minimum unless we tell you otherwise.</p>
+      </div>
+      <div class="value">
+        <span class="n">03</span>
+        <h4>Affordability</h4>
+        <p>Honest scoping. The number on the phone is the number on the invoice.</p>
+      </div>
+      <div class="value">
+        <span class="n">04</span>
+        <h4>Professionalism</h4>
+        <p>Licensed, insured, in uniform, on time. Site cleaner when we leave than when we arrived.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head split">
+      <div>
+        <span class="eyebrow">By the numbers</span>
+        <h2>The shorthand version.</h2>
+      </div>
+      <div class="right">
+        <p class="lede">A few stats that summarise where we're at after a decade of jobs across Sydney and now the tropics.</p>
+      </div>
+    </div>
+    <div class="values-grid">
+      <div class="value"><span class="n" style="color:var(--red)">50+</span><h4>Years of combined experience</h4><p>Between the crew, we've put a brush to most things twice.</p></div>
+      <div class="value"><span class="n" style="color:var(--red)">100%</span><h4>Trade-qualified painters</h4><p>No casual labourers, no apprentices working unsupervised.</p></div>
+      <div class="value"><span class="n" style="color:var(--red)">7yr</span><h4>Workmanship warranty</h4><p>In writing, on every full repaint.</p></div>
+      <div class="value"><span class="n" style="color:var(--red)">4.9★</span><h4>Google rating</h4><p>From client reviews and counting. We don't pay for the stars.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <span class="eyebrow">Work with us</span>
+        <h2>Got a painting job<br/>you'd like us to look at?</h2>
+        <p class="lede">Free, on-site and obligation-free. Ring us on <a style="border-bottom:1px solid currentColor" href="{{ site.phone_link }}">{{ site.phone_display }}</a> or use the contact page.</p>
+        <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn" href="/contact/">Get a quote <span class="arr">→</span></a>
+          <a class="btn btn--ghost" href="/gallery/">See our work</a>
+        </div>
+      </div>
+      <div class="qform" style="background:#fff;border-color:rgba(22,20,19,.18)">
+        <div style="font-family:var(--display);font-size:clamp(24px,2.4vw,32px);font-weight:600;letter-spacing:-.02em;line-height:1.15">{{ site.owner.split(' ')[0] }}'s direct line</div>
+        <p style="color:var(--ink-2)">Best between 7am and 4pm. We'll always call back if you miss us.</p>
+        <a class="btn btn--yellow" href="{{ site.phone_link }}" style="justify-content:center;width:100%;font-size:18px;padding:18px 22px">📞 {{ site.phone_display }}</a>
+        <a class="btn btn--ghost" href="mailto:{{ site.email }}" style="justify-content:center;width:100%;border-color:var(--rule-2)">✉ {{ site.email }}</a>
+      </div>
+    </div>
+  </div>
+</section>

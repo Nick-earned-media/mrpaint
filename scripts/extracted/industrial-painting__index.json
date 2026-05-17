@@ -1,0 +1,44 @@
+{
+  "file": "industrial-painting/index.html",
+  "url": "/industrial-painting/",
+  "title": "Industrial Painting Cairns- Tailored Solutions - MrPaint",
+  "description": "MrPaint industrial painting is a local, family-run painting company, and has been servicing Cairns for over ten years. Get a free quote.",
+  "canonical": "../index.html%3Fp=564.html",
+  "ogImage": "",
+  "headings": [
+    {
+      "tag": "h1",
+      "text": "Industrial Painter"
+    },
+    {
+      "tag": "h2",
+      "text": "Protective coatings"
+    },
+    {
+      "tag": "h2",
+      "text": "Industrial cleaning"
+    },
+    {
+      "tag": "h2",
+      "text": "Industrial floor coatings"
+    },
+    {
+      "tag": "h2",
+      "text": "Our Quality Painting Service is just a call away"
+    }
+  ],
+  "paragraphs": [
+    "High Quality Painting Service for the Cairns Region",
+    "At MrPaint, we provide protective coating solutions tailored to each clients needs.",
+    "We use industrial grade products along with specialised application methods to ensure long term durability and protection of even the most weather beaten and corrosive surfaces.",
+    "Whether it be high pressure water cleaning, lead paint removal or getting to those hard to reach places, MrPaint has you covered.",
+    "Our experienced team can deliver a tailored solution to you at anytime- including after hours, public holidays and weekends.",
+    "At MrPaint we provide after hours and weekend flooring solutions for your business. Our industrial epoxy solutions are anti-slip and water resistant ensuring longevity and peace of mind for our clients."
+  ],
+  "images": [
+    {
+      "src": "../wp-content/uploads/2019/04/mrpaint-logo-163x98.png",
+      "alt": "MrPaint"
+    }
+  ]
+}

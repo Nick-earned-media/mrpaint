@@ -1,0 +1,26 @@
+{
+  "file": "contact/index.html",
+  "url": "/contact/",
+  "title": "Contact Us - MrPaint",
+  "description": "MrPaint is a local, family-run painting company, and has been servicing Sydney for over ten years. Get in touch with our friendly team.",
+  "canonical": "../index.html%3Fp=14.html",
+  "ogImage": "",
+  "headings": [
+    {
+      "tag": "h1",
+      "text": "contact us"
+    }
+  ],
+  "paragraphs": [
+    "High Quality Painting Service for the Cairns Region",
+    "For the quickest response please call me (Adrian Tucci) directly on 0478 659 766.",
+    "I am always more than happy to provide information over the phone or come and provide you with a quote.",
+    "123 Oleander St, Holloways Beach Cairns QLD"
+  ],
+  "images": [
+    {
+      "src": "../wp-content/uploads/2019/04/mrpaint-logo-163x98.png",
+      "alt": "MrPaint"
+    }
+  ]
+}
