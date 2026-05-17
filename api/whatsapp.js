@@ -176,7 +176,7 @@ async function executeUpdateBusinessInfo(fromWa, intent) {
   applyBusinessFieldUpdate(site, field, value);
 
   const branch = `bot/${Date.now()}-update-${slug(field)}`;
-  await ghCommit({
+  const sha = await ghCommit({
     branch,
     file: "_data/site.json",
     content: JSON.stringify(site, null, 2) + "\n",
@@ -186,7 +186,7 @@ async function executeUpdateBusinessInfo(fromWa, intent) {
 
   await sendPreviewMessage(fromWa, {
     summary: `Updated **${field}**.\nBefore: ${before}\nAfter: "${value}"`,
-    branch,
+    branch, sha,
   });
 }
 
@@ -277,7 +277,7 @@ async function executeUpdateText(fromWa, intent) {
   }
 
   const branch = `bot/${Date.now()}-update-text`;
-  await ghCommit({
+  const sha = await ghCommit({
     branch,
     file: edit.file_path,
     content: newContent,
@@ -287,7 +287,7 @@ async function executeUpdateText(fromWa, intent) {
 
   await sendPreviewMessage(fromWa, {
     summary: `Edited **${edit.file_path}**\nReason: ${edit.reason || description}`,
-    branch,
+    branch, sha,
   });
 }
 
@@ -305,7 +305,7 @@ async function executeAddBlogPost(fromWa, intent) {
   await sendMessage(fromWa, `🤖 Drafting blog post "${title}"…`);
 
   const branch = `bot/${Date.now()}-blog-${slugTitle}`;
-  await ghCommit({
+  const sha = await ghCommit({
     branch,
     file: `blog/${slugTitle}.md`,
     content: md,
@@ -315,7 +315,7 @@ async function executeAddBlogPost(fromWa, intent) {
 
   await sendPreviewMessage(fromWa, {
     summary: `Drafted blog post:\n**${title}**\n\n${truncate(body_markdown, 240)}`,
-    branch,
+    branch, sha,
   });
 }
 
@@ -381,7 +381,7 @@ async function executeAddGalleryPhoto(fromWa, caption, media) {
 
   // 4. Commit BOTH files (binary image + updated JSON) atomically via git trees.
   const branch = `bot/${ts}-gallery-${fileSlug}`.slice(0, 200);
-  await ghCommitMulti({
+  const sha = await ghCommitMulti({
     branch,
     baseRef: "main",
     message: `Bot: add gallery photo "${truncate(meta.title, 60)}"`,
@@ -396,7 +396,7 @@ async function executeAddGalleryPhoto(fromWa, caption, media) {
       `Added to gallery:\n**${meta.title}**\n` +
       `Category: ${meta.category} · ${meta.location || "—"}${meta.postcode ? " · " + meta.postcode : ""}` +
       (meta.note ? `\nNote: ${meta.note}` : ""),
-    branch,
+    branch, sha,
   });
 }
 
@@ -428,13 +428,13 @@ async function handleDiscard(fromWa) {
   await sendMessage(fromWa, `🗑 Discarded \`${branch}\`.`);
 }
 
-async function sendPreviewMessage(fromWa, { summary, branch }) {
-  // GitHub compare URL — always correct, shows the diff. Slashes in the
-  // branch name must be URL-encoded as %2F or GitHub parses the path wrong
-  // and 404s. (Switch to the Vercel deployments API later if we want
-  // visual previews instead of diffs.)
-  const encodedBranch = branch.replace(/\//g, "%2F");
-  const diffUrl = `https://github.com/${GITHUB_REPO}/compare/main...${encodedBranch}`;
+async function sendPreviewMessage(fromWa, { summary, branch, sha }) {
+  // Link to the commit SHA, not the branch. Commit URLs work even after
+  // the branch is deleted (post-merge) and don't choke on slashes in branch
+  // names the way compare URLs do.
+  const diffUrl = sha
+    ? `https://github.com/${GITHUB_REPO}/commit/${sha}`
+    : `https://github.com/${GITHUB_REPO}/tree/${branch.replace(/\//g, "%2F")}`;
   await sendMessage(fromWa,
     `✅ ${summary}\n\n` +
     `Branch: \`${branch}\`\n` +
@@ -522,12 +522,13 @@ async function ghCommit({ branch, file, content, message, baseRef }) {
   } catch { /* file doesn't exist yet */ }
 
   // PUT the new contents.
-  await ghJson("PUT", `/repos/${GITHUB_REPO}/contents/${encodeURIComponent(file)}`, {
+  const result = await ghJson("PUT", `/repos/${GITHUB_REPO}/contents/${encodeURIComponent(file)}`, {
     message,
     content: Buffer.from(content, "utf-8").toString("base64"),
     branch,
     ...(sha ? { sha } : {}),
   });
+  return result.commit?.sha;
 }
 
 // Atomic multi-file commit via the git tree API.
@@ -574,6 +575,7 @@ async function ghCommitMulti({ branch, baseRef, message, files }) {
       });
     } else throw err;
   }
+  return commit.sha;
 }
 
 async function ghMergeToMain(branch) {
