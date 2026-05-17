@@ -43,6 +43,10 @@ module.exports = async function handler(req, res) {
   const params = req.body || {};
   const fromRaw = String(params.From || "");
   const messageBody = String(params.Body || "").trim();
+  const numMedia = parseInt(params.NumMedia || "0", 10) || 0;
+  const media = numMedia > 0
+    ? { url: String(params.MediaUrl0 || ""), contentType: String(params.MediaContentType0 || "") }
+    : null;
 
   if (!SKIP_SIGNATURE_CHECK) {
     const signature = req.headers["x-twilio-signature"];
@@ -61,23 +65,27 @@ module.exports = async function handler(req, res) {
     console.warn("twilio-webhook: rejected phone", { phone });
     return reply(res, "Sorry — this number isn't authorised to edit the MrPaint site.");
   }
-  if (!messageBody) {
-    return reply(res, "Got an empty message. Send some text to try.");
+  if (!messageBody && !media) {
+    return reply(res, "Got an empty message. Send some text, or attach a photo with a caption.");
   }
 
   // Ack Twilio immediately so the webhook doesn't time out — actual work
   // continues in the background and the reply is sent via the Twilio API.
   ack(res);
 
-  waitUntil(handleMessage(fromRaw, messageBody).catch(async (err) => {
+  waitUntil(handleMessage(fromRaw, messageBody, media).catch(async (err) => {
     console.error("bot error:", err);
     await sendMessage(fromRaw, `⚠️ ${truncate(String(err.message || err), 400)}`);
   }));
 };
 
-async function handleMessage(fromWa, message) {
+async function handleMessage(fromWa, message, media) {
   if (!ANTHROPIC_API_KEY) {
     return sendMessage(fromWa, "⚠️ ANTHROPIC_API_KEY isn't set on the server.");
+  }
+  // Photo attached? Route to gallery upload (caption-or-prompt-for-it).
+  if (media?.url) {
+    return executeAddGalleryPhoto(fromWa, message, media);
   }
   const intent = await classifyIntent(message);
   await routeIntent(fromWa, intent);
@@ -97,7 +105,14 @@ async function routeIntent(fromWa, intent) {
       return handleDiscard(fromWa);
     case "needs_image":
     case "add_gallery_photo":
-      return sendMessage(fromWa, `🤖 ${intent.message || "Send the photo as a WhatsApp attachment (image handling lands next)."}`);
+      return sendMessage(fromWa,
+        "🤖 To add a photo to the gallery, send it as a WhatsApp attachment WITH a caption in the same message.\n\n" +
+        "Tap the photo before sending → add a caption like:\n" +
+        "• \"interior repaint — Trinity Beach\"\n" +
+        "• \"commercial fit-out, Cairns CBD\"\n" +
+        "• \"roof restoration, Palm Cove\"\n\n" +
+        "Include the category (residential/commercial/industrial/roof), title, and location."
+      );
     case "unknown":
       return sendMessage(fromWa,
         `🤖 Not sure what to do with that.${intent.reason ? " " + intent.reason : ""}\n\n` +
@@ -304,6 +319,87 @@ async function executeAddBlogPost(fromWa, intent) {
   });
 }
 
+// ─── add_gallery_photo ───────────────────────────────────────────────────
+
+const GALLERY_CAPTION_SYSTEM = `Extract gallery item fields from a caption describing a paint-job photo. Reply with valid JSON ONLY:
+{
+  "title": string,
+  "category": "residential" | "commercial" | "industrial" | "roof",
+  "location": string (Cairns suburb if mentioned, else ""),
+  "postcode": string (4-digit AU postcode if implied — Trinity Beach=4879, Holloways=4878, Palm Cove=4879, Edge Hill=4870, Edmonton=4869, Cairns CBD=4870, Smithfield=4878, Portsmith=4870 — else ""),
+  "note": string (short description, optional)
+}
+
+Infer category from clues if not explicit: interior/exterior/house/home/door/ceiling = residential, shop/office/cafe/strata = commercial, warehouse/factory/workshop = industrial, roof = roof. Default residential. Title should be Sentence Case.`;
+
+async function executeAddGalleryPhoto(fromWa, caption, media) {
+  if (!caption) {
+    return sendMessage(fromWa,
+      "🤖 Got the photo but no caption. WhatsApp lets you add one before sending — tap the photo, type a caption like:\n\n" +
+      "• \"residential interior — Trinity Beach\"\n" +
+      "• \"commercial fit-out, Cairns CBD\"\n\n" +
+      "Then send again and I'll add it to the gallery."
+    );
+  }
+  if (!media?.url) throw new Error("executeAddGalleryPhoto: missing media URL");
+
+  await sendMessage(fromWa, `🤖 Adding photo: "${truncate(caption, 100)}"…`);
+
+  // 1. Parse caption into structured fields.
+  const meta = await callAnthropic({
+    model: "claude-haiku-4-5",
+    max_tokens: 400,
+    system: GALLERY_CAPTION_SYSTEM,
+    user: caption,
+    parseJson: true,
+  });
+
+  // 2. Download the image from Twilio's signed media URL.
+  const imageBuf = await downloadTwilioMedia(media.url);
+  const contentType = (media.contentType || "").toLowerCase();
+  const ext = contentType.includes("png") ? "png"
+            : contentType.includes("webp") ? "webp"
+            : contentType.includes("gif") ? "gif"
+            : "jpg";
+  const ts = Date.now();
+  const fileSlug = slug(meta.title || "photo");
+  const imagePath = `assets/images/work-${fileSlug}-${ts}.${ext}`;
+
+  // 3. Read current gallery.json from main; prepend the new entry.
+  const galleryFile = await ghGetContents("_data/gallery.json", "main");
+  const gallery = JSON.parse(Buffer.from(galleryFile.content, "base64").toString("utf-8"));
+  const newItem = {
+    image: `/${imagePath}`,
+    alt: meta.title,
+    title: meta.title,
+    category: meta.category || "residential",
+    location: meta.location || "",
+    postcode: meta.postcode || "",
+    note: meta.note || "",
+  };
+  gallery.unshift(newItem);
+
+  // 4. Commit BOTH files (binary image + updated JSON) atomically via git trees.
+  const branch = `bot/${ts}-gallery-${fileSlug}`.slice(0, 200);
+  await ghCommitMulti({
+    branch,
+    baseRef: "main",
+    message: `Bot: add gallery photo "${truncate(meta.title, 60)}"`,
+    files: [
+      { path: imagePath, content: imageBuf.toString("base64"), encoding: "base64" },
+      { path: "_data/gallery.json", content: JSON.stringify(gallery, null, 2) + "\n", encoding: "utf-8" },
+    ],
+  });
+
+  await sendPreviewMessage(fromWa, {
+    summary:
+      `Added to gallery:\n**${meta.title}**\n` +
+      `Category: ${meta.category} · ${meta.location || "—"}${meta.postcode ? " · " + meta.postcode : ""}` +
+      (meta.note ? `\nNote: ${meta.note}` : ""),
+    branch,
+  });
+}
+
 // ─── approve / discard ────────────────────────────────────────────────────
 
 async function findLatestBotBranch() {
@@ -432,6 +528,52 @@ async function ghCommit({ branch, file, content, message, baseRef }) {
   });
 }
 
+// Atomic multi-file commit via the git tree API.
+// Each file: { path, content, encoding: "utf-8" | "base64" }.
+async function ghCommitMulti({ branch, baseRef, message, files }) {
+  // 1. Base commit + tree SHAs.
+  const base = await ghJson("GET", `/repos/${GITHUB_REPO}/branches/${encodeURIComponent(baseRef)}`);
+  const baseCommitSha = base.commit.sha;
+  const baseTreeSha = base.commit.commit.tree.sha;
+
+  // 2. One blob per file.
+  const treeEntries = await Promise.all(files.map(async (f) => {
+    const blob = await ghJson("POST", `/repos/${GITHUB_REPO}/git/blobs`, {
+      content: f.content,
+      encoding: f.encoding || "utf-8",
+    });
+    return { path: f.path, sha: blob.sha, mode: "100644", type: "blob" };
+  }));
+
+  // 3. New tree extending base.
+  const tree = await ghJson("POST", `/repos/${GITHUB_REPO}/git/trees`, {
+    base_tree: baseTreeSha,
+    tree: treeEntries,
+  });
+
+  // 4. New commit.
+  const commit = await ghJson("POST", `/repos/${GITHUB_REPO}/git/commits`, {
+    message,
+    tree: tree.sha,
+    parents: [baseCommitSha],
+  });
+
+  // 5. Create or fast-forward branch ref.
+  try {
+    await ghJson("POST", `/repos/${GITHUB_REPO}/git/refs`, {
+      ref: `refs/heads/${branch}`,
+      sha: commit.sha,
+    });
+  } catch (err) {
+    if (/Reference already exists/i.test(String(err.message))) {
+      await ghJson("PATCH", `/repos/${GITHUB_REPO}/git/refs/heads/${encodeURIComponent(branch)}`, {
+        sha: commit.sha,
+        force: false,
+      });
+    } else throw err;
+  }
+}
+
 async function ghMergeToMain(branch) {
   return ghJson("POST", `/repos/${GITHUB_REPO}/merges`, {
     base: "main",
@@ -488,6 +630,15 @@ async function sendMessage(toWa, text) {
     const t = await r.text();
     console.error("Twilio send failed:", r.status, t.slice(0, 300));
   }
+}
+
+// Fetch a Twilio MediaUrl (signed; requires basic auth with Account SID+Token).
+async function downloadTwilioMedia(url) {
+  const auth = "Basic " + Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
+  const r = await fetch(url, { headers: { Authorization: auth }, redirect: "follow" });
+  if (!r.ok) throw new Error(`Twilio media download ${r.status} ${url}`);
+  const arr = await r.arrayBuffer();
+  return Buffer.from(arr);
 }
 
 // ─── small utils ─────────────────────────────────────────────────────────
