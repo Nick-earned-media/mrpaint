@@ -333,12 +333,14 @@ async function handleDiscard(fromWa) {
 }
 
 async function sendPreviewMessage(fromWa, { summary, branch }) {
-  const previewUrl = `https://${VERCEL_PROJECT_SLUG}-git-${branch.replace(/\//g, "-")}-${VERCEL_TEAM_SLUG}.vercel.app`;
+  // GitHub compare URL — always correct, shows the diff. (Vercel preview URLs
+  // are unpredictable for long branch names; switch to Vercel API later if we
+  // want visual previews instead of diffs.)
+  const diffUrl = `https://github.com/${GITHUB_REPO}/compare/main...${branch}`;
   await sendMessage(fromWa,
     `✅ ${summary}\n\n` +
     `Branch: \`${branch}\`\n` +
-    `Preview: ${previewUrl}\n` +
-    `(takes ~60s to build)\n\n` +
+    `Diff: ${diffUrl}\n\n` +
     `Reply YES to publish, NO to discard.`
   );
 }
