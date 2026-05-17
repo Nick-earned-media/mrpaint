@@ -518,9 +518,28 @@ async function callAnthropic({ model, max_tokens, system, user, parseJson }) {
   const data = await r.json();
   const raw = data.content?.[0]?.text || "";
   if (!parseJson) return raw;
-  const clean = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
-  try { return JSON.parse(clean); }
-  catch (e) { throw new Error(`Couldn't parse JSON from ${model}: ${clean.slice(0, 300)}`); }
+  try { return extractJson(raw); }
+  catch (e) { throw new Error(`Couldn't parse JSON from ${model}: ${truncate(String(e.message || e), 200)}\n\nFirst 300 chars of raw: ${raw.slice(0, 300)}`); }
+}
+
+// Robust JSON extraction: handles bare JSON, fenced JSON, and JSON-with-prose.
+function extractJson(text) {
+  if (!text) throw new Error("empty response");
+  const trimmed = text.trim();
+  // 1. Direct parse — Claude obeyed and replied with bare JSON.
+  try { return JSON.parse(trimmed); } catch {}
+  // 2. Inside a ```json … ``` (or plain ``` … ```) code fence.
+  const fenced = trimmed.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
+  if (fenced) {
+    try { return JSON.parse(fenced[1].trim()); } catch {}
+  }
+  // 3. First { to matching last } — handles prose-before-JSON.
+  const firstBrace = trimmed.indexOf("{");
+  const lastBrace = trimmed.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    try { return JSON.parse(trimmed.slice(firstBrace, lastBrace + 1)); } catch {}
+  }
+  throw new Error(`no parseable JSON found`);
 }
 
 // ─── GitHub helpers (raw fetch) ───────────────────────────────────────────
