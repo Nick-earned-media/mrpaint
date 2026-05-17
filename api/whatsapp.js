@@ -1,21 +1,23 @@
-// Twilio WhatsApp webhook handler.
+// Twilio WhatsApp webhook handler — MrPaint editorial bot.
 //
-// Receives an incoming WhatsApp message, validates the Twilio signature,
-// checks the sender against a phone whitelist, and replies via TwiML.
+// Flow:
+//   1. Validate Twilio signature (HMAC-SHA1).
+//   2. Check sender against ALLOWED_PHONES whitelist.
+//   3. Pass the message to Claude Haiku for intent classification.
+//   4. Reply via TwiML with the classifier's output (operation + params).
 //
-// Currently runs in ECHO MODE — it replies with the received text so we can
-// verify the plumbing. Real operations (Claude intent classification, file
-// edits via Octokit, preview URLs, YES/NO approval) wire in next.
+// Operation execution (writes, commits, preview URLs, YES/NO approval) lands
+// after we've verified classifier quality with the user.
 //
 // Required Vercel env vars:
-//   TWILIO_AUTH_TOKEN  — from Twilio Console (Settings → API Keys)
-//   ALLOWED_PHONES     — comma-separated E.164 list (e.g. "+61478659766")
-//
-// Twilio webhook URL: https://www.mrpaint.com.au/api/whatsapp (HTTP POST)
+//   TWILIO_AUTH_TOKEN   — from Twilio Console
+//   ANTHROPIC_API_KEY   — from console.anthropic.com (used by Haiku)
+//   ALLOWED_PHONES      — comma-separated E.164 list (e.g. "+61416168991")
 
 const crypto = require("node:crypto");
 
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";
 const ALLOWED_PHONES = (process.env.ALLOWED_PHONES || "")
   .split(",")
   .map((s) => s.trim())
@@ -32,37 +34,117 @@ module.exports = async function handler(req, res) {
   const fromRaw = String(params.From || "");
   const messageBody = String(params.Body || "").trim();
 
-  // 1. Twilio signature check (skip locally with SKIP_SIGNATURE_CHECK=1).
   if (!SKIP_SIGNATURE_CHECK) {
     const signature = req.headers["x-twilio-signature"];
     const proto = req.headers["x-forwarded-proto"] || "https";
     const host = req.headers["x-forwarded-host"] || req.headers.host;
     const url = `${proto}://${host}${req.url}`;
     if (!signature || !verifySignature(TWILIO_AUTH_TOKEN, signature, url, params)) {
-      console.warn("twilio-webhook: invalid signature", { url, hasSig: !!signature });
+      console.warn("twilio-webhook: invalid signature");
       res.status(403).send("Forbidden");
       return;
     }
   }
 
-  // 2. Whitelist: strip "whatsapp:" prefix, compare to ALLOWED_PHONES.
   const phone = fromRaw.replace(/^whatsapp:/, "");
   if (!ALLOWED_PHONES.includes(phone)) {
     console.warn("twilio-webhook: rejected phone", { phone });
     return reply(res, "Sorry — this number isn't authorised to edit the MrPaint site.");
   }
 
-  // 3. Echo mode.
-  const text = messageBody
-    ? `🎨 Got your message:\n\n"${truncate(messageBody, 200)}"\n\n(Bot is in echo mode — real operations land next.)`
-    : "Got an empty message. Send some text to test.";
-  return reply(res, text);
+  if (!messageBody) {
+    return reply(res, "Got an empty message. Send some text to test.");
+  }
+
+  if (!ANTHROPIC_API_KEY) {
+    return reply(res, "⚠️ ANTHROPIC_API_KEY isn't set on the server — can't classify intent yet.");
+  }
+
+  try {
+    const intent = await classifyIntent(messageBody);
+    return reply(res, formatIntentReply(intent));
+  } catch (err) {
+    console.error("classifyIntent failed:", err);
+    return reply(res, `⚠️ Classifier error: ${truncate(String(err.message || err), 300)}`);
+  }
+};
+
+// ─── Claude intent classifier ──────────────────────────────────────────────
+
+const SYSTEM_PROMPT = `You are the backend webhook for a Cairns painting business (MrPaint). Adrian, the owner, messages you in plain English to edit his static website. Your job: classify each message into ONE operation and extract parameters. Reply with valid JSON ONLY — no prose, no code fences, no commentary.
+
+Operations:
+- update_business_info: change a sitewide business field. Output: {"operation":"update_business_info","field":"phone"|"email"|"address"|"hours","value":string}
+- add_blog_post: write a new blog post from a topic or short brief. Output: {"operation":"add_blog_post","title":string,"body_markdown":string}. Generate a 200-400 word body in tradie-friendly Cairns voice.
+- add_gallery_photo: cannot be done with text only — needs an image attachment which we'll handle later. Output: {"operation":"needs_image","message":string}
+- update_text: change some specific text on the site (hero copy, an FAQ answer, etc.). Output: {"operation":"update_text","description":string}
+- approve: user is confirming a pending change ("yes", "publish", "ship", "ok go", "publish it"). Output: {"operation":"approve"}
+- discard: user is cancelling a pending change ("no", "cancel", "discard", "nope", "scrap it"). Output: {"operation":"discard"}
+- unknown: doesn't match any operation. Output: {"operation":"unknown","reason":string}
+
+Examples:
+"change the phone to 0412 345 678" → {"operation":"update_business_info","field":"phone","value":"0412 345 678"}
+"update our email to hello@mrpaint.com.au" → {"operation":"update_business_info","field":"email","value":"hello@mrpaint.com.au"}
+"YES" → {"operation":"approve"}
+"nope cancel that" → {"operation":"discard"}
+"add a blog post about prepping a Queenslander before exterior repaint" → {"operation":"add_blog_post","title":"Prepping a Queenslander for an exterior repaint","body_markdown":"..."}
+"swap the hero photo on the homepage" → {"operation":"needs_image","message":"send me the photo you'd like to use and I'll swap it in"}
+"change the homepage hero to say 'Cairns painters since 2014'" → {"operation":"update_text","description":"change the homepage hero text to 'Cairns painters since 2014'"}
+"what's the weather" → {"operation":"unknown","reason":"not a website edit request"}
+
+Reply with the JSON object only.`;
+
+async function classifyIntent(message) {
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: "claude-haiku-4-5",
+      max_tokens: 800,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: message }],
+    }),
+  });
+  if (!resp.ok) {
+    const body = await resp.text();
+    throw new Error(`Claude API ${resp.status}: ${body.slice(0, 200)}`);
+  }
+  const data = await resp.json();
+  const raw = data.content?.[0]?.text || "";
+  const clean = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
+  return JSON.parse(clean);
+}
+
+function formatIntentReply(intent) {
+  const op = intent.operation || "unknown";
+  switch (op) {
+    case "update_business_info":
+      return `🤖 Understood:\n\nUpdate **${intent.field}** to:\n"${intent.value}"\n\n(Operation execution lands next — for now I'm just confirming I parsed it right.)`;
+    case "add_blog_post":
+      return `🤖 Understood:\n\nNew blog post:\nTitle: "${intent.title}"\n\nBody preview:\n${truncate(intent.body_markdown || "", 300)}\n\n(Execution lands next.)`;
+    case "add_gallery_photo":
+    case "needs_image":
+      return `🤖 ${intent.message || "Send the photo you'd like to use."}`;
+    case "update_text":
+      return `🤖 Understood — text change:\n"${intent.description}"\n\n(Execution lands next.)`;
+    case "approve":
+      return `🤖 Approve — but there's no pending change to publish yet. Once operation execution is wired, this'll merge the preview branch.`;
+    case "discard":
+      return `🤖 Discard — but there's no pending change to cancel yet.`;
+    case "unknown":
+      return `🤖 Not sure what to do with that. ${intent.reason || ""}\n\nTry: "change phone to 0412 345 678" or "add a blog post about ..."`;
+    default:
+      return `🤖 Got an unexpected intent:\n${JSON.stringify(intent, null, 2)}`;
+  }
 }
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 
 function verifySignature(authToken, signature, url, params) {
-  // Twilio: sort POST params by key, append key+value to URL, HMAC-SHA1, base64.
   const sortedKeys = Object.keys(params).sort();
   const data = url + sortedKeys.map((k) => k + String(params[k])).join("");
   const expected = crypto
