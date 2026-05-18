@@ -1,0 +1,44 @@
+---
+title: "The Best Garden Features To Increase The Value Of Your Home"
+date: 2021-07-11
+summary: "When you are selling your home, the garden is often overlooked. Here are five of the best garden features that can add value to your home."
+---
+If you’re trying to sell your home, one thing that often gets overlooked amid the chaos that is home-selling is your garden. Maybe you’ve let it grow out of control over the years and now aren’t sure how to rein it back in again, or maybe you’ve got problems with your grass or a rodent infestation that’s leaving holes everywhere. 
+
+It could be the trees that used to line your property are looking damp and dark and are dying or dead. Whatever the problem, it’s an easy fix. With a little investment and time, you can add anywhere from 15 to 25% on top of the valuation of your home. That said, here are five of the best garden features that can add value to your home. 
+
+## **1\. Instal a garden shed** 
+
+Everyone loves an outdoor space, but homeowners often find themselves incapable of [storing all of their tools](https://outsidelivingtoday.com/best-outdoor-storage-sheds) in a garage, so one addition you might consider is a garden shed. It doesn’t have to be very big, it just has to be there. You can match the paint to your house, or have the little shed stand out on its own. 
+
+And if you really want to go all out — consider transforming it into a man-cave or even [a home office](https://mrpaint.com.au/blog/trending-tiny-houses-as-work-from-home-garden-offices/) — this will attract a whole new range of buyers to the home. In order to make this a successful project that’ll repay you when you sell the house, you’re going to want to hire professional shed builders, so be sure to do your research and shop around. 
+
+## **2\. Take control of your shrubbery** 
+
+If you’ve let your shrubbery grow and grow over the last couple of years, it’s time to take back control of that area of the garden. Find a landscaping company that might be able to help you out, or alternatively, you could consider [taking a landscaping course](https://www.coursesforsuccess.com.au/blog/business/4948-starting-a-lawn-care-business) or starting a lawn care business. 
+
+Then, if you must, remove any dead or dying shrubs, or any that are invasive and are taking over space that could be reserved for other shrubs, so they might grow better. Takedown any overgrown hedges to roughly head or window height, depending on location.  It’s easy to take control once you know what you’re doing. 
+
+## **3\. Add outdoor lighting with solar power** 
+
+Not only is this critical for any evening outdoor escapades for your newcomers, but it’s also [good for the environment](https://mrpaint.com.au/blog/energy-efficiency-multi-storey-building-guide/). You don’t have to go big or crazy with this expense, it can be bought and installed very simply, but the addition of outdoor lighting powered by the sun means that your new owners can have peace of mind that their moonlight madness will be well lit. There is an abundance of options for outdoor lighting. 
+
+## **4\. Add a deck** 
+
+If you don’t have a deck, it might be worth the investment to put one in. There’s nothing better than sitting out on the deck after a long, hard day at work, sipping a nice cold drink, and watching the birds or bees buzz around. Contentment is easy to find on a nice deck. Decks are something you can do yourself if you have the time, but whatever you do, make sure you choose a nice-looking wood and a nice stain to give the deck a great look. 
+
+Decks also don’t have to be low-hanging, in fact, it might be worth putting up an overhang of some sort, to allow for your home’s new owners to hang a set of fairy or pot lights to light up the deck area. You may also consider separating the deck area definitively with some stairs, perhaps to a barbecue space? 
+
+## **5\. Add walkways** 
+
+If you’re looking to add something to your garden that wasn’t there before, consider the installation of a walkway or two to different parts of the garden. This can be as simple as crushed stone or some good quality paving stones to give easy access. If you’re thinking about something long-lasting and easy to maintain, [pavers](https://pavingsupplies.com.au/product-category/pavers) are a solid option that can really lift the look of your garden paths. The installation of walkways in between different parts of the garden really helps separate the space out and gives a great aesthetic appeal. 
+
+Making the most of your old home’s sale value is really important, and with a little investment, your garden can make up that extra 15-25% and provide an awesome first impression to any prospective buyer. After all, your garden is the first thing that they’re going to see — make it a good one. And, if you need a hand with painting your house, then get in touch [with MrPaint today](https://mrpaint.com.au/)!
+
+![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+
+[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+
+In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
+
+[](https://www.instagram.com/mrpaint.com.au/?hl=en "Instagram")
