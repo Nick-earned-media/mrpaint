@@ -3,7 +3,7 @@ title: "5 Easy Paint Waste Disposal Tips"
 date: 2022-10-11
 summary: "Paint waste can seriously harm the environment. Here are five easy paint waste disposal tips to help you eliminate and safely dispose of paint waste."
 ---
-You can’t leave out painting interior walls or old furniture when it comes to [DIY home projects](https://mrpaint.com.au/blog/how-to-paint-a-wall/). A new coat of paint miraculously saves a dull room, brightening and giving it extra character. It also gives old furniture a second chance. But after a whole week or two of hard work, there will always be leftover paint.
+You can’t leave out painting interior walls or old furniture when it comes to [DIY home projects](/blog/how-to-paint-a-wall/). A new coat of paint miraculously saves a dull room, brightening and giving it extra character. It also gives old furniture a second chance. But after a whole week or two of hard work, there will always be leftover paint.
 
 Excess paint is one of the most common [hazardous](https://www.cessnockadvertiser.com.au/story/7926005/australias-next-step-on-forever-chemicals/) household wastes. In Australia, people buy more than 100 million litres of paint each year. Unfortunately, about [5-7 million litres](https://www.southernhighlandnews.com.au/story/4079303/the-consumer-products-that-should-not-be-entering-the-household-waste-stream/) end up in landfills, including the packaging and materials that go with it.
 
@@ -87,11 +87,11 @@ Here are some tips on what you should avoid or try in your paint disposal waste 
 
 While some might consider keeping leftover paints for future touch-ups, others just can’t find any use for it anymore. However, household paint is classified as hazardous. It should never be poured down the drain or put into your curbside waste bins. Check your local waste management centres and consider hazardous waste disposal plans.
 
-If you need a hand with painting your home, strata building, or apartment, get in touch with [MrPaint](https://mrpaint.com.au/) today.
+If you need a hand with painting your home, strata building, or apartment, get in touch with [MrPaint](/) today.
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

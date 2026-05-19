@@ -84,11 +84,11 @@ It’s vital to catch this issue early to avoid costly repairs or building colla
 
 It’s best to get in a professional to diagnose the primary cause of your concrete cancer and to identify the best treatment option. Various [waterproofing solutions](https://projex.com.au/services-solutions/waterproofing/) can help prevent further cases of concrete cancer. 
 
-Contact [MrPaint](https://mrpaint.com.au/) today if you need a hand with painting your residential or commercial building. We paint everything from roofs to walls and ceilings.
+Contact [MrPaint](/) today if you need a hand with painting your residential or commercial building. We paint everything from roofs to walls and ceilings.
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

@@ -23,7 +23,7 @@ Whether that means saving floor space with a murphy bed, creating a work area wi
 
 With so much increased time inside our homes, trends are turning towards having more warmth. While greys have been dominating neutral palettes for interior over the past few years, the trends are now moving towards more natural and earthy tones. 
 
-You can either get your inspiration from neutral tones such as olive green, brown beiges, and pale creams, or consider [painting your walls](https://mrpaint.com.au/blog/10-diy-painting-hacks-that-you-need-to-know/) in deeper shades of burnt oranges, warm marigolds, cosy cinnamons, and striking mustards. 
+You can either get your inspiration from neutral tones such as olive green, brown beiges, and pale creams, or consider [painting your walls](/blog/10-diy-painting-hacks-that-you-need-to-know/) in deeper shades of burnt oranges, warm marigolds, cosy cinnamons, and striking mustards. 
 
 For a homey and inviting vibe look to colours with red or yellow undertones, and bring some really spicy heat into any room with warm woody chestnut tones. These warm and earthy shades are a top colour trend in 2021 as they can help create a more expressive and intimate feeling of perfect contentment inside your home.
 
@@ -37,9 +37,9 @@ After last year slowed us all down and gave us a chance to be more aware of our 
 
 Our homes have historically been where we only got to spend around one-third of our lives, but the COVID-19 pandemic changed everything. Because everyone is now spending so much more time around the house, their above trends are all about making sure our home looks good and feels good, while also being functional for all the increased use.
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

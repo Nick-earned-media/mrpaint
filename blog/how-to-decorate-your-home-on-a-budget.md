@@ -11,7 +11,7 @@ You just have to be creative, thoughtful, and frugal with your fixed expenses du
 
 One of the most significant expenses during the decorating phase of any home is the money you’ll spend on getting professionals to do the work for you. Usually, most professionals, whether it’s interior designers, painters, furniture installers, or cabinet makers, will charge upwards of $50-60/hour for their services. This will leave you with quite a hefty bill in totality across all of the different professionals you may need, depending on your decorating job.
 
-You can save yourself _a lot_ of money by doing as much decorating as you can by yourself! You can’t do some things — for example, anything to do with electricity or gas needs to be done by a professional legally. But if you’re looking to paint things yourself, there are [several things](https://mrpaint.com.au/blog/10-diy-painting-hacks-that-you-need-to-know/) you’ll need to keep an eye on as you go, but that is by far the most manageable part of the whole project. 
+You can save yourself _a lot_ of money by doing as much decorating as you can by yourself! You can’t do some things — for example, anything to do with electricity or gas needs to be done by a professional legally. But if you’re looking to paint things yourself, there are [several things](/blog/10-diy-painting-hacks-that-you-need-to-know/) you’ll need to keep an eye on as you go, but that is by far the most manageable part of the whole project. 
 
 ## **Buy some plants** 
 
@@ -39,9 +39,9 @@ When it comes to decorating your walls with art, you can save money while giving
 
 No matter what you choose to do with your space, saving money while doing it doesn’t have to be complicated or stressful, simply get creative and think outside the box. If you feel as though you can’t do it alone, you might even consider investing in an interior decorator or designer to assist.
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

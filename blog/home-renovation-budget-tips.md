@@ -17,7 +17,7 @@ First things first, know when it’s right to tackle projects yourself and when 
 
 If it’s a bigger job or it could result in complications, then a professional is the most appropriate answer. A good example of this is if it involves electrical work or complicated plumbing issues, then do not try to do it yourself unless you have previous training or experience.
 
-There are [also plenty of ways](https://mrpaint.com.au/blog/5-ways-to-save-on-house-painting/) you can save money by sharing the workload. For example, you [can hire a professional painting company,](https://mrpaint.com.au/painter/) but reduce the time it will take for them to do the job by tackling all of the preparatory work for them. You can tape the area, lay the clothes, move the furniture, and have the space ready for the painters to walk in and tackle the job. 
+There are [also plenty of ways](/blog/5-ways-to-save-on-house-painting/) you can save money by sharing the workload. For example, you [can hire a professional painting company,](/painter-cairns/) but reduce the time it will take for them to do the job by tackling all of the preparatory work for them. You can tape the area, lay the clothes, move the furniture, and have the space ready for the painters to walk in and tackle the job. 
 
 ## **Keep to the classics** 
 
@@ -39,11 +39,11 @@ If you have big renovations coming, it might be wise to move all of your furnitu
 
 Do you have a good friend group? If so, feel your friends out for favors. If someone you know (or they know) has the right skills for your renovation, then don’t be afraid to trade favors to get the job done. Write out a list of the skills you have and could exchange as payment.   
 
-Whether you shop for home renovation items during the sales, you maintain a strict budget to ensure you stay in the black, there is always some way to save money. It doesn’t matter what home renovations you have on the cards, if you tackle it with the right approach you can create the home of your dreams without spending big. If you need a hand with painting your home, get in touch with [Mr.Paint](https://mrpaint.com.au/) today!
+Whether you shop for home renovation items during the sales, you maintain a strict budget to ensure you stay in the black, there is always some way to save money. It doesn’t matter what home renovations you have on the cards, if you tackle it with the right approach you can create the home of your dreams without spending big. If you need a hand with painting your home, get in touch with [Mr.Paint](/) today!
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

@@ -3,13 +3,13 @@ title: "Choosing A Colour Palette For Your Whole House"
 date: 2021-04-13
 summary: "Most people will often struggle with choosing which colours to paint their walls. The colour palette is how you will set the mood for each room."
 ---
-When it comes to [decorating the interior](https://mrpaint.com.au/blog/how-to-decorate-your-home-on-a-budget/) of their homes, most people will often struggle with choosing which colours to paint their walls. That’s because the colour palette is how you will set the mood for each room of your house. That’s why we’ve decided to make things a little easier for you by helping you choose the perfect colour scheme for you and your home.
+When it comes to [decorating the interior](/blog/how-to-decorate-your-home-on-a-budget/) of their homes, most people will often struggle with choosing which colours to paint their walls. That’s because the colour palette is how you will set the mood for each room of your house. That’s why we’ve decided to make things a little easier for you by helping you choose the perfect colour scheme for you and your home.
 
 ## **Create a colour palette**
 
-The first thing you need to understand is that you will have to choose a palette of paint colours including accent shades for your [whole house](https://mrpaint.com.au/blog/10-diy-painting-hacks-that-you-need-to-know/). This palette will then be used as a guide or a blueprint for choosing all of the interior design aspects of your home. 
+The first thing you need to understand is that you will have to choose a palette of paint colours including accent shades for your [whole house](/blog/10-diy-painting-hacks-that-you-need-to-know/). This palette will then be used as a guide or a blueprint for choosing all of the interior design aspects of your home. 
 
-Your palette will eliminate a lot of the guesswork when it comes to making decorating decisions for your home, including wood, stone, or metal finishes for things like floors, [décor](https://mrpaint.com.au/blog/home-decor-trends/), and furniture. And this colour repetition will ultimately ensure the style of your interiors flows seamlessly between each room.
+Your palette will eliminate a lot of the guesswork when it comes to making decorating decisions for your home, including wood, stone, or metal finishes for things like floors, [décor](/blog/home-decor-trends/), and furniture. And this colour repetition will ultimately ensure the style of your interiors flows seamlessly between each room.
 
 ## **A white shade**
 
@@ -19,7 +19,7 @@ Even if they look very similar on the chart, every shade of white will vary in d
 
 ## **Neutral shades**
 
-An important part of your colour palette, neutral shades will be used for all the interconnected areas inside your home. This could be open areas like lofts and hallways, or inside closets, toilets, and bathrooms. Neutral shades can be colours, but it’s important to choose very subtle hues. Remember too that having a few different neutral shades in your palette will make it much easier to bring everything together within your [interior space](https://mrpaint.com.au/blog/how-to-make-a-small-space-seem-big/).
+An important part of your colour palette, neutral shades will be used for all the interconnected areas inside your home. This could be open areas like lofts and hallways, or inside closets, toilets, and bathrooms. Neutral shades can be colours, but it’s important to choose very subtle hues. Remember too that having a few different neutral shades in your palette will make it much easier to bring everything together within your [interior space](/blog/how-to-make-a-small-space-seem-big/).
 
 ## **An accent shade**
 
@@ -37,17 +37,17 @@ For example, if you have a certain piece of boldly coloured art that you want to
 
 Once you’ve started to narrow down your palette choices, it’s super important to test the shades in each area of your home to ensure you have chosen the perfect colours. Sample cards are often deceptive too, so bring home some test pots of each colour so you can paint swatches on the walls. 
 
-Remember too that [light and shadow](https://mrpaint.com.au/blog/best-exterior-house-colours/) can also have an impact on the shade, so make sure you check during the day, at night, and with different bulbs and lighting fixtures. This will ultimately allow you to properly assess whether the different shades of colour work together in each specific room.
+Remember too that [light and shadow](/blog/best-exterior-house-colours/) can also have an impact on the shade, so make sure you check during the day, at night, and with different bulbs and lighting fixtures. This will ultimately allow you to properly assess whether the different shades of colour work together in each specific room.
 
 ## **Get creative with your colour choices**
 
 Your paint palette will ultimately become one of the defining features of your home, which you’ll hopefully be living in for a long period of time. So when you are choosing your colour palettes, make sure you choose colours that you feel good about, that make you feel happy, and that will ultimately reflect your lifestyle and your personality. 
 
-Remember that it’s all about balance because an entirely neutral home would simply be boring. If you need a hand with painting your new home, then get in touch [with MrPaint today](https://mrpaint.com.au/)!
+Remember that it’s all about balance because an entirely neutral home would simply be boring. If you need a hand with painting your new home, then get in touch [with MrPaint today](/)!
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

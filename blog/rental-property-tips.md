@@ -62,11 +62,11 @@ Now that you’ve got the key facts, all that’s left is for you to find your p
 -   Select a location that is likely to develop in the future.
 -   Choose a low-maintenance property to save on expenses.
 
-Follow these tips and you will gain all the advantages that come with purchasing a rental property. And, if you need a hand with painting your rental property, then [get in touch with MrPaint today](https://mrpaint.com.au/)!
+Follow these tips and you will gain all the advantages that come with purchasing a rental property. And, if you need a hand with painting your rental property, then [get in touch with MrPaint today](/)!
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

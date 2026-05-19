@@ -53,11 +53,11 @@ Both owners and tenants benefit from an energy-efficient commercial property. In
 
 Not only does it have a positive impact on the environment, but it is also a smart way to stand out from the competition. Renters and customers are attracted to businesses that demonstrate sustainability and concern for the environment and will more likely choose their services over a non-sustainable business. 
 
-Going green also increases the comfort of a building, with better performing heating and cooling systems, as well as passive features like green spaces, increasing the well-being of tenants. If you need a hand with painting your new multi-storey building, then get in touch with [MrPaint](https://mrpaint.com.au/) today! MrPaint is your solution for all of your home and [commercial painting needs](https://mrpaint.com.au/commercial-painter-sydney/).
+Going green also increases the comfort of a building, with better performing heating and cooling systems, as well as passive features like green spaces, increasing the well-being of tenants. If you need a hand with painting your new multi-storey building, then get in touch with [MrPaint](/) today! MrPaint is your solution for all of your home and [commercial painting needs](/commercial-painter-cairns/).
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

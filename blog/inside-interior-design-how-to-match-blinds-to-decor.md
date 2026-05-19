@@ -37,11 +37,11 @@ For the movie buffs among us, don’t forget window treatments in your media or 
 
 Remember, you want to think about what each space is for and what primary job your window treatment will serve. Look at all of the options possible before you determine which one is right for you. Take a look at each room to see the existing colors and textures you have to work with. Don’t forget to consider your personal tastes, as well as the room’s overall personality. Likewise, don’t be afraid to shop around to find out what’s on-trend and in-style. 
 
-It’s okay to be practical, you can also be stylish at the same time. In addition to all of that, you will also want to pay attention to the size and shape of each window, as well as what accessories will be featured in the area, from curtains to art. And, if you are looking [to paint the interior of your home](https://mrpaint.com.au/blog/how-much-does-it-cost-to-paint-a-house/) to match your decor—then, [get in touch with MrPaint](https://mrpaint.com.au/contact-us) today.
+It’s okay to be practical, you can also be stylish at the same time. In addition to all of that, you will also want to pay attention to the size and shape of each window, as well as what accessories will be featured in the area, from curtains to art. And, if you are looking [to paint the interior of your home](/blog/how-much-does-it-cost-to-paint-a-house/) to match your decor—then, [get in touch with MrPaint](/contact/) today.
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

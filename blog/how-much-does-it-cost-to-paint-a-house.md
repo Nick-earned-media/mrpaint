@@ -3,7 +3,7 @@ title: "How Much Does It Cost To Paint A House In 2024?"
 date: 2021-09-24
 summary: "In this guide, you'll learn how much it costs to paint a house (including interior, exterior, units, roof painting, two and three-storey buildings)."
 ---
-Is your house looking tired, dull and in need of restoration? If so, there’s nothing like a fresh coat of paint to work wonders on your property. Depending on the size of the painting job, [renovating a house](https://mrpaint.com.au/blog/renovation-project-tips/) can be a mammoth task if you don’t know what you’re doing. Not only this, it can eat away at your budget quite quickly.
+Is your house looking tired, dull and in need of restoration? If so, there’s nothing like a fresh coat of paint to work wonders on your property. Depending on the size of the painting job, [renovating a house](/blog/renovation-project-tips/) can be a mammoth task if you don’t know what you’re doing. Not only this, it can eat away at your budget quite quickly.
 
 When considering painting your home, whether the interior or exterior, there are plenty of questions to ask before getting started. First off, do you need a professional? Is it a DIY job? And most of all, what is the cost of house painting?
 
@@ -21,7 +21,7 @@ There are multiple decisions to be made before planning an interior painting job
 
 For house interiors, the size of jobs ranges from small to significant. Home interiors include walls, ceilings, skirting boards, woodwork, windows, doors, and timber flooring.
 
-The size of the job has a significant impact on the cost of painting. For instance, a [bathroom](https://mrpaint.com.au/blog/budget-ideas-bathroom/) will cost considerably less than painting an entire upper floor. The size of the space, number of rooms, ceiling height, and paint quality will also affect the cost.
+The size of the job has a significant impact on the cost of painting. For instance, a [bathroom](/blog/budget-ideas-bathroom/) will cost considerably less than painting an entire upper floor. The size of the space, number of rooms, ceiling height, and paint quality will also affect the cost.
 
 Whether you choose to do it yourself or hire a house painter, here are some general numbers to give you an idea of what to expect. For a house in Australia, cost estimates for interior house painting range from:
 
@@ -35,7 +35,7 @@ There could be extra painter charges if the painter needs to repair the damage o
 -   Filling and repairing cracks.
 -   Allowing time for the surface to dry before applying a breathable stabilising primer.
 
-Quotes from painters vary, with many charging hourly rates or on a cost-per-square-metre basis. [DIY projects will reduce the price](https://mrpaint.com.au/blog/how-to-save-money-on-your-next-diy-project/), especially if you can do some typical painting jobs yourself. 
+Quotes from painters vary, with many charging hourly rates or on a cost-per-square-metre basis. [DIY projects will reduce the price](/blog/how-to-save-money-on-your-next-diy-project/), especially if you can do some typical painting jobs yourself. 
 
 Obtaining affordable paints and materials is vital without budging on quality. Different areas of the house require specialised interior paint. For example, the conditions in that room can become wet and steamy.
 
@@ -108,7 +108,7 @@ If your house is more than a single storey, there’s a larger surface area to b
 
 ## **How much does roof painting cost?**
 
-If you embark on a completely external project by painting house exteriors, it might be worth [getting a roof painting quote](https://mrpaint.com.au/roof-painter-sydney/). However, the cost of roof work will call for extra spending, so make this decision wisely. For general roof painting, expect to pay between $2000 and $5000 for professional house painters. 
+If you embark on a completely external project by painting house exteriors, it might be worth [getting a roof painting quote](/painter-cairns/). However, the cost of roof work will call for extra spending, so make this decision wisely. For general roof painting, expect to pay between $2000 and $5000 for professional house painters. 
 
 ## **What affects the cost of painting a house?** 
 
@@ -118,7 +118,7 @@ The cost of house painting doesn’t solely include painting walls. If you’re 
 
 ### **1\. Cost of paint**
 
-The paint cost significantly impacts the overall pricing of a paint job. Different types of paint for jobs will depend on the room, surface, and paint quality. Even the paint colour can vary in price, as [some lighter colours](https://mrpaint.com.au/blog/how-to-choose-a-color-palette-for-your-house/) may need extra coats for best results. There are also primers and finishing coats to purchase.
+The paint cost significantly impacts the overall pricing of a paint job. Different types of paint for jobs will depend on the room, surface, and paint quality. Even the paint colour can vary in price, as [some lighter colours](/blog/how-to-choose-a-color-palette-for-your-house/) may need extra coats for best results. There are also primers and finishing coats to purchase.
 
 ### **2\. Smaller painting jobs**
 
@@ -142,17 +142,17 @@ Professional house painters estimate a painting project’s timeframe. They will
 
 The cost in Australia to hire a house painter can vary greatly. Most quotes will represent an overall price for the entire job, including paint, tools and equipment. It’s often generated on a cost-per-square-metre basis, but some prefer to negotiate a painter’s hourly rate.
 
-The average painter’s salary is $34.73 per hour in Australia, and [commercial painting](https://mrpaint.com.au/commercial-painter-sydney/) is likely to cost more than [residential painting services](https://mrpaint.com.au/painter/). 
+The average painter’s salary is $34.73 per hour in Australia, and [commercial painting](/commercial-painter-cairns/) is likely to cost more than [residential painting services](/painter-cairns/). 
 
 ## **What are some ways to save on house painting costs?**
 
-There are always ways to alter the price of painting a house. If you’re keen on DIY, [painting your home](https://mrpaint.com.au/blog/10-diy-painting-hacks-that-you-need-to-know/) can be an enriching experience. 
+There are always ways to alter the price of painting a house. If you’re keen on DIY, [painting your home](/blog/10-diy-painting-hacks-that-you-need-to-know/) can be an enriching experience. 
 
 If you’re prepared to buy the right tools and make a go of it yourself, you could severely cut the costs of paying for skilled labourers. But painting a house can be a big job. How do you decide whether to call in the experts?
 
 It depends on the project size and whether you’re prepared to put the work in and learn to paint properly. The last thing you want is a bad paint job that you either have to live with or redo all over again. 
 
-A good balance is to mix between DIY and professional. Many homeowners choose to do some of the work to keep prices down. Other ways [to save money include](https://mrpaint.com.au/blog/5-ways-to-save-on-house-painting/) the following:
+A good balance is to mix between DIY and professional. Many homeowners choose to do some of the work to keep prices down. Other ways [to save money include](/blog/5-ways-to-save-on-house-painting/) the following:
 
 -   Do the preparation work yourself. 
 -   Paint doors, windows and other woodwork yourself.
@@ -190,11 +190,11 @@ Painting a house can be a good challenge for the DIY-er, but as you can see, man
 
 Because of this, it would be a good idea to contact a professional painter for an initial quote, and you can then decide from there which option will be more cost and time-effective for you.
 
-If you need a hand painting a home, unit, apartment, or upcoming renovation project, contact [MrPaint today](https://mrpaint.com.au/contact-us/)!
+If you need a hand painting a home, unit, apartment, or upcoming renovation project, contact [MrPaint today](/contact/)!
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

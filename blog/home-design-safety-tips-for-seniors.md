@@ -41,11 +41,11 @@ Fixed or temporary ramps can be installed over doorway thresholds to ensure your
 
 So in order to allow easy access for people in wheelchairs or who use walkers, the width of doorways will need to be increased and doors likely replaced by a professional carpenter. 
 
-Another option is powered automatic opening doors for the main entries, but they’re obviously quite expensive to have installed into your home. And, if you need a hand with painting your home, then get in touch with [MrPaint](https://mrpaint.com.au/) today!
+Another option is powered automatic opening doors for the main entries, but they’re obviously quite expensive to have installed into your home. And, if you need a hand with painting your home, then get in touch with [MrPaint](/) today!
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

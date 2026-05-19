@@ -7,7 +7,7 @@ Tiny homes as offices are becoming more popular and offer remote workers solitud
 
 Depending upon where you live, a home may be as large as 800 square feet and as small as 100 square feet, but most tiny houses are 400 square feet or less. This small size is what makes them ideal for use as a detached home office.
 
-Adding [a tiny home to your property](https://mrpaint.com.au/blog/the-benefits-of-tiny-house-living/) essentially adds square footage to your home without modifying the primary dwelling. Tiny houses are also less expensive to build than adding a traditional addition. In some areas, if the structure is small enough, no building permit is required.
+Adding [a tiny home to your property](/blog/the-benefits-of-tiny-house-living/) essentially adds square footage to your home without modifying the primary dwelling. Tiny houses are also less expensive to build than adding a traditional addition. In some areas, if the structure is small enough, no building permit is required.
 
 ## **Tiny builders**
 
@@ -15,7 +15,7 @@ Using a kit, homeowners can build a tiny home themselves or start with a prebuil
 
 For the self-employed, gig worker, or entrepreneurs—anyone working from home—a tiny house as an office has many benefits. Separated from the main house, it can offer a quieter atmosphere, isolation from distraction, and the ability to lock up and walk away from work at the end of the day.
 
-For the inventor, [painter](https://mrpaint.com.au/blog/10-diy-painting-hacks-that-you-need-to-know/), engineer, or massage therapist, a tiny home makes a great studio, workshop, or private place for sessions. Professionals get the benefits of a personal studio without the cost and distractions of shared tenancy.
+For the inventor, [painter](/blog/10-diy-painting-hacks-that-you-need-to-know/), engineer, or massage therapist, a tiny home makes a great studio, workshop, or private place for sessions. Professionals get the benefits of a personal studio without the cost and distractions of shared tenancy.
 
 Families, too, like the idea of an external office. The separation of the office from the main house means there is no need to force kids and pets to be on their best behaviour at all times.   
 
@@ -39,11 +39,11 @@ A new survey by 451 Research of 575 small, medium, and large businesses found th
 
 For employees to continue to enjoy the many benefits of working from home, they will need to create a space with amenities that make it comfortable, efficient, and distraction-free. While a homeowner can modify a spare room or the garage to create a home office, this is lost floor space compared to that gained with the addition of a tiny home.
 
-Tiny homeowners have long touted the benefits of tiny home living and today, remote workers are beginning to listen. Get in touch with [MrPaint](https://mrpaint.com.au/) today if you need a hand with painting your new tiny home. Contact us now [for a quote](https://mrpaint.com.au/contact-us).
+Tiny homeowners have long touted the benefits of tiny home living and today, remote workers are beginning to listen. Get in touch with [MrPaint](/) today if you need a hand with painting your new tiny home. Contact us now [for a quote](/contact/).
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

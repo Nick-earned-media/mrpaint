@@ -15,7 +15,7 @@ Alternatively, if you’re renovating to improve the style of your own home, you
 
 ## **What’s your budget?**
 
-Your [budget](https://mrpaint.com.au/blog/home-renovation-budget-tips/) is one of the most crucial things to address upfront during the planning stage of any renovation. Whether it’s an exact amount that you can’t go over, or it’s more of a ballpark figure, you definitely need to have a budget before you start ripping out fixtures and knocking down walls.
+Your [budget](/blog/home-renovation-budget-tips/) is one of the most crucial things to address upfront during the planning stage of any renovation. Whether it’s an exact amount that you can’t go over, or it’s more of a ballpark figure, you definitely need to have a budget before you start ripping out fixtures and knocking down walls.
 
 Knowing what kind of numbers you’ll be working with is important because it will ultimately dictate the size and quality of the entire renovation project. Then if you don’t have enough to cover the realistic cost projection for your plans, you can either increase the budget, reduce the scope of work, or put it off until you can afford to do it right.
 
@@ -35,11 +35,11 @@ Ultimately, the major construction work required for this type of renovation wil
 
 During the planning stage and throughout the renovation project, it’s important to be practical about everything. Because it’s so easy to get caught up in the moment and start making design choices without actually considering the practicality. So make sure you remain focused on what you want the reno to achieve as well as what you plan on using the area for.
 
-Maybe you’ve fallen in love with the idea of installing fake grass on the ceiling of your lounge. Or now that you’ve seen how voice-controlled heated flooring works, you can’t imagine life without it. While these trends or tech toys may seem like a good idea, will you still feel the same in a few years? Don’t forget that you’ll be paying extra for these unique features. If you’re renovating your house and need a hand with painting, then get in touch with [MrPaint today](https://mrpaint.com.au/')! 
+Maybe you’ve fallen in love with the idea of installing fake grass on the ceiling of your lounge. Or now that you’ve seen how voice-controlled heated flooring works, you can’t imagine life without it. While these trends or tech toys may seem like a good idea, will you still feel the same in a few years? Don’t forget that you’ll be paying extra for these unique features. If you’re renovating your house and need a hand with painting, then get in touch with [MrPaint today](/contact/)! 
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

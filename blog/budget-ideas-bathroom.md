@@ -13,7 +13,7 @@ Finish the job by installing your very own backsplash. You can up the ante by bu
 
 ## **Wallpaper, color, and accessories**
 
-Go bold with a [dramatic wallpaper option](https://mrpaint.com.au/blog/inside-interior-design-how-to-match-blinds-to-decor/) to create a high-end boutique look in your home bathroom. The best part is that the end-product is luxury but the price tag is affordable. You can save time and money for the future by choosing [one of many](https://www.wallsauce.com/how-it-works/peel-stick-wallpaper) peel and stick wallpaper options. They’re temporary and stylish. 
+Go bold with a [dramatic wallpaper option](/blog/inside-interior-design-how-to-match-blinds-to-decor/) to create a high-end boutique look in your home bathroom. The best part is that the end-product is luxury but the price tag is affordable. You can save time and money for the future by choosing [one of many](https://www.wallsauce.com/how-it-works/peel-stick-wallpaper) peel and stick wallpaper options. They’re temporary and stylish. 
 
 If you want to finish the luxurious look you can do so by opting for gold accessories, fixtures, and hardware. Of course, that’s up to you.  If that’s still a little too rich for your blood, you can accessorize with different colors. You don’t have to swing a hammer to change things up. You can refresh the bathroom with new shower curtains, window treatments, and textiles like towels and rugs. If you’re feeling particularly crafty you can update your storage units with adhesive paper, whether it’s patterned, textured, or colorful. 
 
@@ -23,9 +23,9 @@ Finish your new room with some stylish accessories, a bathroom mirror can jazz t
 
 ## **Make paint exciting**
 
-Of course, the easiest, [most affordable](https://mrpaint.com.au/blog/how-much-does-it-cost-to-paint-a-house/) renovation option anyone can choose in any room is paint. It might sound boring, but [paint can be exciting too](https://mrpaint.com.au/blog/10-diy-painting-hacks-that-you-need-to-know/)! For example, you can skip tile and rely on paint alone to create a cheap and stylish bathroom update. Consider a two-tone treatment. Use a stencil to create a line, you can go light at the top and dark at the bottom or you can push the boat out and create a stripe around the entire room. It’s up to you, but with paint, there [are plenty of options](https://mrpaint.com.au/blog/painting-tips-to-help-sell-your-house/). 
+Of course, the easiest, [most affordable](/blog/how-much-does-it-cost-to-paint-a-house/) renovation option anyone can choose in any room is paint. It might sound boring, but [paint can be exciting too](/blog/10-diy-painting-hacks-that-you-need-to-know/)! For example, you can skip tile and rely on paint alone to create a cheap and stylish bathroom update. Consider a two-tone treatment. Use a stencil to create a line, you can go light at the top and dark at the bottom or you can push the boat out and create a stripe around the entire room. It’s up to you, but with paint, there [are plenty of options](/blog/painting-tips-to-help-sell-your-house/). 
 
-It isn’t just the walls that could do with a lick of paint, you may want to give your bathroom cabinets a facelift with a fresh coat of paint. Sand your cabinets down before you paint and opt for a color that stands out or fits in. If you [choose a colorful option](https://mrpaint.com.au/blog/best-exterior-house-colours/), use your accessories to bring it all together. 
+It isn’t just the walls that could do with a lick of paint, you may want to give your bathroom cabinets a facelift with a fresh coat of paint. Sand your cabinets down before you paint and opt for a color that stands out or fits in. If you [choose a colorful option](/blog/best-exterior-house-colours/), use your accessories to bring it all together. 
 
 ## **Fixtures and fittings**
 
@@ -33,9 +33,9 @@ Take a look at your lighting and shower fixtures and consider what will make the
 
 Bathroom lighting fixtures often go ignored and they can be fairly dated. Look for something modern or dramatic to change the entire look of your bathroom in one fell swoop. 
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

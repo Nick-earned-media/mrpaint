@@ -47,9 +47,9 @@ One or two cups of coffee is more than sufficient. Don’t forget that caffeine 
 
 Finally, don’t allow snacking to replace proper meals. Your wellbeing will be at its best, and you’ll get the most out of your day, if you stick to a schedule of three proper meals at similar times each day.
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

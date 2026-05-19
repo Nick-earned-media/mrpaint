@@ -35,11 +35,11 @@ You must take a helicopter view to imagine the project as a whole. You must thin
 
 Opting for a solid wall rather than a metal divider increases privacy, enhancing a guest’s perception of the restroom space. It can also make life easier for the maintenance team.
 
-Whatever you choose, know that the restroom space reflects on your organisation just as every other area of the space does. It might reflect on you even more than those other areas. And, if you need a handing with painting your restroom, get in touch with [MrPaint](https://mrpaint.com.au/) today!
+Whatever you choose, know that the restroom space reflects on your organisation just as every other area of the space does. It might reflect on you even more than those other areas. And, if you need a handing with painting your restroom, get in touch with [MrPaint](/) today!
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

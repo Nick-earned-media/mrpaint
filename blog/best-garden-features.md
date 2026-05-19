@@ -11,7 +11,7 @@ It could be the trees that used to line your property are looking damp and dark 
 
 Everyone loves an outdoor space, but homeowners often find themselves incapable of [storing all of their tools](https://outsidelivingtoday.com/best-outdoor-storage-sheds) in a garage, so one addition you might consider is a garden shed. It doesn’t have to be very big, it just has to be there. You can match the paint to your house, or have the little shed stand out on its own. 
 
-And if you really want to go all out — consider transforming it into a man-cave or even [a home office](https://mrpaint.com.au/blog/trending-tiny-houses-as-work-from-home-garden-offices/) — this will attract a whole new range of buyers to the home. In order to make this a successful project that’ll repay you when you sell the house, you’re going to want to hire professional shed builders, so be sure to do your research and shop around. 
+And if you really want to go all out — consider transforming it into a man-cave or even [a home office](/blog/trending-tiny-houses-as-work-from-home-garden-offices/) — this will attract a whole new range of buyers to the home. In order to make this a successful project that’ll repay you when you sell the house, you’re going to want to hire professional shed builders, so be sure to do your research and shop around. 
 
 ## **2\. Take control of your shrubbery** 
 
@@ -21,7 +21,7 @@ Then, if you must, remove any dead or dying shrubs, or any that are invasive and
 
 ## **3\. Add outdoor lighting with solar power** 
 
-Not only is this critical for any evening outdoor escapades for your newcomers, but it’s also [good for the environment](https://mrpaint.com.au/blog/energy-efficiency-multi-storey-building-guide/). You don’t have to go big or crazy with this expense, it can be bought and installed very simply, but the addition of outdoor lighting powered by the sun means that your new owners can have peace of mind that their moonlight madness will be well lit. There is an abundance of options for outdoor lighting. 
+Not only is this critical for any evening outdoor escapades for your newcomers, but it’s also [good for the environment](/blog/energy-efficiency-multi-storey-building-guide/). You don’t have to go big or crazy with this expense, it can be bought and installed very simply, but the addition of outdoor lighting powered by the sun means that your new owners can have peace of mind that their moonlight madness will be well lit. There is an abundance of options for outdoor lighting. 
 
 ## **4\. Add a deck** 
 
@@ -33,11 +33,11 @@ Decks also don’t have to be low-hanging, in fact, it might be worth putting up
 
 If you’re looking to add something to your garden that wasn’t there before, consider the installation of a walkway or two to different parts of the garden. This can be as simple as crushed stone or some good quality paving stones to give easy access. If you’re thinking about something long-lasting and easy to maintain, [pavers](https://pavingsupplies.com.au/product-category/pavers) are a solid option that can really lift the look of your garden paths. The installation of walkways in between different parts of the garden really helps separate the space out and gives a great aesthetic appeal. 
 
-Making the most of your old home’s sale value is really important, and with a little investment, your garden can make up that extra 15-25% and provide an awesome first impression to any prospective buyer. After all, your garden is the first thing that they’re going to see — make it a good one. And, if you need a hand with painting your house, then get in touch [with MrPaint today](https://mrpaint.com.au/)!
+Making the most of your old home’s sale value is really important, and with a little investment, your garden can make up that extra 15-25% and provide an awesome first impression to any prospective buyer. After all, your garden is the first thing that they’re going to see — make it a good one. And, if you need a hand with painting your house, then get in touch [with MrPaint today](/)!
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

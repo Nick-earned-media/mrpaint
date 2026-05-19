@@ -3,7 +3,7 @@ title: "How To Save Your Lawn From Dead And Dormant Spots"
 date: 2021-03-08
 summary: "Luscious green grass makes a beautiful addition to your home. But, differentiating between dead and inactive patches can be hard work."
 ---
-Luscious green grass makes [a beautiful addition to your home](https://mrpaint.com.au/blog/home-renovation-budget-tips/). However, sometimes being a proud lawn owner can be a little stressful. This is particularly true when brown spots seemingly appear overnight.
+Luscious green grass makes [a beautiful addition to your home](/blog/home-renovation-budget-tips/). However, sometimes being a proud lawn owner can be a little stressful. This is particularly true when brown spots seemingly appear overnight.
 
 These patches suggest that your turf is either dead and, therefore, not coming back, or perhaps dormant, a natural protection mechanism to withstand extreme weather changes. 
 
@@ -53,9 +53,9 @@ Instead of playing a guessing game and over watering or over fertilising certain
 
 Being able to tell the difference between the two and thus going through the right treatment program will save you time and money and ultimately result in healthy, luscious lawns year-round. 
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

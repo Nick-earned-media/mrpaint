@@ -41,9 +41,9 @@ Alignment issues or debris stuck anywhere on your roof are both issues which cou
 
 Noticing any of the signs above is just the start because the underlying problems need to be addressed to avoid them getting any worse. Just remember to make sure these issues are definitely caused by your roof and not by faulty plumbing before going ahead with a roof replacement.
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

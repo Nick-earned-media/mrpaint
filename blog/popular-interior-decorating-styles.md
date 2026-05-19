@@ -59,11 +59,11 @@ Nautical homes often also contain many other decorative elements and themed acce
 
 ## **Summing up**
 
-While these are some of the most in-vogue interiors design styles of the moment, remember that they are always constantly evolving and changing. And if you can’t find one that perfectly suits you, you can always blend different styles to create your own. And, if you need a hand with painting your home or commercial building, then [get in touch with MrPaint today](https://mrpaint.com.au/)!
+While these are some of the most in-vogue interiors design styles of the moment, remember that they are always constantly evolving and changing. And if you can’t find one that perfectly suits you, you can always blend different styles to create your own. And, if you need a hand with painting your home or commercial building, then [get in touch with MrPaint today](/)!
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

@@ -47,9 +47,9 @@ The tiny house movement provides a viable solution to climbing housing costs and
 
 These single mobile dwellings may not be for everyone, but they do influence the way home buyers choose their dream house. There are now a plethora of tiny home designs or kits available to purchase so that you can fulfill your dream of living more simply. 
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

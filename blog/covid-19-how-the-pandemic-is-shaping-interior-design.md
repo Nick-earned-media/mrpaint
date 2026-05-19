@@ -39,11 +39,11 @@ Homes and apartments with open floor plans have been trending for many years now
 
 Many families decided to change up their interior designs throughout 2020 by installing temporary or fixed walls in order to create specific areas for different activities. Because not only does closing off open plan interiors limit distraction, but it ultimately allows for much more privacy and peace.
 
-If you’re searching for fresh ideas to update your life at home in 2021, the above trends for interior design are already huge and are only going to get bigger. As the world continues living and working from home, how we decorate and design our homes has become more important than ever before. And, if you need help painting your new home, then [get in touch with MrPaint](https://mrpaint.com.au/contact-us/) today!
+If you’re searching for fresh ideas to update your life at home in 2021, the above trends for interior design are already huge and are only going to get bigger. As the world continues living and working from home, how we decorate and design our homes has become more important than ever before. And, if you need help painting your new home, then [get in touch with MrPaint](/contact/) today!
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

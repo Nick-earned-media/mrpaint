@@ -53,11 +53,11 @@ Inhaling fumes may be a problem whilst painting indoors – especially when ther
 
 Painting can be fun and exciting, especially for first-time owners or anyone who wants to update the look of their house. While it may look like the simplest job to do in terms of home improvement, there are a lot of things to pay attention to, especially when it comes to exterior painting. 
 
-Purchasing the right tools and using them properly is key to making your space look flawless, and can also prevent future mishaps from happening. If you want to get quality results that will last, however, it might be a better idea to [book the experts](https://mrpaint.com.au/painter/) as bad paint jobs can end up costing you more in the future. Contact [Mr.Paint today for a painting quote](https://mrpaint.com.au/contact-us/).
+Purchasing the right tools and using them properly is key to making your space look flawless, and can also prevent future mishaps from happening. If you want to get quality results that will last, however, it might be a better idea to [book the experts](/painter-cairns/) as bad paint jobs can end up costing you more in the future. Contact [Mr.Paint today for a painting quote](/contact/).
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

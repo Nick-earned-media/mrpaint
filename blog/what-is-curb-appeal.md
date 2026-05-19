@@ -15,7 +15,7 @@ If you think that your curb appeal might be lacking, here are some things you ca
 
 ## **A fresh coat of paint** 
 
-Quite simply, nothing makes a home look better than a fresh coat of paint, particularly if the previous paint job is waning. If the paint is chipping and cracking and has outright come off in certain sections, it’s going to be an automatic turn-off for any prospective buyer. Adding a fresh coat of paint adds a lot of extra value to a home come sale time. Consider it [an investment](https://mrpaint.com.au/blog/how-much-does-it-cost-to-paint-a-house/) in the future sale of the home. 
+Quite simply, nothing makes a home look better than a fresh coat of paint, particularly if the previous paint job is waning. If the paint is chipping and cracking and has outright come off in certain sections, it’s going to be an automatic turn-off for any prospective buyer. Adding a fresh coat of paint adds a lot of extra value to a home come sale time. Consider it [an investment](/blog/how-much-does-it-cost-to-paint-a-house/) in the future sale of the home. 
 
 ## **Keeping up with the garden** 
 
@@ -37,11 +37,11 @@ One of the most overlooked aspects of the exterior of a home, ironically, is the
 
 They’re a reflection (the puns just write themselves) of the interior of the house. If you’re hoping to sell, then a quick wipe down of your windows with soap and water is mandatory. Make sure they’re as clean as can be. 
 
-Whatever your reason for selling your house, the first impression that you leave any prospective buyer with is the most important one. Almost every first impression is made from the outside looking in, so make sure that the house looks as good from the outside as it does inside. If you need a hand with painting your home, then [get in touch with MrPaint today](https://mrpaint.com.au/contact-us/)!
+Whatever your reason for selling your house, the first impression that you leave any prospective buyer with is the most important one. Almost every first impression is made from the outside looking in, so make sure that the house looks as good from the outside as it does inside. If you need a hand with painting your home, then [get in touch with MrPaint today](/contact/)!
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 

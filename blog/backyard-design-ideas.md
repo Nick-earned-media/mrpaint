@@ -47,11 +47,11 @@ There are lots of considerations to be made when shopping for outdoor furniture.
 
 While furniture won’t boost the home’s value as you’ll be taking it with you, it does give others the opportunity to imagine what the space could be like. There are endless ways to improve front and backyards for personal gain or to add value. 
 
-Lastly, be mindful of spending money in the right places to ensure it is tailored to meet your needs while securing the interest of others if you decide to sell. And, if you need a hand with painting your outdoor area, then get in touch [with MrPaint today](https://mrpaint.com.au/)!
+Lastly, be mindful of spending money in the right places to ensure it is tailored to meet your needs while securing the interest of others if you decide to sell. And, if you need a hand with painting your outdoor area, then get in touch [with MrPaint today](/)!
 
-![](https://mrpaint.com.au/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
 
-[Adrian Tucci](https://mrpaint.com.au/blog/author/adrian-tucci/)
+[Adrian Tucci](/about/)
 
 In 2014 Adrian quit his job and opened a painting business called MrPaint. Adrian is a strong believer in the ‘healthy body, healthy mind’ principle and backs this up by being a competitive track cyclist here in Australia.
 
