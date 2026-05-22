@@ -4,6 +4,9 @@
   "outputDirectory": "_site",
   "cleanUrls": true,
   "trailingSlash": false,
+  "crons": [
+    { "path": "/api/cron-weekly", "schedule": "0 23 * * 0" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

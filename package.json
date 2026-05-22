@@ -10,10 +10,11 @@
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",
-    "cheerio": "^1.2.0",
     "turndown": "^7.2.4"
   },
   "dependencies": {
-    "@vercel/functions": "^3.6.0"
+    "@vercel/functions": "^3.6.0",
+    "cheerio": "^1.2.0",
+    "googleapis": "^160.0.0"
   }
 }

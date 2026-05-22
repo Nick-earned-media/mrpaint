@@ -89,6 +89,11 @@ async function handleMessage(fromWa, message, media) {
   if (media?.url) {
     return executeAddGalleryPhoto(fromWa, message, media);
   }
+  // Slash commands bypass the LLM classifier — they're explicit + cheap.
+  const trimmed = message.trim().toLowerCase();
+  if (trimmed === "/audit" || trimmed === "audit") {
+    return executeAudit(fromWa);
+  }
   const intent = await classifyIntent(message);
   await routeIntent(fromWa, intent);
 }
@@ -122,6 +127,7 @@ async function routeIntent(fromWa, intent) {
         `• "change phone to 0412 345 678"\n` +
         `• "add a . at the end of the homepage h1"\n` +
         `• "add a blog post about prepping a Queenslander"\n` +
+        `• "/audit" — run a full SEO + competitor + GSC audit\n` +
         `• "YES" / "NO" to approve or discard a pending change`
       );
     default:
@@ -210,6 +216,19 @@ function applyBusinessFieldUpdate(site, field, value) {
     else site.address = { ...site.address, street: value };
   } else {
     throw new Error(`Unknown business field: ${field}`);
+  }
+}
+
+// ─── /audit ───────────────────────────────────────────────────────────────
+
+async function executeAudit(fromWa) {
+  await sendMessage(fromWa, "🔍 Running full audit on mrpaint.com.au — SEO + competitors + GSC. Back in ~30-40s.");
+  const { runAudit, formatAuditMessages } = require("../lib/audit.js");
+  const audit = await runAudit();
+  const messages = formatAuditMessages(audit);
+  // Send messages sequentially so they arrive in order in WhatsApp.
+  for (const m of messages) {
+    await sendMessage(fromWa, m);
   }
 }
 
