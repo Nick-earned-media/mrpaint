@@ -94,6 +94,9 @@ async function handleMessage(fromWa, message, media) {
   if (trimmed === "/audit" || trimmed === "audit") {
     return executeAudit(fromWa);
   }
+  if (trimmed === "/rankings" || trimmed === "rankings") {
+    return executeRankings(fromWa);
+  }
   const intent = await classifyIntent(message);
   await routeIntent(fromWa, intent);
 }
@@ -127,7 +130,8 @@ async function routeIntent(fromWa, intent) {
         `• "change phone to 0412 345 678"\n` +
         `• "add a . at the end of the homepage h1"\n` +
         `• "add a blog post about prepping a Queenslander"\n` +
-        `• "/audit" — run a full SEO + competitor + GSC audit\n` +
+        `• "/audit" — full SEO + competitor + GSC audit\n` +
+        `• "/rankings" — Ahrefs Rank Tracker movers + top tracked keywords\n` +
         `• "YES" / "NO" to approve or discard a pending change`
       );
     default:
@@ -228,6 +232,17 @@ async function executeAudit(fromWa) {
   const messages = formatAuditMessages(audit);
   // Send messages sequentially so they arrive in order in WhatsApp.
   for (const m of messages) {
+    await sendMessage(fromWa, m);
+  }
+}
+
+// ─── /rankings ────────────────────────────────────────────────────────────
+
+async function executeRankings(fromWa) {
+  await sendMessage(fromWa, "📊 Pulling Rank Tracker data from Ahrefs…");
+  const { fetchRankings, formatRankingsMessages } = require("../lib/rankings.js");
+  const r = await fetchRankings();
+  for (const m of formatRankingsMessages(r)) {
     await sendMessage(fromWa, m);
   }
 }
