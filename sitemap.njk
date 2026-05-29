@@ -1,0 +1,28 @@
+---
+permalink: /sitemap.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{%- for p in collections.all %}
+{%- if p.url and not p.data.eleventyExcludeFromCollections and "/areas/" not in p.url %}
+  <url>
+    <loc>{{ site.url }}{{ p.url }}</loc>
+    {%- if p.date %}
+    <lastmod>{{ p.date | isoDate }}</lastmod>
+    {%- endif %}
+    <changefreq>monthly</changefreq>
+    <priority>{% if p.url == "/" %}1.0{% elif "/blog/" in p.url %}0.6{% else %}0.7{% endif %}</priority>
+  </url>
+{%- endif %}
+{%- endfor %}
+{%- for a in locations %}
+{%- if a.publish %}
+  <url>
+    <loc>{{ site.url }}/areas/{{ a.slug }}/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+{%- endif %}
+{%- endfor %}
+</urlset>

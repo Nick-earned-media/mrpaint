@@ -1,0 +1,163 @@
+---
+pagination:
+  data: locations
+  size: 1
+  alias: area
+permalink: "/areas/{{ area.slug }}/"
+layout: base.njk
+eleventyComputed:
+  title: "Painter {{ area.name }} Cairns"
+  description: "Local painter in {{ area.name }}, Cairns. {{ area.intro | safe }}"
+  canonical: "/areas/{{ area.slug }}/"
+---
+
+{# ─── HERO ─── #}
+<section class="hero">
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <span class="eyebrow">Painting Services in {{ area.name }}, Cairns</span>
+        <h1 style="margin-top:14px">Painter {{ area.name }}</h1>
+        <span class="eyebrow" style="margin-top:24px;display:inline-block">{{ area.postcode }} · Cairns Region</span>
+        <p class="sub" style="margin-top:8px">Looking for a reliable painter in {{ area.name }}?</p>
+        <p style="margin-top:16px;font-size:18px;font-weight:600;color:var(--ink);line-height:1.4">
+          Now Is The Time To Call Mr Paint.
+        </p>
+        <p style="margin-top:10px;font-size:17px;font-weight:500;color:var(--ink-2);line-height:1.45">
+          {{ area.intro }}
+        </p>
+        <div class="ctas">
+          <a class="btn btn--yellow btn--lg" href="/contact/">Get a Free Quote</a>
+          <a class="btn btn--ghost btn--lg" href="{{ site.phone_link }}">📞 {{ site.phone_display }}</a>
+        </div>
+      </div>
+      <div class="hero-img">
+        <img src="/assets/images/work-outdoor.png" alt="MrPaint painter working in {{ area.name }}, Cairns" />
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ─── PHONE BAND ─── #}
+<div class="phone-band">
+  <div class="wrap row">
+    <div class="left">
+      <span class="label">Need a painter in {{ area.name }}? Talk to us today</span>
+      <span class="num"><a href="{{ site.phone_link }}">{{ site.phone_display }}</a></span>
+    </div>
+    <div class="right">
+      <span class="label" style="text-align:right">Or get a free quote online</span>
+      <a class="btn" href="/contact/">Get your Free Quote Today</a>
+    </div>
+  </div>
+</div>
+
+{# ─── COPY: What we paint here ─── #}
+<section class="copy-block">
+  <div class="wrap-narrow">
+    <h2 class="sec-head">What we paint in {{ area.name }}</h2>
+    <p>{{ area.common_jobs }}</p>
+    <p style="margin-top:14px">MrPaint has been painting in the Cairns region since {{ site.founded }}. Whether it's a one-room touch-up, a full exterior repaint, or commercial work in {{ area.name }}, we'll come out and give you a free quote with no obligation. Honest pricing, neat work, and a tidy job site when we leave.</p>
+
+    <h3 class="subhead">Our {{ area.name }} painting services include:</h3>
+    <ul class="dot-list">
+      <li>Interior painting — bedrooms, living areas, kitchens, bathrooms</li>
+      <li>Exterior painting — full repaints, trim, soffits, fences</li>
+      <li>Commercial painting — offices, retail, hospitality</li>
+      <li>Touch-ups and rental refreshes</li>
+      <li>Premium and special finishes</li>
+      <li>Free, no-obligation quotes</li>
+    </ul>
+  </div>
+</section>
+
+{# ─── SERVICES TRIO ─── #}
+<section class="copy-block" style="background:var(--bg-soft)">
+  <div class="wrap">
+    <h2 class="sec-head" style="text-align:center">Painting services available in {{ area.name }}</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:32px">
+      {% for s in services_trio %}
+      <div style="background:#fff;border:1px solid var(--rule);border-radius:12px;padding:28px">
+        <h3 style="margin:0 0 12px;font-size:22px">{{ s.title }}</h3>
+        <p style="margin:0 0 18px;color:var(--ink-2)">{{ s.summary }}</p>
+        <a href="{{ s.url }}" class="btn btn--ghost">{{ s.more_label }}</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ─── RECENT JOBS (placeholder — populated by future job-capture flow) ─── #}
+{% if area.recent_jobs and area.recent_jobs.length > 0 %}
+<section class="copy-block">
+  <div class="wrap-narrow">
+    <h2 class="sec-head">Recent jobs in {{ area.name }}</h2>
+    {% for j in area.recent_jobs %}
+    <article style="border-top:1px solid var(--rule);padding-top:24px;margin-top:24px">
+      <span class="eyebrow">{{ j.date }}</span>
+      <h3 style="margin-top:8px">{{ j.title }}</h3>
+      <p>{{ j.body }}</p>
+      {% if j.image %}<img src="{{ j.image }}" alt="{{ j.title }} — {{ area.name }}" style="margin-top:16px;border-radius:10px;width:100%;height:auto" />{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{# ─── CTA + AREA CHIPS (cross-link to other suburbs) ─── #}
+<section style="background:var(--bg-soft);padding:clamp(48px,6vw,80px) 0">
+  <div class="wrap text-center">
+    <span class="eyebrow">MrPaint — Painter {{ area.name }} — your Cairns painter</span>
+    <h2 style="margin-top:14px;margin-left:auto;margin-right:auto">Call us now to talk paint &amp; how we can make your {{ area.name }} place look extra special.</h2>
+    <div style="margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn--yellow btn--lg" href="/contact/">Get a Free Quote</a>
+      <a class="btn btn--ghost btn--lg" href="{{ site.phone_link }}">📞 {{ site.phone_display }}</a>
+    </div>
+    <div style="margin-top:36px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      {% for a in locations %}
+        {% if a.slug == area.slug %}
+          <span style="padding:6px 14px;background:var(--yellow);border:1px solid var(--yellow);border-radius:999px;font-size:13px;color:var(--ink);font-weight:600">{{ a.name }}</span>
+        {% else %}
+          <a href="/areas/{{ a.slug }}/" style="padding:6px 14px;background:#fff;border:1px solid var(--rule);border-radius:999px;font-size:13px;color:var(--ink-2);font-weight:500;text-decoration:none">{{ a.name }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ─── SCHEMA: area-specific PaintingService with areaServed ─── #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "PaintingService",
+  "name": "{{ site.name }} — Painter {{ area.name }}",
+  "url": "{{ site.url }}/areas/{{ area.slug }}/",
+  "telephone": "{{ site.phone }}",
+  "priceRange": "$$",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ site.address.street }}",
+    "addressLocality": "{{ site.address.suburb }}",
+    "addressRegion": "{{ site.address.state }}",
+    "postalCode": "{{ site.address.postcode }}",
+    "addressCountry": "{{ site.address.country }}"
+  },
+  "areaServed": {
+    "@type": "Place",
+    "name": "{{ area.name }}, Cairns",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "{{ area.name }}",
+      "addressRegion": "QLD",
+      "postalCode": "{{ area.postcode }}",
+      "addressCountry": "AU"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": {{ area.lat }},
+      "longitude": {{ area.lng }}
+    }
+  },
+  "openingHours": "Mo-Sa 07:00-17:00"
+}
+</script>

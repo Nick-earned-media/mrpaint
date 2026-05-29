@@ -1,9 +1,86 @@
 [
-  { "name": "Cairns CBD",     "highlighted": false },
-  { "name": "Trinity Beach",  "highlighted": false },
-  { "name": "Palm Cove",      "highlighted": false },
-  { "name": "Edge Hill",      "highlighted": false },
-  { "name": "Holloways · HQ", "highlighted": true  },
-  { "name": "Edmonton",       "highlighted": false },
-  { "name": "Port Douglas",   "highlighted": false }
+  {
+    "name": "Cairns CBD",
+    "slug": "cairns-cbd",
+    "highlighted": false,
+    "publish": true,
+    "postcode": "4870",
+    "lat": -16.9203,
+    "lng": 145.7710,
+    "intro": "Cairns CBD is a mix of heritage Queenslanders, 70s and 80s walk-ups, and newer apartments — most needing regular repaints to cope with the salt air and the sun. We do a lot of unit blocks, share-house exteriors, and rental turnaround work in the city. Quick quotes, neat work, no mess left behind.",
+    "common_jobs": "Exterior repaints on weatherboard homes, hallway and stairwell work in unit blocks, end-of-lease rental refreshes, balcony repaints.",
+    "recent_jobs": []
+  },
+  {
+    "name": "Trinity Beach",
+    "slug": "trinity-beach",
+    "highlighted": false,
+    "publish": true,
+    "postcode": "4879",
+    "lat": -16.7833,
+    "lng": 145.7000,
+    "intro": "Trinity Beach is one of our regular patches — mostly 90s and 2000s homes, plenty of rendered brick, and exteriors that take a hammering from the salt and the wet season. Most houses up here need a full exterior repaint every 5 to 7 years to keep the seal tight and stop the timber going soft. We do a lot of repaints and trim work in Trinity Beach.",
+    "common_jobs": "Full exterior repaints, soffit and eave touch-ups, fence and timber refresh, pool-house repaints.",
+    "recent_jobs": []
+  },
+  {
+    "name": "Palm Cove",
+    "slug": "palm-cove",
+    "highlighted": false,
+    "publish": true,
+    "postcode": "4879",
+    "lat": -16.7484,
+    "lng": 145.6675,
+    "intro": "Palm Cove is high-end coastal — beachfront homes, holiday rentals, and a fair few short-stay properties that need to look sharp every season. We work on a lot of interior touch-ups between guests and full exterior repaints for owners getting ready to lease or sell. Tropical-spec finishes, proper prep, no shortcuts on the salt-side walls.",
+    "common_jobs": "Holiday-rental interior touch-ups, full exterior repaints, deck and timber refinishing, premium finishes on entryways.",
+    "recent_jobs": []
+  },
+  {
+    "name": "Edge Hill",
+    "slug": "edge-hill",
+    "highlighted": false,
+    "publish": true,
+    "postcode": "4870",
+    "lat": -16.9047,
+    "lng": 145.7500,
+    "intro": "Edge Hill is character country — older Queenslanders, lots of timber, period detail that needs to be respected. We do a lot of period-correct colour work in Edge Hill, plus the usual exterior repaints on the older weatherboard homes. If you've got a heritage place that needs a careful hand, we know what we're doing.",
+    "common_jobs": "Period-correct exterior repaints on Queenslanders, sash and trim work, internal heritage colour schemes, soffit and bargeboard restoration.",
+    "recent_jobs": []
+  },
+  {
+    "name": "Holloways Beach",
+    "slug": "holloways-beach",
+    "highlighted": true,
+    "publish": true,
+    "postcode": "4878",
+    "lat": -16.8667,
+    "lng": 145.7333,
+    "intro": "Holloways Beach is home — we're based here and have been working in the area for years. Mix of older fibro and weatherboard cottages, mid-80s brick homes, and newer builds along the foreshore. Salt is the big one in Holloways — every exterior needs proper prep to last more than a couple of seasons. Most of our work in Holloways is locals we already know.",
+    "common_jobs": "Exterior repaints with salt-grade prep, fibro and weatherboard touch-ups, internal repaints, fence and gate refresh.",
+    "recent_jobs": []
+  },
+  {
+    "name": "Edmonton",
+    "slug": "edmonton",
+    "highlighted": false,
+    "publish": true,
+    "postcode": "4869",
+    "lat": -17.0167,
+    "lng": 145.7333,
+    "intro": "Edmonton is mostly newer estate housing — rendered brick, modern facades, lots of dark-trim modern builds. Repaints in Edmonton are usually about colour updates rather than full restoration, plus internal repaints for growing families. We're across the southern suburbs and happy to come down for a quote.",
+    "common_jobs": "Modern-build exterior repaints, feature wall work, internal repaints, garage door and trim refresh.",
+    "recent_jobs": []
+  },
+  {
+    "name": "Port Douglas",
+    "slug": "port-douglas",
+    "highlighted": false,
+    "publish": true,
+    "postcode": "4877",
+    "lat": -16.4847,
+    "lng": 145.4669,
+    "intro": "Port Douglas is a fair drive but we go up regularly — mostly for holiday-rental work and high-end residential. Tropical-spec exterior work, proper prep for the salt and humidity, finishes that look sharp for the rental market. We schedule Port Douglas jobs in batches to keep travel sensible for the client.",
+    "common_jobs": "Holiday-rental repaints, premium exterior finishes, deck and shutter work, internal refresh between guest cycles.",
+    "recent_jobs": []
+  }
 ]
