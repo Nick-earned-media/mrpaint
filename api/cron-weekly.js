@@ -1,15 +1,19 @@
 // Vercel cron — runs every Monday 9am Brisbane time (23:00 UTC Sunday).
-// Pushes a GSC week-over-week digest to the configured WhatsApp number.
+// Pushes a GSC week-over-week digest + Semrush snapshot to the configured
+// WhatsApp number. Each data source is independent: one failing does not
+// suppress the others.
 //
 // Schedule is defined in vercel.json under "crons".
 //
 // Env vars required for the digest to actually fire:
 //   GSC_SERVICE_ACCOUNT_JSON — Google service account JSON (see lib/gsc.js).
+//   SEMRUSH_API_KEY — Semrush API key (skipped if missing — see lib/semrush.js).
 //   TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM
 //   CRON_DIGEST_TO_PHONE — WhatsApp number to push to (E.164, no whatsapp: prefix).
 //   CRON_SECRET — Vercel auto-sets this for cron auth; we verify the header.
 
 const { fetchGscTrends } = require("../lib/gsc.js");
+const { runSemrushSnapshot, formatSemrushMessages } = require("../lib/semrush.js");
 
 const SITE_URL = process.env.GSC_SITE_URL || "https://mrpaint.com.au/";
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
@@ -29,23 +33,43 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true, skipped: "CRON_DIGEST_TO_PHONE not set" });
   }
 
+  const result = { ok: true, gsc: null, semrush: null };
+
+  // ── 1. GSC trends (existing)
   try {
     const trends = await fetchGscTrends({ siteUrl: SITE_URL });
     if (trends.skipped) {
-      return res.status(200).json({ ok: true, skipped: trends.skipped });
-    }
-    if (trends.error) {
+      result.gsc = { skipped: trends.skipped };
+    } else if (trends.error) {
       await sendWhatsApp(CRON_DIGEST_TO_PHONE, `📈 Weekly GSC digest failed: ${trends.error}`);
-      return res.status(500).json({ ok: false, error: trends.error });
+      result.gsc = { error: trends.error };
+    } else {
+      await sendWhatsApp(CRON_DIGEST_TO_PHONE, formatDigest(trends));
+      result.gsc = { summary: trends.summary, drops: trends.drops.length };
     }
-
-    const msg = formatDigest(trends);
-    await sendWhatsApp(CRON_DIGEST_TO_PHONE, msg);
-    return res.status(200).json({ ok: true, summary: trends.summary, drops: trends.drops.length });
   } catch (err) {
-    console.error("cron-weekly error:", err);
-    return res.status(500).json({ ok: false, error: String(err.message || err) });
+    console.error("cron-weekly GSC error:", err);
+    result.gsc = { error: String(err.message || err) };
   }
+
+  // ── 2. Semrush snapshot (new)
+  try {
+    const snap = await runSemrushSnapshot();
+    if (snap.skipped) {
+      result.semrush = { skipped: snap.skipped };
+    } else {
+      for (const m of formatSemrushMessages(snap)) {
+        await sendWhatsApp(CRON_DIGEST_TO_PHONE, m);
+      }
+      result.semrush = { ok: true, domain: snap.domain };
+    }
+  } catch (err) {
+    console.error("cron-weekly Semrush error:", err);
+    await sendWhatsApp(CRON_DIGEST_TO_PHONE, `📊 Weekly Semrush snapshot failed: ${err.message || err}`);
+    result.semrush = { error: String(err.message || err) };
+  }
+
+  return res.status(200).json(result);
 };
 
 function formatDigest(g) {

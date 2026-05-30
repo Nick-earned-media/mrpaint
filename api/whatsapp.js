@@ -97,6 +97,13 @@ async function handleMessage(fromWa, message, media) {
   if (trimmed === "/rankings" || trimmed === "rankings") {
     return executeRankings(fromWa);
   }
+  if (trimmed === "/semrush" || trimmed === "semrush") {
+    return executeSemrush(fromWa);
+  }
+  if (trimmed.startsWith("/semrush kw ") || trimmed.startsWith("semrush kw ")) {
+    const phrase = message.trim().replace(/^\/?semrush\s+kw\s+/i, "").trim();
+    return executeSemrushKw(fromWa, phrase);
+  }
   const intent = await classifyIntent(message);
   await routeIntent(fromWa, intent);
 }
@@ -132,6 +139,8 @@ async function routeIntent(fromWa, intent) {
         `• "add a blog post about prepping a Queenslander"\n` +
         `• "/audit" — full SEO + competitor + GSC audit\n` +
         `• "/rankings" — Ahrefs Rank Tracker movers + top tracked keywords\n` +
+        `• "/semrush" — Semrush domain snapshot + competitors\n` +
+        `• "/semrush kw <phrase>" — keyword research (volume, CPC, related)\n` +
         `• "YES" / "NO" to approve or discard a pending change`
       );
     default:
@@ -244,6 +253,41 @@ async function executeRankings(fromWa) {
   const r = await fetchRankings();
   for (const m of formatRankingsMessages(r)) {
     await sendMessage(fromWa, m);
+  }
+}
+
+// ─── /semrush ─────────────────────────────────────────────────────────────
+
+async function executeSemrush(fromWa) {
+  await sendMessage(fromWa, "📊 Pulling Semrush snapshot — domain overview + competitors. Back in ~15s.");
+  const { runSemrushSnapshot, formatSemrushMessages } = require("../lib/semrush.js");
+  try {
+    const snap = await runSemrushSnapshot();
+    for (const m of formatSemrushMessages(snap)) {
+      await sendMessage(fromWa, m);
+    }
+  } catch (err) {
+    await sendMessage(fromWa, `⚠️ Semrush snapshot failed: ${err.message || err}`);
+  }
+}
+
+async function executeSemrushKw(fromWa, phrase) {
+  if (!phrase) {
+    return sendMessage(fromWa, '🤖 Usage: "/semrush kw painter cairns"');
+  }
+  await sendMessage(fromWa, `🔎 Researching "${phrase}" on Semrush…`);
+  const { keywordOverview, keywordRelated, formatKeywordResearch } = require("../lib/semrush.js");
+  try {
+    const database = process.env.SEMRUSH_DATABASE || "au";
+    const [overview, related] = await Promise.all([
+      keywordOverview(phrase, database),
+      keywordRelated(phrase, { database, limit: 12 }),
+    ]);
+    for (const m of formatKeywordResearch(phrase, overview, related)) {
+      await sendMessage(fromWa, m);
+    }
+  } catch (err) {
+    await sendMessage(fromWa, `⚠️ Semrush keyword lookup failed: ${err.message || err}`);
   }
 }
 
