@@ -166,23 +166,22 @@
   }
   .todo .why{ font-size: 12.5px; color: var(--muted); margin-top: 4px }
 
-  /* ─── sticky CTA ─── */
+  /* ─── sticky owner-actions bar ─── */
   .ctabar{
     position: fixed; bottom: 0; left: 0; right: 0;
     background: #fff; border-top: 1px solid var(--line);
     padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
     z-index: 10;
   }
   .btn{
-    display:flex; align-items:center; justify-content:center; gap:6px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
     text-decoration: none;
-    padding: 12px 8px; border-radius: 10px;
-    font-size: 13.5px; font-weight: 700; min-height: 44px;
+    padding: 13px 10px; border-radius: 10px;
+    font-size: 14px; font-weight: 700; min-height: 46px;
   }
-  .btn--yellow{ background: var(--yellow); color: var(--navy) }
+  .btn--primary{ background: var(--navy); color: #fff }
   .btn--ghost{ background: transparent; color: var(--navy); border: 1px solid var(--navy) }
-  .btn--call{ background: var(--navy); color: #fff }
 
   /* ─── footer note ─── */
   .ftnote{
@@ -373,9 +372,8 @@
 
 <!-- sticky CTA bar -->
 <nav class="ctabar" aria-label="Quick actions">
-  <a class="btn btn--call" href="tel:0478659766">📞 Call</a>
-  <a class="btn btn--ghost" href="#" onclick="navigator.share?navigator.share({title:'Edge Hill Report — MrPaint',url:location.href}):alert('Share via WhatsApp');return false;">Share</a>
-  <a class="btn btn--yellow" href="/contact/">Get a quote</a>
+  <a class="btn btn--primary" href="https://wa.me/14155238886?text=%2Freport%20edge-hill" rel="noopener">💬 Ask the bot</a>
+  <a class="btn btn--ghost" href="#" onclick="if(navigator.share){navigator.share({title:\"Edge Hill Report — MrPaint\",url:location.href})}else{alert(\"Long-press the link in your browser to share.\")};return false;">↗ Share report</a>
 </nav>
 
 </body>
