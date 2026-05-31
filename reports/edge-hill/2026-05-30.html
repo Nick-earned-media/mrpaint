@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#0e1f33" />
+<title>Edge Hill report · MrPaint</title>
+<meta name="description" content="Weekly local search performance for MrPaint in Edge Hill, Cairns." />
+<meta name="robots" content="noindex" />
+<style>
+  :root{
+    --navy:#0e1f33;
+    --navy-2:#0a1828;
+    --cream:#fbf6ec;
+    --cream-2:#f3ecd9;
+    --ink:#13151b;
+    --ink-2:#465264;
+    --muted:#778497;
+    --line:#e6dfc9;
+    --yellow:#ffd23f;
+    --cyan:#1daae0;
+    --up:#16a34a;
+    --down:#dc2626;
+    --flat:#94a3b8;
+    --shadow: 0 6px 20px rgba(15,30,50,.08);
+    --radius: 14px;
+  }
+  *{ box-sizing:border-box }
+  html,body{ margin:0; padding:0 }
+  body{
+    background: var(--cream);
+    color: var(--ink);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 96px;
+  }
+  /* ─── top brand bar ─── */
+  .topbar{
+    background: var(--navy);
+    color: #fff;
+    padding: 14px 18px 12px;
+    display:flex; align-items:center; gap:10px;
+    position:sticky; top:0; z-index: 5;
+  }
+  .brand{ display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px }
+  .dot{ width:8px; height:8px; border-radius:50%; background:var(--yellow) }
+  .topbar .meta{ margin-left:auto; font-size:12px; color:#a9b8cd }
+
+  /* ─── hero ─── */
+  .hero{
+    background: var(--navy);
+    color: #fff;
+    padding: 4px 18px 28px;
+    position:relative;
+  }
+  .crumb{ font-size:12px; color:#a9b8cd; letter-spacing:.1em; text-transform:uppercase }
+  .h1{ font-size: 22px; line-height:1.2; font-weight:700; margin:6px 0 10px }
+  .h1 em{ font-style:normal; color: var(--yellow) }
+  .hero p{ color:#cfd9e6; font-size:14px; margin:0; max-width:30ch }
+
+  /* ─── KPI row ─── */
+  .kpis{
+    display:grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: -16px 14px 0;
+    position: relative; z-index: 1;
+  }
+  .kpi{
+    background:#fff;
+    border-radius: var(--radius);
+    padding: 14px 12px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .kpi .v{ font-size: 22px; font-weight: 800; letter-spacing: -.02em; color: var(--navy) }
+  .kpi .l{ font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-top:4px }
+  .kpi .d{ font-size: 12px; margin-top:4px; font-weight:600 }
+  .kpi .d.up{ color: var(--up) }
+  .kpi .d.down{ color: var(--down) }
+  .kpi .d.flat{ color: var(--flat) }
+
+  /* ─── card ─── */
+  .card{
+    background:#fff;
+    border-radius: var(--radius);
+    padding: 18px;
+    margin: 16px 14px;
+    box-shadow: var(--shadow);
+  }
+  .eyebrow{
+    font-size: 11px; letter-spacing:.14em; text-transform:uppercase;
+    color: var(--muted); font-weight: 700; margin-bottom: 8px;
+  }
+  h2{ font-size: 18px; margin: 0 0 12px; color: var(--navy); font-weight: 700 }
+  p{ margin: 0 0 10px; color: var(--ink-2); font-size: 14.5px; line-height: 1.55 }
+  p:last-child{ margin-bottom: 0 }
+  p strong{ color: var(--ink) }
+
+  /* ─── mover rows ─── */
+  .mover{
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .mover:last-child{ border-bottom:0 }
+  .badge{
+    width:36px; height:36px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; color:#fff;
+  }
+  .badge.up{ background: var(--up) }
+  .badge.down{ background: var(--down) }
+  .badge.flat{ background: var(--flat) }
+  .badge.new{ background: var(--navy) }
+  .mover .kw{ font-weight: 600; font-size: 15px; color: var(--ink) }
+  .mover .sub{ font-size: 12.5px; color: var(--muted); margin-top: 2px }
+  .pos{ font-weight: 800; font-size: 17px; color: var(--navy) }
+
+  /* ─── keyword list (compact) ─── */
+  .kwlist{ margin: 4px 0 0 }
+  .kwlist .row{
+    display:grid; grid-template-columns: 1fr auto auto; gap:12px;
+    padding: 10px 0; border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .kwlist .row:last-child{ border-bottom:0 }
+  .kwlist .ph{ font-weight: 500; font-size: 14.5px; color: var(--ink) }
+  .kwlist .vl{ font-size:12px; color: var(--muted) }
+  .kwlist .po{ font-weight: 700; color: var(--navy); font-variant-numeric: tabular-nums }
+  .delta{ font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 6px; margin-left: 6px }
+  .delta.up{ background: rgba(22,163,74,.12); color: var(--up) }
+  .delta.down{ background: rgba(220,38,38,.12); color: var(--down) }
+  .delta.flat{ color: var(--flat) }
+
+  /* ─── competitor bars ─── */
+  .compete .crow{ display:grid; grid-template-columns: 1fr; gap: 10px; padding: 8px 0 }
+  .crow{ position:relative }
+  .crow .name{ display:flex; justify-content:space-between; font-size: 13.5px; margin-bottom: 4px }
+  .crow .name strong{ color: var(--ink) }
+  .crow .name .pct{ color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 600 }
+  .bar{ height:10px; background: var(--cream-2); border-radius: 999px; overflow: hidden }
+  .bar > span{ display:block; height:100%; border-radius: 999px }
+  .you .bar > span{ background: var(--yellow) }
+  .other .bar > span{ background: var(--navy) }
+  .crow.you .name strong:after{
+    content:" · You"; color: var(--navy); font-weight:600; background: var(--yellow);
+    padding: 0 6px; border-radius: 4px; margin-left: 6px; font-size: 11px;
+  }
+
+  /* ─── do this week ─── */
+  .todo li{
+    list-style: none; padding-left: 0; padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items:start;
+  }
+  .todo li:last-child{ border-bottom:0 }
+  .todo ul{ margin:0; padding:0 }
+  .num{
+    background: var(--navy); color: var(--yellow);
+    width:24px; height:24px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight: 800; font-size: 12px;
+  }
+  .todo .why{ font-size: 12.5px; color: var(--muted); margin-top: 4px }
+
+  /* ─── sticky CTA ─── */
+  .ctabar{
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; border-top: 1px solid var(--line);
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+    z-index: 10;
+  }
+  .btn{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    text-decoration: none;
+    padding: 12px 8px; border-radius: 10px;
+    font-size: 13.5px; font-weight: 700; min-height: 44px;
+  }
+  .btn--yellow{ background: var(--yellow); color: var(--navy) }
+  .btn--ghost{ background: transparent; color: var(--navy); border: 1px solid var(--navy) }
+  .btn--call{ background: var(--navy); color: #fff }
+
+  /* ─── footer note ─── */
+  .ftnote{
+    color: var(--muted); font-size: 11.5px; text-align: center;
+    padding: 6px 18px 4px;
+  }
+
+  /* slight desktop polish */
+  @media (min-width: 720px){
+    body{ background: #ece4cf }
+    .topbar, .hero, .kpis, .card, .ftnote{ max-width: 480px; margin-left:auto; margin-right:auto }
+    .topbar{ border-radius: 0 }
+    .ctabar{ max-width: 480px; left:50%; transform: translateX(-50%); border-radius: 14px 14px 0 0 }
+  }
+</style>
+</head>
+<body>
+
+<!-- top brand bar -->
+<div class="topbar" role="banner">
+  <span class="brand"><span class="dot"></span> MrPaint · Reports</span>
+  <span class="meta">30 May 2026</span>
+</div>
+
+<!-- hero -->
+<section class="hero">
+  <div class="crumb">Local performance</div>
+  <h1 class="h1">Edge Hill · <em>last 7 days</em></h1>
+  <p>Five tracked keywords moved this week, two of them onto the front page. Here's where you stand.</p>
+</section>
+
+<!-- KPI row (overlaps hero by negative margin) -->
+<div class="kpis">
+  <div class="kpi">
+    <div class="v">5</div>
+    <div class="l">Keywords ranked</div>
+    <div class="d up">▲ 2 new</div>
+  </div>
+  <div class="kpi">
+    <div class="v">#6.8</div>
+    <div class="l">Avg position</div>
+    <div class="d up">▲ 2.4</div>
+  </div>
+  <div class="kpi">
+    <div class="v">1.2%</div>
+    <div class="l">Share of voice</div>
+    <div class="d up">▲ 0.4%</div>
+  </div>
+</div>
+
+<!-- what happened — Claude narrative in Adrian voice -->
+<section class="card">
+  <div class="eyebrow">What happened</div>
+  <h2>Good week. Edge Hill is heating up.</h2>
+  <p>You jumped from <strong>#7 to #4</strong> for "painter edge hill" — that's the front page. "House painter edge hill" moved up two spots to #6, also page one now. And "edge hill painters" is a brand new entry at #5 — first time tracked.</p>
+  <p>Cairnspaintingcontractors slipped 1.2% in visibility but they're still well ahead overall. The gap is closing on suburb-specific terms though, which is where Edge Hill jobs actually come from.</p>
+</section>
+
+<!-- movers -->
+<section class="card">
+  <div class="eyebrow">Top movers this week</div>
+
+  <div class="mover">
+    <div class="badge up">▲3</div>
+    <div>
+      <div class="kw">painter edge hill</div>
+      <div class="sub">vol 90/mo · CPC $2.20 · now page 1</div>
+    </div>
+    <div class="pos">#4</div>
+  </div>
+
+  <div class="mover">
+    <div class="badge up">▲2</div>
+    <div>
+      <div class="kw">house painter edge hill</div>
+      <div class="sub">vol 50/mo · CPC $2.40 · now page 1</div>
+    </div>
+    <div class="pos">#6</div>
+  </div>
+
+  <div class="mover">
+    <div class="badge new">★</div>
+    <div>
+      <div class="kw">edge hill painters</div>
+      <div class="sub">vol 30/mo · CPC $1.90 · new entry</div>
+    </div>
+    <div class="pos">#5</div>
+  </div>
+
+  <div class="mover">
+    <div class="badge down">▼1</div>
+    <div>
+      <div class="kw">exterior painter edge hill</div>
+      <div class="sub">vol 20/mo · CPC $2.10</div>
+    </div>
+    <div class="pos">#11</div>
+  </div>
+</section>
+
+<!-- full tracked list -->
+<section class="card">
+  <div class="eyebrow">All tracked keywords</div>
+  <h2 style="margin-bottom: 4px">Edge Hill — 5 phrases</h2>
+  <div class="kwlist">
+    <div class="row">
+      <div class="ph">painter edge hill</div>
+      <div class="vl">90/mo</div>
+      <div class="po">#4 <span class="delta up">▲3</span></div>
+    </div>
+    <div class="row">
+      <div class="ph">edge hill painters</div>
+      <div class="vl">30/mo</div>
+      <div class="po">#5 <span class="delta up">new</span></div>
+    </div>
+    <div class="row">
+      <div class="ph">house painter edge hill</div>
+      <div class="vl">50/mo</div>
+      <div class="po">#6 <span class="delta up">▲2</span></div>
+    </div>
+    <div class="row">
+      <div class="ph">edge hill painter cairns</div>
+      <div class="vl">20/mo</div>
+      <div class="po">#8 <span class="delta flat">—</span></div>
+    </div>
+    <div class="row">
+      <div class="ph">exterior painter edge hill</div>
+      <div class="vl">20/mo</div>
+      <div class="po">#11 <span class="delta down">▼1</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- competitor snapshot -->
+<section class="card compete">
+  <div class="eyebrow">Local competitor snapshot</div>
+  <h2 style="margin-bottom:14px">Cairns market share</h2>
+
+  <div class="crow other">
+    <div class="name"><strong>cairnspaintingcontractors.com</strong><span class="pct">12.0%</span></div>
+    <div class="bar"><span style="width:100%"></span></div>
+  </div>
+  <div class="crow other">
+    <div class="name"><strong>petespainting.com.au</strong><span class="pct">8.2%</span></div>
+    <div class="bar"><span style="width:68%"></span></div>
+  </div>
+  <div class="crow other">
+    <div class="name"><strong>mcleodspainting.com.au</strong><span class="pct">5.4%</span></div>
+    <div class="bar"><span style="width:45%"></span></div>
+  </div>
+  <div class="crow you">
+    <div class="name"><strong>mrpaint.com.au</strong><span class="pct">4.1%</span></div>
+    <div class="bar"><span style="width:34%"></span></div>
+  </div>
+
+  <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">Cairns CBD + suburb terms. You're up <strong style="color:var(--up)">0.4%</strong> this week, mainly from Edge Hill movement.</p>
+</section>
+
+<!-- do this week -->
+<section class="card todo">
+  <div class="eyebrow">Do this week</div>
+  <h2>Three things to keep momentum.</h2>
+  <ul>
+    <li>
+      <span class="num">1</span>
+      <div>
+        <strong>Post the Edge Hill Queenslander job to your GBP.</strong>
+        <div class="why">Edge Hill keywords are heating up. Fresh GBP posts tagged to the suburb reinforce the trend Google is already noticing.</div>
+      </div>
+    </li>
+    <li>
+      <span class="num">2</span>
+      <div>
+        <strong>Get a photo of the team mid-job in Edge Hill this week.</strong>
+        <div class="why">Hyper-local photos in your gallery + GBP feed help on "painter [suburb]" terms more than generic shots do.</div>
+      </div>
+    </li>
+    <li>
+      <span class="num">3</span>
+      <div>
+        <strong>Ask the next two Edge Hill customers for a Google review mentioning the suburb.</strong>
+        <div class="why">Suburb-named reviews are one of the strongest local-pack signals. Two would shift the needle for next week's report.</div>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<p class="ftnote">Report generated 30 May 2026 · data via Semrush Position Tracking · MrPaint · Cairns, AU</p>
+
+<!-- sticky CTA bar -->
+<nav class="ctabar" aria-label="Quick actions">
+  <a class="btn btn--call" href="tel:0478659766">📞 Call</a>
+  <a class="btn btn--ghost" href="#" onclick="navigator.share?navigator.share({title:'Edge Hill Report — MrPaint',url:location.href}):alert('Share via WhatsApp');return false;">Share</a>
+  <a class="btn btn--yellow" href="/contact/">Get a quote</a>
+</nav>
+
+</body>
+</html>
