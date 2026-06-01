@@ -71,6 +71,49 @@ and pushes GSC + Semrush snapshots to the configured WhatsApp number.
 | `CRON_SECRET` | Vercel auto-sets for cron auth | Weekly cron |
 | `AUDIT_SITE_BASE` | base URL audited by `/audit` | `/audit` |
 
+### Supabase setup (foundation for the conversational bot)
+
+The bot stores client KB, conversation threads, jobs, reports, and rules in
+Supabase. pgvector handles semantic search.
+
+**One-time setup:**
+
+1. Supabase project created — e.g., `https://nisblrrjgnjcjxxmenjk.supabase.co`
+2. Enable pgvector: Dashboard → **Database → Extensions** → search "vector" → Enable
+3. Run the schema migration: open Dashboard → **SQL Editor** → New query →
+   paste contents of `db/migrations/001_initial.sql` → Run.
+4. Run the seed: same SQL editor → paste `db/seeds/001_mrpaint_profile.sql` → Run.
+5. Add env vars locally + on Vercel:
+   ```bash
+   # Local — for running scripts
+   cp .env.example .env.local
+   # Edit .env.local with SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, OPENAI_API_KEY
+
+   # Vercel
+   vercel env add SUPABASE_URL production
+   vercel env add SUPABASE_SERVICE_ROLE_KEY production
+   vercel env add OPENAI_API_KEY production
+   ```
+6. Install the new dep:
+   ```bash
+   npm install
+   ```
+7. Ingest platform-wide marketing KB:
+   ```bash
+   npm run ingest:platform
+   ```
+8. Ingest client-specific seed content (Adrian's voice notes + photo refs):
+   ```bash
+   npm run ingest:client
+   ```
+9. Smoke-test KB retrieval works:
+   ```bash
+   npm run kb:smoke
+   ```
+
+If smoke tests pass, the bot can retrieve from both KBs and the conversational
+orchestrator is ready to wire up.
+
 ### Setting Semrush env vars on Vercel
 
 ```bash

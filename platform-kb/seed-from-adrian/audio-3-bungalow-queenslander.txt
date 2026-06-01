@@ -1,0 +1,27 @@
+SOURCE: AUDIO-2026-05-31-14-47-57.m4a
+SPEAKER: Adrian Tucci (MrPaint owner)
+TYPE: voice note / job narration — most detailed of the three
+LOCATION: Bungalow (Cairns suburb)
+DATE: 2026-05-31
+
+RAW TRANSCRIPT (whisper.cpp base.en, uncorrected):
+─────────────────────────────────────────────────
+This is the façade of a high set Queensland in the suburb of bungalow, where we've had to do a full weatherboard strip due to old previous enamel coatings from the 1980s. So here we used a carpenter's planar, a Makeda battery powered planar to plan down the boards. In conjunction with our Festal Gear, our Rotex 125 sanders, with 40 grit to get into all the nooks and crannies. From here we applied a dual-ux PSU, which is a prime sealer undercoat, one step, and then proceeded to add top coats from there.
+
+CLEANED (best-guess interpretation):
+─────────────────────────────────────
+This is the façade of a high-set Queenslander in the suburb of Bungalow, where we've had to do a full weatherboard strip due to old previous enamel coatings from the 1980s. So here we used a carpenter's planer — a Makita battery-powered planer to plane down the boards. In conjunction with our Festool gear, our Rotex 125 sanders, with 40 grit to get into all the nooks and crannies. From here we applied a Dulux PSU — which is a prime sealer undercoat, one-step — and then proceeded to add top coats from there.
+
+CONFIDENCE: high
+- "high set Queensland" → high-set Queenslander (architectural style — house raised on stumps, common in tropical Australia)
+- "suburb of bungalow" → Bungalow (Cairns suburb, west of CBD)
+- "Makeda" → Makita (Japanese tool brand)
+- "Festal Gear" → Festool gear (German power tool brand)
+- "Rotex 125" → Festool Rotex 125 sander (real product, common in trades)
+- "dual-ux PSU" → Dulux PSU (Dulux's "Prep Sealer Undercoat" — Dulux 1Step PSU is real product line)
+
+IMAGE PAIRED:
+This audio note describes the work shown in PHOTO-2026-05-31-14-47-09.jpg — half-stripped weatherboard wall with Adrian (white shirt) actually painting, bare timber and primer patches visible. PHOTO-2026-05-31-14-46-29.jpg shows the finished result on the same / adjacent wall.
+
+THIS IS GOLD FOR L3 KB
+A complete job story: location → diagnosis (old 1980s enamel) → tools → method → product sequence (strip → planer → sand → PSU → top coats) → end result. Exactly the substance the strategist needs to ground content generation in.

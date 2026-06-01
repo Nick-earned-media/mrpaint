@@ -6,13 +6,20 @@
   "scripts": {
     "build": "eleventy",
     "dev": "eleventy --serve --quiet",
-    "clean": "rm -rf _site"
+    "clean": "rm -rf _site",
+    "db:migrate": "echo 'Run db/migrations/001_initial.sql in Supabase SQL editor — see README'",
+    "db:seed": "echo 'Run db/seeds/001_mrpaint_profile.sql in Supabase SQL editor — see README'",
+    "ingest:platform": "node scripts/ingest-platform-kb.js",
+    "ingest:client": "node scripts/ingest-client-seed.js",
+    "kb:smoke": "node scripts/smoke-test-kb.js",
+    "chat:smoke": "node scripts/smoke-test-chat.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",
     "turndown": "^7.2.4"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
     "@vercel/functions": "^3.6.0",
     "cheerio": "^1.2.0",
     "googleapis": "^160.0.0"

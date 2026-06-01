@@ -1,0 +1,19 @@
+SOURCE: AUDIO-2026-05-31-14-40-18.m4a
+SPEAKER: Adrian Tucci (MrPaint owner)
+TYPE: voice note / job narration
+LOCATION: Brinsmead (Cairns suburb)
+DATE: 2026-05-31
+
+RAW TRANSCRIPT (whisper.cpp base.en, uncorrected):
+─────────────────────────────────────────────────
+Here we are in Brin's Maid, applying Sicken's C-Tal filter 7 0 0 9 tint to some hardwood that needed a refresher coat. Did a wash down with the outdoor chemical and a light sand with 120 grit on our festivals across all the timbers and the aves and rafterwork.
+
+CLEANED (best-guess interpretation):
+─────────────────────────────────────
+Here we are in Brinsmead, applying Sikkens Cetol Filter 7 (709 tint) to some hardwood that needed a refresher coat. Did a wash down with the outdoor chemical and a light sand with 120 grit on our Festool [sander] across all the timbers, the eaves and rafter work.
+
+CONFIDENCE: high — terms align with real paint products and Cairns geography
+- "Brin's Maid" → Brinsmead (Cairns northern suburb)
+- "Sicken's C-Tal filter 7 0 0 9" → Sikkens Cetol Filter 7 Plus, tint 709
+- "festivals" → Festool (German sander brand, common in trades)
+- "aves" → eaves

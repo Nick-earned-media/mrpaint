@@ -4,3 +4,7 @@ _site/
 .env.local
 .DS_Store
 .vercel
+.env*.local
+
+# whisper.cpp models — too large for git, manage locally
+lib/whisper-models/

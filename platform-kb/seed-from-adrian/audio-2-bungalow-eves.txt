@@ -1,0 +1,26 @@
+SOURCE: AUDIO-2026-05-31-14-46-46.m4a
+SPEAKER: Adrian Tucci (MrPaint owner)
+TYPE: voice note / job narration
+LOCATION: Cairns (likely Bungalow suburb based on architectural reference)
+DATE: 2026-05-31
+
+RAW TRANSCRIPT (whisper.cpp base.en, uncorrected):
+─────────────────────────────────────────────────
+Here's my produce sack with our lance extension on our pitfall gurney, washing down all the eve sections in this barline-style bungalow in Cairns.
+
+CLEANED (best-guess interpretation):
+─────────────────────────────────────
+Here's [my pressure-washing rig] with our lance extension on our [Spitwater / Gerni] pressure washer, washing down all the eaves sections in this [barge-board-style / colonial-style] bungalow in Cairns.
+
+CONFIDENCE: medium — some terms are noisy
+- "produce sack" — uncertain; possibly a brand name or rig component
+- "pitfall gurney" → likely "Spitwater" or "Gerni" (common AU pressure-washer brands). Adrian likely said one of these. Worth confirming.
+- "barline-style" → possibly "bargeboard-style" or a style descriptor not recognised by the model
+- "eve sections" → eaves sections
+
+NOTES FOR FOLLOW-UP:
+- Confirm pressure-washer brand with Adrian (Spitwater / Gerni / Karcher / Bar)
+- Confirm the architectural style descriptor
+
+IMAGE PAIRED:
+This audio note likely accompanies PHOTO-2026-05-31-14-48-47.jpg — tropical-looking patio with a tradie pressure-washing eaves under an awning.

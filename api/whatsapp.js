@@ -1,13 +1,15 @@
-// Twilio WhatsApp webhook handler — MrPaint editorial bot.
+// Twilio WhatsApp webhook handler — MrPaint editorial + conversational bot.
 //
 // Flow:
 //   1. Validate Twilio signature.
 //   2. Whitelist check (ALLOWED_PHONES).
 //   3. Ack Twilio immediately with empty TwiML so the 10s timeout never bites.
 //   4. Background work via waitUntil():
-//      - Claude Haiku classifies the message into an operation.
-//      - Operation executes (file edit, GitHub commit to bot/* branch).
-//      - Reply with preview URL + YES/NO prompt via Twilio Messages API.
+//      - Slash commands / media → execute directly.
+//      - Otherwise: Claude Haiku classifies into a site-edit operation.
+//      - Site-edit ops → file edit, GitHub commit to bot/* branch, preview URL.
+//      - "Unknown" intent → falls through to chat() (the conversational
+//        strategist with retrieval + tools — see lib/chat.js).
 //      - On "YES" → merge branch to main. On "NO" → delete branch.
 //
 // Env vars:
@@ -105,6 +107,7 @@ async function handleMessage(fromWa, message, media) {
     return executeSemrushKw(fromWa, phrase);
   }
   const intent = await classifyIntent(message);
+  intent._original_message = message;
   await routeIntent(fromWa, intent);
 }
 
@@ -131,18 +134,8 @@ async function routeIntent(fromWa, intent) {
         "Include the category (residential/commercial/industrial/roof), title, and location."
       );
     case "unknown":
-      return sendMessage(fromWa,
-        `🤖 Not sure what to do with that.${intent.reason ? " " + intent.reason : ""}\n\n` +
-        `Try:\n` +
-        `• "change phone to 0412 345 678"\n` +
-        `• "add a . at the end of the homepage h1"\n` +
-        `• "add a blog post about prepping a Queenslander"\n` +
-        `• "/audit" — full SEO + competitor + GSC audit\n` +
-        `• "/rankings" — Ahrefs Rank Tracker movers + top tracked keywords\n` +
-        `• "/semrush" — Semrush domain snapshot + competitors\n` +
-        `• "/semrush kw <phrase>" — keyword research (volume, CPC, related)\n` +
-        `• "YES" / "NO" to approve or discard a pending change`
-      );
+      // Not a site-edit request — route to the conversational strategist.
+      return executeChat(fromWa, intent._original_message || "");
     default:
       return sendMessage(fromWa, `🤖 Got an unexpected intent:\n${JSON.stringify(intent, null, 2)}`);
   }
@@ -288,6 +281,41 @@ async function executeSemrushKw(fromWa, phrase) {
     }
   } catch (err) {
     await sendMessage(fromWa, `⚠️ Semrush keyword lookup failed: ${err.message || err}`);
+  }
+}
+
+// ─── chat (conversational strategist with retrieval + tools) ─────────────
+
+async function executeChat(fromWa, message) {
+  if (!message) {
+    return sendMessage(fromWa, "Got an empty message — what's on your mind?");
+  }
+  const phone = fromWa.replace(/^whatsapp:/, "");
+  let chatMod, supaMod;
+  try {
+    chatMod = require("../lib/chat.js");
+    supaMod = require("../lib/supabase.js");
+  } catch (err) {
+    return sendMessage(fromWa, `⚠️ Chat module not available: ${err.message || err}`);
+  }
+  const clientRow = await supaMod.getClientByPhone(phone);
+  if (!clientRow) {
+    return sendMessage(fromWa,
+      "Couldn't find a client linked to this number in the database. " +
+      "Make sure your phone is in the clients.allowed_phones array."
+    );
+  }
+  try {
+    const reply = await chatMod.chat({
+      clientId: clientRow.id,
+      phoneNumber: phone,
+      message,
+      clientRow,
+    });
+    return sendMessage(fromWa, reply);
+  } catch (err) {
+    console.error("chat error:", err);
+    return sendMessage(fromWa, `⚠️ ${truncate(String(err.message || err), 400)}`);
   }
 }
 

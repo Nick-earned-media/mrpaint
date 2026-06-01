@@ -1,0 +1,77 @@
+# Structured signals extracted from Adrian's voice notes — for L1 client_profile seeding
+# Confidence levels: high / medium / low. Always confirm with Adrian before pinning to L1.
+# Source: 3 voice notes recorded 2026-05-31 narrating real jobs.
+
+suburbs_mentioned:
+  - name: Brinsmead
+    confidence: high
+    source: audio-1
+    job_evidence: hardwood refresher coat with Sikkens Cetol Filter 7
+  - name: Bungalow
+    confidence: high
+    source: audio-3
+    job_evidence: full weatherboard strip on high-set Queenslander, 1980s enamel removal
+
+architectural_styles_handled:
+  - high-set Queenslander           # raised house on stumps, tropical AU
+  - weatherboard bungalow           # also painted
+
+paint_brands_used:
+  - brand: Sikkens
+    product: Cetol Filter 7 Plus
+    tints_used: ["709"]
+    confidence: high
+    use_case: exterior hardwood refresher / oil-based tint
+  - brand: Dulux
+    product: PSU (1Step Prep Sealer Undercoat)
+    confidence: high
+    use_case: prime/seal/undercoat in one step before top coats
+
+tool_brands_used:
+  - brand: Festool
+    products:
+      - Rotex 125 sander
+    confidence: high
+  - brand: Makita
+    products:
+      - battery-powered carpenter's planer
+    confidence: high
+  - brand: pressure washer (Spitwater / Gerni / Karcher — uncertain)
+    products:
+      - with lance extension
+    confidence: low
+    follow_up: confirm brand with Adrian
+
+abrasives_used:
+  - 120 grit (sanding refresher coats)
+  - 40 grit (heavy stripping into nooks and crannies)
+
+services_evidenced:
+  - hardwood refresher coats (exterior)
+  - eaves and rafter painting
+  - full weatherboard strip and recoat (1980s enamel removal)
+  - exterior pressure washing (prep)
+
+method_patterns_evidenced:
+  - wash → sand → recoat (refresher pattern)
+  - strip → planer → sand 40 grit → Dulux PSU → top coats (full restoration pattern)
+
+vocabulary_signals_for_voice_profile:
+  signature_terms_used:
+    - "here we are"
+    - "here we used"
+    - "here's my"
+    - "from here we applied"
+    - "in conjunction with"
+    - "nooks and crannies"
+  technical_specificity:
+    high  # Adrian names grit numbers, product tints, tool model numbers, decade of old paint
+  registration:
+    matter-of-fact  # not selling, just describing
+  audience_implied:
+    customer / tradie  # explains products but doesn't oversimplify
+
+speech_voice_NOTE: |
+  These are SPOKEN samples — narration style. Different from his written voice.
+  Useful for L3 KB (what he knows, how he describes jobs) and L1 vocabulary signals.
+  Still need 10–15 WRITTEN samples (GBP posts, customer emails) for proper L2.
