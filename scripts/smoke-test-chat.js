@@ -13,21 +13,25 @@ require("../lib/load-env.js");
 const { chat } = require("../lib/chat.js");
 const { getClientBySlug } = require("../lib/supabase.js");
 
+// All test queries are MARKETING questions. The bot must never answer
+// trade-craft questions back to the painter — see strategist-prompt.md.
 const TESTS = [
   {
     name: "Platform KB retrieval — Google reviews",
     message: "how do I get more Google reviews from my customers?",
-    expect: ["review", /review|customer|ask/i],
+    expect: [/review|customer|ask/i],
   },
   {
-    name: "Client KB retrieval — hardwood",
-    message: "what should I use for a hardwood exterior refresher?",
-    expect: ["Sikkens", /Sikkens|Cetol|filter|hardwood/i],
+    name: "Trade-craft REDIRECT — should NOT answer painting question",
+    message: "what brand should I use for a hardwood exterior refresher?",
+    // Must redirect to marketing, NOT recommend a brand
+    expect: [/your call|your lane|you're the painter|not my lane|GBP|post|blog|content|story/i],
+    forbid: [/I (would |'d )?recommend|use (Sikkens|Dulux)|best (paint|brand) (is|for)/i],
   },
   {
     name: "Tool call — list competitors",
     message: "who are my competitors?",
-    expect: ["competitor", /Cairns Painting|Pete's|McLeod/i],
+    expect: [/Cairns Painting|Pete's|McLeod/i],
   },
 ];
 
@@ -52,12 +56,19 @@ async function main() {
       const ms = Date.now() - t0;
       console.log(`A (${ms}ms): ${reply.slice(0, 500)}${reply.length > 500 ? "…" : ""}`);
 
-      const passes = t.expect.every((e) => {
+      const expectsOk = t.expect.every((e) => {
         if (typeof e === "string") return reply.toLowerCase().includes(e.toLowerCase());
         if (e instanceof RegExp) return e.test(reply);
         return false;
       });
-      console.log(passes ? "✓ pass\n" : "✗ FAIL — expected match not found\n");
+      const forbidsOk = !t.forbid || t.forbid.every((e) => {
+        if (typeof e === "string") return !reply.toLowerCase().includes(e.toLowerCase());
+        if (e instanceof RegExp) return !e.test(reply);
+        return true;
+      });
+      const passes = expectsOk && forbidsOk;
+      const why = !expectsOk ? " — expected match not found" : !forbidsOk ? " — forbidden phrase appeared" : "";
+      console.log(passes ? "✓ pass\n" : `✗ FAIL${why}\n`);
       if (passes) passed++;
     } catch (err) {
       console.error("✗ ERROR:", err.message || err);
