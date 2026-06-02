@@ -12,7 +12,8 @@
     "ingest:platform": "node scripts/ingest-platform-kb.js",
     "ingest:client": "node scripts/ingest-client-seed.js",
     "kb:smoke": "node scripts/smoke-test-kb.js",
-    "chat:smoke": "node scripts/smoke-test-chat.js"
+    "chat:smoke": "node scripts/smoke-test-chat.js",
+    "semrush:sync": "node scripts/sync-semrush-once.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",

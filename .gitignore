@@ -8,3 +8,4 @@ _site/
 
 # whisper.cpp models — too large for git, manage locally
 lib/whisper-models/
+.env*

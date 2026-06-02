@@ -109,6 +109,9 @@ async function handleMessage(fromWa, message, media) {
   if (trimmed === "/reset" || trimmed === "reset") {
     return executeReset(fromWa);
   }
+  if (trimmed === "/sync" || trimmed === "sync") {
+    return executeSyncKeywords(fromWa);
+  }
   const intent = await classifyIntent(message);
   intent._original_message = message;
   await routeIntent(fromWa, intent);
@@ -287,6 +290,36 @@ async function executeSemrushKw(fromWa, phrase) {
   }
 }
 
+// ─── /sync — manually trigger Semrush → Supabase keyword sync ────────────
+
+async function executeSyncKeywords(fromWa) {
+  await sendMessage(fromWa, "📊 Syncing Semrush position tracking → Supabase. Back in ~15s.");
+  const phone = fromWa.replace(/^whatsapp:/, "");
+  let supaMod, syncMod;
+  try {
+    supaMod = require("../lib/supabase.js");
+    syncMod = require("../lib/sync-semrush.js");
+  } catch (err) {
+    return sendMessage(fromWa, `⚠️ ${err.message || err}`);
+  }
+  const clientRow = await supaMod.getClientByPhone(phone);
+  if (!clientRow) return sendMessage(fromWa, "🤖 No client linked to this number.");
+  try {
+    const r = await syncMod.syncTrackedKeywords(clientRow.id);
+    return sendMessage(fromWa,
+      `✅ Synced.\n\n` +
+      `Tracked keywords: ${r.synced}\n` +
+      `History rows written for ${r.snapshot_date}: ${r.history_rows}\n` +
+      `Campaign: ${r.campaign_id} (${r.engine})\n` +
+      `Domain: ${r.domain}` +
+      (r.note ? `\n\nNote: ${r.note}` : "")
+    );
+  } catch (err) {
+    console.error("sync error:", err);
+    return sendMessage(fromWa, `⚠️ Sync failed: ${truncate(String(err.message || err), 400)}`);
+  }
+}
+
 // ─── /reset — clear the active conversation thread so next chat starts fresh ─
 
 async function executeReset(fromWa) {
@@ -329,6 +362,11 @@ async function executeChat(fromWa, message) {
       "Make sure your phone is in the clients.allowed_phones array."
     );
   }
+  // Fire-and-forget "thinking" status so the user sees activity while the
+  // chat() call (which can take 5-15s with tool loops) runs in the background.
+  // We use a context-aware status if the question pattern matches a known tool.
+  const status = pickThinkingStatus(message);
+  sendMessage(fromWa, status).catch(() => {});
   try {
     const reply = await chatMod.chat({
       clientId: clientRow.id,
@@ -341,6 +379,26 @@ async function executeChat(fromWa, message) {
     console.error("chat error:", err);
     return sendMessage(fromWa, `⚠️ ${truncate(String(err.message || err), 400)}`);
   }
+}
+
+function pickThinkingStatus(message) {
+  const m = String(message).toLowerCase();
+  if (/(ranking|rank|position|visibility|semrush|sov|share.*voice)/.test(m)) {
+    return "📊 Pulling your latest Semrush data…";
+  }
+  if (/(competitor|beating|losing|against)/.test(m)) {
+    return "📊 Checking competitor data in Semrush…";
+  }
+  if (/(review|rating|google review|gbp|business profile)/.test(m)) {
+    return "📚 Checking the local-SEO playbook…";
+  }
+  if (/(remind|follow up|nudge)/.test(m)) {
+    return "📝 Setting that up…";
+  }
+  if (/(job|just (did|finished)|painted|customer)/.test(m)) {
+    return "📝 Logging that…";
+  }
+  return "🤔 Hang on, checking that for you…";
 }
 
 // ─── update_text (Sonnet-powered template edit) ──────────────────────────
