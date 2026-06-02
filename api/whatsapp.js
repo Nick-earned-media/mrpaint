@@ -106,6 +106,9 @@ async function handleMessage(fromWa, message, media) {
     const phrase = message.trim().replace(/^\/?semrush\s+kw\s+/i, "").trim();
     return executeSemrushKw(fromWa, phrase);
   }
+  if (trimmed === "/reset" || trimmed === "reset") {
+    return executeReset(fromWa);
+  }
   const intent = await classifyIntent(message);
   intent._original_message = message;
   await routeIntent(fromWa, intent);
@@ -282,6 +285,27 @@ async function executeSemrushKw(fromWa, phrase) {
   } catch (err) {
     await sendMessage(fromWa, `⚠️ Semrush keyword lookup failed: ${err.message || err}`);
   }
+}
+
+// ─── /reset — clear the active conversation thread so next chat starts fresh ─
+
+async function executeReset(fromWa) {
+  const phone = fromWa.replace(/^whatsapp:/, "");
+  let supaMod;
+  try {
+    supaMod = require("../lib/supabase.js");
+  } catch (err) {
+    return sendMessage(fromWa, `⚠️ ${err.message || err}`);
+  }
+  const clientRow = await supaMod.getClientByPhone(phone);
+  if (!clientRow) return sendMessage(fromWa, "🤖 No client linked to this number.");
+  const { error } = await supaMod.client()
+    .from("conversation_threads")
+    .update({ last_active_at: "2020-01-01T00:00:00Z" })
+    .eq("client_id", clientRow.id)
+    .eq("phone_number", phone);
+  if (error) return sendMessage(fromWa, `⚠️ Reset failed: ${error.message}`);
+  return sendMessage(fromWa, "🧹 Conversation cleared. Next message starts a fresh thread with no past context.");
 }
 
 // ─── chat (conversational strategist with retrieval + tools) ─────────────
