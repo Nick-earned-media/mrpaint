@@ -13,7 +13,8 @@
     "ingest:client": "node scripts/ingest-client-seed.js",
     "kb:smoke": "node scripts/smoke-test-kb.js",
     "chat:smoke": "node scripts/smoke-test-chat.js",
-    "semrush:sync": "node scripts/sync-semrush-once.js"
+    "semrush:sync": "node scripts/sync-semrush-once.js",
+    "gsc:setup": "node scripts/setup-gsc-oauth.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",
