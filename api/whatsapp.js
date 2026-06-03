@@ -418,38 +418,85 @@ async function executeChat(fromWa, message) {
   }
 }
 
+function pickRandom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// Friendlier thinking statuses — rotates so it doesn't get repetitive.
+// Per locked rule: "boss" / "chief" are fine, "mate" is NOT.
+const GENERIC_PICKUPS = [
+  "👍 Okily dokily, give me a min boss…",
+  "🫡 Got it chief, getting that now…",
+  "🫡 On it boss, hang tight…",
+  "👍 Nice, I'll get that for you now chief…",
+  "🫡 Right-o boss, give us a sec…",
+  "👍 Yep, on it chief — one moment…",
+];
+
+const RANK_PICKUPS = [
+  "🔍 Right-o boss, pulling the live Google SERP from Cairns…",
+  "🔍 Got it chief, checking page 1 of Google for you now…",
+  "🔍 On it boss, fetching what Google's actually showing in Cairns…",
+];
+
+const GSC_PICKUPS = [
+  "📈 Yep boss, grabbing your Search Console click data…",
+  "📈 Got it chief, pulling Search Console for you now…",
+  "📈 On it boss, checking what's bringing you traffic…",
+];
+
+const AI_PICKUPS = [
+  "🤖 Right boss, checking AI Overviews and what ChatGPT's saying…",
+  "🤖 On it chief, scanning AI search for you…",
+  "🤖 Got it boss, checking the AI engines now…",
+];
+
+const COMPETITOR_PICKUPS = [
+  "🔎 On it boss, checking who's in your patch…",
+  "🔎 Right-o chief, sizing up the competition…",
+  "🔎 Got it boss, pulling the competitive picture…",
+];
+
 function pickThinkingStatus(message) {
   const m = String(message).toLowerCase();
   // Action intents (add/remove/improve) come first — they don't query data,
   // they queue or write. Don't say "checking" for those.
   if (/(\b(add|track|watch|follow)\b.*\b(competitor|painter|business)\b|track\s+\w+\.(com|com\.au)|watch\s+\w+\.(com|com\.au))/.test(m)) {
-    return "✏️ Queuing that for Nick to add…";
+    return "✏️ Queuing that with Nick now boss…";
   }
   if (/(\b(drop|remove|stop tracking)\b.*\b(competitor|painter)\b|stop\s+tracking)/.test(m)) {
-    return "✏️ Queuing that removal for Nick…";
+    return "✏️ Queuing that removal for Nick chief…";
   }
   if (/^(yes|yep|yeah|go ahead|do it|please|sure|use those)\b/i.test(message.trim())) {
-    return "✏️ On it…";
+    return pickRandom(["🫡 On it boss…", "👍 Right-o chief…", "🫡 Got it boss…"]);
   }
   if (/improve report|change about the report|feedback on the report/.test(m)) {
-    return "📝 Let me ask a couple of quick questions about the report…";
+    return "📝 Got it boss — let me ask a couple of quick questions about the report…";
   }
-  if (/(ranking|rank|position|visibility|semrush|sov|share.*voice)/.test(m)) {
-    return "📊 Pulling your latest Semrush data…";
+
+  // Data lookups — pick by topic, then rotate within category.
+  if (/(rank|position|page\s*1|where am i|am i ranking|do i rank|live serp|google\s+result)/.test(m)) {
+    return pickRandom(RANK_PICKUPS);
   }
-  if (/(competitor|beating|losing|against)/.test(m)) {
-    return "📊 Checking competitor data in Semrush…";
+  if (/(click|impression|gsc|search console|traffic|ctr|query|queries|landing page)/.test(m)) {
+    return pickRandom(GSC_PICKUPS);
+  }
+  if (/(ai overview|aio|chatgpt|gemini|perplexity|claude|ai search|llm)/.test(m)) {
+    return pickRandom(AI_PICKUPS);
+  }
+  if (/(competitor|beating|losing|against|who.s in front|share.*voice|sov)/.test(m)) {
+    return pickRandom(COMPETITOR_PICKUPS);
   }
   if (/(review|rating|google review|gbp|business profile)/.test(m)) {
-    return "📚 Checking the local-SEO playbook…";
+    return "📚 Right chief, checking the local-SEO playbook…";
   }
   if (/(remind|follow up|nudge)/.test(m)) {
-    return "📝 Setting that up…";
+    return "📝 Got it boss, setting that up…";
   }
   if (/(job|just (did|finished)|painted|customer)/.test(m)) {
-    return "📝 Logging that…";
+    return "📝 Logging that one boss…";
   }
-  return "🤔 Hang on, checking that for you…";
+  return pickRandom(GENERIC_PICKUPS);
 }
 
 // ─── update_text (Sonnet-powered template edit) ──────────────────────────
