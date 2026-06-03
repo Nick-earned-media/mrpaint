@@ -699,6 +699,41 @@ async function findLatestBotBranch() {
   return bot[0].name;
 }
 
+// Look up the job (if any) whose pending_publish.branch matches the given
+// branch. Used by handleApprove/handleDiscard to fire the GBP Slack ping
+// after a job-publish branch merges.
+async function findJobByPendingBranch(branch) {
+  try {
+    const { client: supa, getClientByPhone } = require("../lib/supabase.js");
+    const { data } = await supa()
+      .from("jobs")
+      .select("id, suburb, summary, structured_facts, client_id")
+      .eq("status", "pending_approval")
+      .limit(50);
+    if (!data?.length) return null;
+    return data.find((j) => j.structured_facts?.pending_publish?.branch === branch) || null;
+  } catch (err) {
+    console.warn("findJobByPendingBranch error:", err.message || err);
+    return null;
+  }
+}
+
+async function clearJobPendingPublish(jobId, finalStatus) {
+  try {
+    const { client: supa } = require("../lib/supabase.js");
+    const { data: row } = await supa()
+      .from("jobs")
+      .select("structured_facts")
+      .eq("id", jobId)
+      .maybeSingle();
+    const facts = { ...(row?.structured_facts || {}) };
+    delete facts.pending_publish;
+    await supa().from("jobs").update({ status: finalStatus, structured_facts: facts }).eq("id", jobId);
+  } catch (err) {
+    console.warn("clearJobPendingPublish error:", err.message || err);
+  }
+}
+
 async function handleApprove(fromWa) {
   const branch = await findLatestBotBranch();
   if (!branch) return sendMessage(fromWa, "🤖 No pending changes to publish.");
@@ -706,13 +741,48 @@ async function handleApprove(fromWa) {
   await sendMessage(fromWa, `🤖 Merging \`${branch}\` to main…`);
   await ghMergeToMain(branch);
   await ghDeleteBranch(branch);
-  await sendMessage(fromWa, `✅ Published. Live in ~60s at https://mrpaint.vercel.app`);
+
+  // If this branch was a job publish, fire the GBP Slack ping for Nick.
+  const job = await findJobByPendingBranch(branch);
+  if (job) {
+    const pp = job.structured_facts.pending_publish;
+    try {
+      const { client: supa } = require("../lib/supabase.js");
+      const { data: client } = await supa()
+        .from("clients").select("display_name, site_url")
+        .eq("id", job.client_id).maybeSingle();
+      const { notifyGbpPost } = require("../lib/slack.js");
+      const previewUrl = client?.site_url
+        ? `${client.site_url.replace(/\/$/, "")}/areas/${pp.suburb_slug}/`
+        : `https://mrpaint.vercel.app/areas/${pp.suburb_slug}/`;
+      await notifyGbpPost({
+        clientName: client?.display_name || "client",
+        suburb: pp.suburb_name || pp.suburb_slug,
+        jobTitle: pp.job_title,
+        gbpText: pp.gbp_text,
+        previewUrl,
+      });
+      await clearJobPendingPublish(job.id, "published");
+      return sendMessage(fromWa, `✅ Published to /areas/${pp.suburb_slug}/. Live in ~60s. GBP draft sent to Nick — he'll post it within 24h.`);
+    } catch (err) {
+      console.error("GBP Slack post failed:", err);
+      await clearJobPendingPublish(job.id, "published");
+      return sendMessage(fromWa, `✅ Published. Live in ~60s. (Heads up — couldn't auto-ping Nick for the GBP post: ${truncate(String(err.message || err), 120)}. He'll catch it on the weekly digest.)`);
+    }
+  }
+
+  return sendMessage(fromWa, `✅ Published. Live in ~60s at https://mrpaint.vercel.app`);
 }
 
 async function handleDiscard(fromWa) {
   const branch = await findLatestBotBranch();
   if (!branch) return sendMessage(fromWa, "🤖 No pending changes to discard.");
   await ghDeleteBranch(branch);
+
+  // If this branch was a job publish, clear the pending state on the job.
+  const job = await findJobByPendingBranch(branch);
+  if (job) await clearJobPendingPublish(job.id, "discarded");
+
   await sendMessage(fromWa, `🗑 Discarded \`${branch}\`.`);
 }
 
