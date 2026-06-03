@@ -87,9 +87,31 @@ async function handleMessage(fromWa, message, media) {
   if (!ANTHROPIC_API_KEY) {
     return sendMessage(fromWa, "⚠️ ANTHROPIC_API_KEY isn't set on the server.");
   }
-  // Photo attached? Route to gallery upload (caption-or-prompt-for-it).
+  // Media attached? Route by content type.
   if (media?.url) {
-    return executeAddGalleryPhoto(fromWa, message, media);
+    const ct = String(media.contentType || "").toLowerCase();
+    if (ct.startsWith("image/")) {
+      // Image → existing gallery upload flow (caption-or-prompt-for-it).
+      return executeAddGalleryPhoto(fromWa, message, media);
+    }
+    if (ct.startsWith("audio/")) {
+      // Voice note → transcribe via Whisper, then treat as a normal text
+      // message and let the conversational orchestrator handle it.
+      sendMessage(fromWa, "🎙️ Got your voice note — transcribing…").catch(() => {});
+      const { transcribeTwilioAudio } = require("../lib/transcribe.js");
+      const result = await transcribeTwilioAudio(media.url, media.contentType);
+      if (!result.ok) {
+        return sendMessage(fromWa, `⚠️ Couldn't transcribe that voice note: ${result.error}`);
+      }
+      const transcribed = result.text;
+      // If they also typed text alongside the voice note, prepend it.
+      const combined = message ? `${message}\n\n${transcribed}` : transcribed;
+      return executeChat(fromWa, combined);
+    }
+    // Unknown media type — let them know.
+    return sendMessage(fromWa,
+      `🤔 Got a "${ct || "unknown"}" attachment. I can handle photos (for the gallery) and voice notes (for any question). ` +
+      `Other media types aren't supported — type your message instead.`);
   }
   // Slash commands bypass the LLM classifier — they're explicit + cheap.
   const trimmed = message.trim().toLowerCase();
