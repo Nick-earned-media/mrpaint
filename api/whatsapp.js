@@ -420,6 +420,20 @@ async function executeChat(fromWa, message) {
 
 function pickThinkingStatus(message) {
   const m = String(message).toLowerCase();
+  // Action intents (add/remove/improve) come first — they don't query data,
+  // they queue or write. Don't say "checking" for those.
+  if (/(\b(add|track|watch|follow)\b.*\b(competitor|painter|business)\b|track\s+\w+\.(com|com\.au)|watch\s+\w+\.(com|com\.au))/.test(m)) {
+    return "✏️ Queuing that for Nick to add…";
+  }
+  if (/(\b(drop|remove|stop tracking)\b.*\b(competitor|painter)\b|stop\s+tracking)/.test(m)) {
+    return "✏️ Queuing that removal for Nick…";
+  }
+  if (/^(yes|yep|yeah|go ahead|do it|please|sure|use those)\b/i.test(message.trim())) {
+    return "✏️ On it…";
+  }
+  if (/improve report|change about the report|feedback on the report/.test(m)) {
+    return "📝 Let me ask a couple of quick questions about the report…";
+  }
   if (/(ranking|rank|position|visibility|semrush|sov|share.*voice)/.test(m)) {
     return "📊 Pulling your latest Semrush data…";
   }
