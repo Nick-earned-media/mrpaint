@@ -1,102 +1,103 @@
-// Vercel cron — runs every Monday 9am Brisbane time (23:00 UTC Sunday).
-// Pushes a GSC week-over-week digest + Semrush snapshot to the configured
-// WhatsApp number. Each data source is independent: one failing does not
-// suppress the others.
+// Vercel cron — runs every Friday 4:45pm Brisbane (06:45 UTC Friday).
+// Generates the weekly Cairns report URL and DMs it to the allow-listed
+// phone(s) with a short strategist-voice intro line.
 //
-// Schedule is defined in vercel.json under "crons".
+// The report itself renders dynamically at /reports/cairns/<YYYY-MM-DD>
+// so the cron just sends the URL — no large payload to compute or cache.
 //
-// Env vars required for the digest to actually fire:
-//   GSC_SERVICE_ACCOUNT_JSON — Google service account JSON (see lib/gsc.js).
-//   SEMRUSH_API_KEY — Semrush API key (skipped if missing — see lib/semrush.js).
+// Schedule: vercel.json crons → "45 6 * * 5" (Friday 06:45 UTC = 4:45pm AEST).
+//
+// Env vars:
 //   TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM
-//   CRON_DIGEST_TO_PHONE — WhatsApp number to push to (E.164, no whatsapp: prefix).
-//   CRON_SECRET — Vercel auto-sets this for cron auth; we verify the header.
+//   CRON_DIGEST_TO_PHONE  — override target (E.164). Falls back to
+//                           ALLOWED_PHONES if not set.
+//   ALLOWED_PHONES        — comma-separated E.164 list
+//   CRON_SECRET           — Vercel auto-sets for cron auth
+//   ANTHROPIC_API_KEY     — optional, used to write the intro line in voice
+//   PUBLIC_BASE_URL       — defaults to https://mrpaint.vercel.app
 
-const { fetchGscTrends } = require("../lib/gsc.js");
-const { runSemrushSnapshot, formatSemrushMessages } = require("../lib/semrush.js");
-
-const SITE_URL = process.env.GSC_SITE_URL || "https://mrpaint.com.au/";
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const TWILIO_FROM = process.env.TWILIO_FROM || "whatsapp:+14155238886";
-const CRON_DIGEST_TO_PHONE = process.env.CRON_DIGEST_TO_PHONE || "";
 const CRON_SECRET = process.env.CRON_SECRET || "";
+const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || "https://mrpaint.vercel.app";
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";
 
 module.exports = async function handler(req, res) {
-  // Vercel cron passes Authorization: Bearer <CRON_SECRET>. Reject anything else.
+  // Vercel cron passes Authorization: Bearer <CRON_SECRET>.
   const auth = req.headers["authorization"] || "";
-  if (CRON_SECRET && auth !== `Bearer ${CRON_SECRET}`) {
+  const isVercelCron = req.headers["x-vercel-cron"];
+  if (!isVercelCron && CRON_SECRET && auth !== `Bearer ${CRON_SECRET}`) {
     return res.status(401).json({ ok: false, reason: "unauthorized" });
   }
 
-  if (!CRON_DIGEST_TO_PHONE) {
-    return res.status(200).json({ ok: true, skipped: "CRON_DIGEST_TO_PHONE not set" });
+  const recipients = resolveRecipients();
+  if (!recipients.length) {
+    return res.status(200).json({ ok: true, skipped: "no recipients configured" });
   }
 
-  const result = { ok: true, gsc: null, semrush: null };
-
-  // ── 1. GSC trends (existing)
   try {
-    const trends = await fetchGscTrends({ siteUrl: SITE_URL });
-    if (trends.skipped) {
-      result.gsc = { skipped: trends.skipped };
-    } else if (trends.error) {
-      await sendWhatsApp(CRON_DIGEST_TO_PHONE, `📈 Weekly GSC digest failed: ${trends.error}`);
-      result.gsc = { error: trends.error };
-    } else {
-      await sendWhatsApp(CRON_DIGEST_TO_PHONE, formatDigest(trends));
-      result.gsc = { summary: trends.summary, drops: trends.drops.length };
-    }
+    const result = await sendFridayDigest(recipients);
+    return res.status(200).json({ ok: true, ...result });
   } catch (err) {
-    console.error("cron-weekly GSC error:", err);
-    result.gsc = { error: String(err.message || err) };
+    console.error("cron-weekly error:", err);
+    return res.status(500).json({ ok: false, error: String(err.message || err) });
   }
-
-  // ── 2. Semrush snapshot (new)
-  try {
-    const snap = await runSemrushSnapshot();
-    if (snap.skipped) {
-      result.semrush = { skipped: snap.skipped };
-    } else {
-      for (const m of formatSemrushMessages(snap)) {
-        await sendWhatsApp(CRON_DIGEST_TO_PHONE, m);
-      }
-      result.semrush = { ok: true, domain: snap.domain };
-    }
-  } catch (err) {
-    console.error("cron-weekly Semrush error:", err);
-    await sendWhatsApp(CRON_DIGEST_TO_PHONE, `📊 Weekly Semrush snapshot failed: ${err.message || err}`);
-    result.semrush = { error: String(err.message || err) };
-  }
-
-  return res.status(200).json(result);
 };
 
-function formatDigest(g) {
-  const m = [`📈 *Weekly GSC digest — mrpaint.com.au*`, ``];
-  m.push(`Clicks: ${g.summary.clicksThis} (${signedPct(g.summary.clicksDelta)})`);
-  m.push(`Impressions: ${g.summary.impressionsThis} (${signedPct(g.summary.impressionsDelta)})`);
-  m.push(``);
-  if (g.drops?.length > 0) {
-    m.push(`🚨 *${g.drops.length} pages dropped ≥20%*:`);
-    for (const d of g.drops.slice(0, 5)) {
-      m.push(`• ${d.page} — clicks ${signedPct(d.clicksDelta)}, impr ${signedPct(d.impressionsDelta)}`);
-    }
-  } else {
-    m.push(`✅ No pages with ≥20% drop this week.`);
-  }
-  m.push(``);
-  m.push(`*Top pages (last 7d)*:`);
-  for (const t of (g.top || []).slice(0, 5)) {
-    m.push(`• ${t.page} — ${t.clicks} clicks, ${t.impressions} impr`);
-  }
-  return m.join("\n");
+function resolveRecipients() {
+  const explicit = (process.env.CRON_DIGEST_TO_PHONE || "").trim();
+  if (explicit) return [explicit];
+  return (process.env.ALLOWED_PHONES || "")
+    .split(",").map((s) => s.trim()).filter(Boolean);
 }
 
-function signedPct(n) {
-  if (n == null || !isFinite(n)) return "—";
-  const sign = n > 0 ? "+" : "";
-  return `${sign}${Math.round(n)}%`;
+async function sendFridayDigest(recipients) {
+  const today = new Date().toISOString().slice(0, 10);
+  const url = `${PUBLIC_BASE_URL}/reports/cairns/${today}`;
+
+  const intro = await writeIntro(today);
+  const message = `${intro}\n\n${url}\n\nReply with a question if you want me to dig into anything.`;
+
+  const sent = [];
+  for (const to of recipients) {
+    try {
+      await sendWhatsApp(to, message);
+      sent.push(to);
+    } catch (err) {
+      console.error(`Failed to send to ${to}:`, err.message || err);
+    }
+  }
+  return { date: today, url, sent_to: sent.length, recipients: sent };
+}
+
+async function writeIntro(dateStr) {
+  // Fallback if Anthropic isn't available
+  const fallback = `📊 Friday digest — Cairns week ending ${dateStr}.`;
+  if (!ANTHROPIC_API_KEY) return fallback;
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5",
+        max_tokens: 100,
+        system: "Write one casual WhatsApp opener (~12 words) in Nick Brogden's voice for a weekly painter SEO report. Never use 'mate'. Sound like Nick texting a client. Examples: 'Friday report's up.', 'Quick read for the week — Cairns is looking sharp.', 'Done — this week's numbers.' Reply with JUST the opener, no quotes, no prefix.",
+        messages: [{ role: "user", content: `It's Friday ${dateStr}. The bot just generated this week's Cairns report.` }],
+      }),
+    });
+    if (!r.ok) throw new Error(`Anthropic ${r.status}`);
+    const data = await r.json();
+    const text = (data.content?.[0]?.text || "").trim().replace(/^["']|["']$/g, "");
+    return text || fallback;
+  } catch (err) {
+    console.error("intro generation failed:", err.message || err);
+    return fallback;
+  }
 }
 
 async function sendWhatsApp(toPhone, text) {

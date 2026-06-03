@@ -112,6 +112,9 @@ async function handleMessage(fromWa, message, media) {
   if (trimmed === "/sync" || trimmed === "sync") {
     return executeSyncKeywords(fromWa);
   }
+  if (trimmed === "/digest" || trimmed === "digest") {
+    return executeDigest(fromWa);
+  }
   const intent = await classifyIntent(message);
   intent._original_message = message;
   await routeIntent(fromWa, intent);
@@ -288,6 +291,18 @@ async function executeSemrushKw(fromWa, phrase) {
   } catch (err) {
     await sendMessage(fromWa, `⚠️ Semrush keyword lookup failed: ${err.message || err}`);
   }
+}
+
+// ─── /digest — manually fire the Friday digest right now ────────────────
+
+async function executeDigest(fromWa) {
+  await sendMessage(fromWa, "📊 Generating this week's report URL…");
+  const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || "https://mrpaint.vercel.app";
+  const today = new Date().toISOString().slice(0, 10);
+  const url = `${PUBLIC_BASE_URL}/reports/cairns/${today}`;
+  await sendMessage(fromWa,
+    `📊 Friday digest — Cairns week ending ${today}.\n\n${url}\n\nReply with a question if you want me to dig into anything.`
+  );
 }
 
 // ─── /sync — manually trigger Semrush → Supabase keyword sync ────────────
