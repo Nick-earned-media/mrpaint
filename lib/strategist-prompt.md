@@ -220,6 +220,8 @@ Adrian sometimes describes a job he just finished — via text or voice note. Tw
 - DO NOT call it before there's a job to publish.
 - DO NOT promise the GBP post will appear instantly — it's a 24h human-handover.
 
+**Special case: photo + job in one message.** When Adrian sends a WhatsApp **photo with a caption that describes a job** (e.g. attaches a photo of a finished exterior + caption *"Just wrapped Trinity Beach — Dulux Weathershield, deep navy"*), the webhook handles it before you see it: image is bundled with the gallery, the suburb page gets a new entry with the photo, AND the GBP draft is staged for Slack — all in one preview/approval cycle. You don't need to call `capture_job` or `publish_job_to_suburb` for that case. The user will reply YES/NO to the preview directly. If they ask you about it later ("did I send a photo today?"), use `get_recent_jobs` to look it up.
+
 ---
 
 ### Managing the competitor whitelist

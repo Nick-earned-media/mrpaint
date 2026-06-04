@@ -91,8 +91,10 @@ async function handleMessage(fromWa, message, media) {
   if (media?.url) {
     const ct = String(media.contentType || "").toLowerCase();
     if (ct.startsWith("image/")) {
-      // Image → existing gallery upload flow (caption-or-prompt-for-it).
-      return executeAddGalleryPhoto(fromWa, message, media);
+      // Image + caption → combined handler that decides job-vs-gallery and
+      // commits everything atomically (image + gallery.json + locations.json
+      // if a job). Falls back to gallery-only if the caption is generic.
+      return executeAddPhotoJob(fromWa, message, media);
     }
     if (ct.startsWith("audio/")) {
       // Voice note → transcribe via Whisper, then treat as a normal text
@@ -607,6 +609,213 @@ async function executeAddBlogPost(fromWa, intent) {
   });
 }
 
+// ─── combined photo+job handler (entry point for image media) ────────────
+//
+// One handler, one preview, one approval. Adrian sends a photo with a
+// caption — we classify whether the caption describes a job (not just a
+// gallery item) and commit accordingly:
+//   - gallery only: image + gallery.json (same as legacy flow)
+//   - job:          image + gallery.json + locations.json (new recent_jobs
+//                   entry with the photo path) + Supabase job row with
+//                   pending_publish metadata. handleApprove fires GBP
+//                   Slack ping on YES.
+
+const PHOTO_JOB_CLASSIFIER_SYSTEM = `Extract fields from a caption that accompanies a paint-job photo. The caption may describe a job Adrian just completed (work piece, specific location) OR be a generic gallery upload. Reply with valid JSON only:
+
+{
+  "is_job": boolean,
+  "gallery": {
+    "title": "Sentence Case short title",
+    "category": "residential" | "commercial" | "industrial" | "roof",
+    "location": "Cairns suburb if mentioned, else \\"\\"",
+    "postcode": "4-digit AU postcode based on suburb, else \\"\\"",
+    "note": "short description, optional"
+  },
+  "job": {
+    "suburb": "Cairns suburb name (only if is_job true)",
+    "summary": "one-line summary of the job",
+    "job_type": "exterior_repaint | interior_repaint | roof | commercial_fitout | touch_up | pressure_wash | other",
+    "brands_used": ["Sikkens", "Dulux", "Festool", "..."],
+    "architectural_style": "e.g. high-set Queenslander, fibro cottage, modern brick, or \\"\\""
+  }
+}
+
+JOB CLASSIFICATION:
+- is_job=TRUE when the caption describes a completed work piece in a specific location. Markers: "just finished", "just did", "completed", "done", "wrapped up", "finished today", or a clear suburb + work type ("Edge Hill exterior repaint").
+- is_job=FALSE when the caption is generic ("team photo", "site overview", "warehouse interior shot").
+- When in doubt AND a Cairns suburb is named: lean is_job=TRUE.
+
+Suburb postcodes for gallery.postcode: Trinity Beach=4879, Holloways Beach=4878, Palm Cove=4879, Edge Hill=4870, Edmonton=4869, Cairns CBD=4870, Smithfield=4878, Portsmith=4870, Port Douglas=4877.
+
+Infer gallery.category from clues if not explicit (interior/exterior/house/door = residential; shop/office/cafe/strata = commercial; warehouse/factory = industrial; roof = roof).`;
+
+async function executeAddPhotoJob(fromWa, caption, media) {
+  if (!caption) {
+    return sendMessage(fromWa,
+      "🤖 Got the photo but no caption. Tap the photo before sending and add a caption like:\n\n" +
+      "• \"Just finished a Queenslander exterior in Edge Hill — Dulux Weathershield deep navy\"\n" +
+      "• \"Commercial fit-out, Cairns CBD\"\n\n" +
+      "Then send again. If you mention the suburb I'll add it to that area page automatically."
+    );
+  }
+  if (!media?.url) throw new Error("executeAddPhotoJob: missing media URL");
+
+  await sendMessage(fromWa, `🤖 Got the photo. Reading the caption…`);
+
+  // 1. Single classifier+extractor call.
+  const meta = await callAnthropic({
+    model: "claude-haiku-4-5",
+    max_tokens: 700,
+    system: PHOTO_JOB_CLASSIFIER_SYSTEM,
+    user: caption,
+    parseJson: true,
+  });
+
+  // 2. Download the image once.
+  const imageBuf = await downloadTwilioMedia(media.url);
+  const contentType = (media.contentType || "").toLowerCase();
+  const ext = contentType.includes("png") ? "png"
+            : contentType.includes("webp") ? "webp"
+            : contentType.includes("gif") ? "gif"
+            : "jpg";
+  const ts = Date.now();
+  const fileSlug = slug(meta.gallery?.title || meta.job?.summary || "photo");
+  const imagePath = `assets/images/work-${fileSlug}-${ts}.${ext}`;
+
+  // 3. Gallery entry (always created — the photo always goes to the gallery).
+  const galleryFile = await ghGetContents("_data/gallery.json", "main");
+  const gallery = JSON.parse(Buffer.from(galleryFile.content, "base64").toString("utf-8"));
+  const galleryItem = {
+    image: `/${imagePath}`,
+    alt: meta.gallery?.title || meta.job?.summary || "Paint job",
+    title: meta.gallery?.title || meta.job?.summary || "Paint job",
+    category: meta.gallery?.category || (meta.job?.job_type?.includes("commercial") ? "commercial" : "residential"),
+    location: meta.gallery?.location || meta.job?.suburb || "",
+    postcode: meta.gallery?.postcode || "",
+    note: meta.gallery?.note || "",
+  };
+  gallery.unshift(galleryItem);
+
+  // 4. If job — match suburb, generate suburb-page entry, update locations.
+  let locations, suburb, jobContent;
+  if (meta.is_job && meta.job?.suburb) {
+    const locFile = await ghGetContents("_data/locations.json", "main");
+    locations = JSON.parse(Buffer.from(locFile.content, "base64").toString("utf-8"));
+    const norm = (s) => String(s || "").toLowerCase().trim().replace(/\s+/g, "-");
+    const wantedSlug = norm(meta.job.suburb);
+    const suburbIdx = locations.findIndex(
+      (l) => norm(l.name) === wantedSlug || norm(l.slug) === wantedSlug
+    );
+    if (suburbIdx !== -1) {
+      suburb = locations[suburbIdx];
+      const { generateJobContent } = require("../lib/job-publisher.js");
+      try {
+        jobContent = await generateJobContent({
+          job: {
+            suburb: suburb.name,
+            summary: meta.job.summary,
+            raw_transcript: caption,
+            structured_facts: {
+              job_type: meta.job.job_type,
+              brands_used: meta.job.brands_used,
+              architectural_style: meta.job.architectural_style,
+            },
+          },
+          suburbCtx: suburb,
+        });
+        const today = new Date().toISOString().slice(0, 10);
+        const recentJobEntry = {
+          date: today,
+          title: jobContent.title,
+          body: jobContent.body,
+          photo_alt: jobContent.photo_alt,
+          image: `/${imagePath}`,
+        };
+        const current = Array.isArray(suburb.recent_jobs) ? suburb.recent_jobs : [];
+        suburb.recent_jobs = [recentJobEntry, ...current].slice(0, 6);
+        locations[suburbIdx] = suburb;
+      } catch (err) {
+        console.warn("[photojob] generateJobContent failed:", err.message);
+        suburb = null; // fall back to gallery-only commit
+      }
+    } else {
+      // Suburb didn't match — fall back to gallery-only.
+      await sendMessage(fromWa,
+        `📍 Caption mentioned "${meta.job.suburb}" but that doesn't match a known suburb on the site. Saving to the gallery only — Nick can add the suburb to /_data/locations.json if you want a page for it.`
+      ).catch(() => {});
+    }
+  }
+
+  // 5. Atomic commit — image + gallery.json + (if job) locations.json.
+  const branch = `bot/${ts}-${suburb ? `job-${suburb.slug}` : `gallery-${fileSlug}`}`.slice(0, 200);
+  const files = [
+    { path: imagePath, content: imageBuf.toString("base64"), encoding: "base64" },
+    { path: "_data/gallery.json", content: JSON.stringify(gallery, null, 2) + "\n", encoding: "utf-8" },
+  ];
+  if (suburb) {
+    files.push({ path: "_data/locations.json", content: JSON.stringify(locations, null, 2) + "\n", encoding: "utf-8" });
+  }
+  const commitMsg = suburb
+    ? `Bot: add job in ${suburb.name} + gallery photo "${truncate(galleryItem.title, 60)}"`
+    : `Bot: add gallery photo "${truncate(galleryItem.title, 60)}"`;
+  const sha = await ghCommitMulti({
+    branch, baseRef: "main", message: commitMsg, files,
+  });
+
+  // 6. If job — insert Supabase row with pending_publish metadata so
+  //    handleApprove fires the GBP Slack ping (with image URL) on YES.
+  if (suburb && jobContent) {
+    try {
+      const { client: supa } = require("../lib/supabase.js");
+      const phone = fromWa.replace(/^whatsapp:/, "");
+      const { data: client } = await supa()
+        .from("clients").select("id, site_url").contains("allowed_phones", [phone]).maybeSingle();
+      if (client?.id) {
+        const liveImageUrl = client.site_url
+          ? `${client.site_url.replace(/\/$/, "")}/${imagePath}`
+          : `https://mrpaint.vercel.app/${imagePath}`;
+        await supa()
+          .from("jobs")
+          .insert({
+            client_id: client.id,
+            captured_at: new Date().toISOString(),
+            suburb: suburb.name,
+            summary: meta.job.summary,
+            raw_transcript: caption,
+            structured_facts: {
+              job_type: meta.job.job_type,
+              brands_used: meta.job.brands_used,
+              architectural_style: meta.job.architectural_style,
+              image_url: `/${imagePath}`,
+              pending_publish: {
+                branch,
+                sha,
+                suburb_slug: suburb.slug,
+                suburb_name: suburb.name,
+                gbp_text: jobContent.gbp_text,
+                job_title: jobContent.title,
+                image_url: liveImageUrl,
+                photo_alt: jobContent.photo_alt,
+                created_at: new Date().toISOString(),
+              },
+            },
+            status: "pending_approval",
+          });
+      }
+    } catch (err) {
+      console.warn("[photojob] Supabase write failed:", err.message);
+    }
+  }
+
+  // 7. Send preview message.
+  const summary = suburb
+    ? `📍 *${suburb.name}* job drafted with photo:\n• Suburb page entry: ${truncate(jobContent.title, 60)}\n• Gallery: ${truncate(galleryItem.title, 60)}\n• GBP draft (${jobContent.gbp_text.length} chars) queued for Nick on approval`
+    : `Added to gallery:\n**${galleryItem.title}**\n` +
+      `Category: ${galleryItem.category} · ${galleryItem.location || "—"}${galleryItem.postcode ? " · " + galleryItem.postcode : ""}` +
+      (galleryItem.note ? `\nNote: ${galleryItem.note}` : "");
+  await sendPreviewMessage(fromWa, { summary, branch, sha });
+}
+
 // ─── add_gallery_photo ───────────────────────────────────────────────────
 
 const GALLERY_CAPTION_SYSTEM = `Extract gallery item fields from a caption describing a paint-job photo. Reply with valid JSON ONLY:
@@ -761,6 +970,8 @@ async function handleApprove(fromWa) {
         jobTitle: pp.job_title,
         gbpText: pp.gbp_text,
         previewUrl,
+        imageUrl: pp.image_url,
+        photoAlt: pp.photo_alt,
       });
       await clearJobPendingPublish(job.id, "published");
       return sendMessage(fromWa, `✅ Published to /areas/${pp.suburb_slug}/. Live in ~60s. GBP draft sent to Nick — he'll post it within 24h.`);
