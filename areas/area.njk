@@ -97,7 +97,7 @@ eleventyComputed:
       <span class="eyebrow">{{ j.date }}</span>
       <h3 style="margin-top:8px">{{ j.title }}</h3>
       <p>{{ j.body }}</p>
-      {% if j.image %}<img src="{{ j.image }}" alt="{{ j.title }} — {{ area.name }}" style="margin-top:16px;border-radius:10px;width:100%;height:auto" />{% endif %}
+      {% if j.video %}<video src="{{ j.video }}" controls muted playsinline preload="metadata" style="margin-top:16px;border-radius:10px;width:100%;height:auto;background:#000" {% if j.poster %}poster="{{ j.poster }}"{% endif %}></video>{% elif j.image %}<img src="{{ j.image }}" alt="{{ j.title }} — {{ area.name }}" style="margin-top:16px;border-radius:10px;width:100%;height:auto" />{% endif %}
     </article>
     {% endfor %}
   </div>

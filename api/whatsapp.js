@@ -90,10 +90,13 @@ async function handleMessage(fromWa, message, media) {
   // Media attached? Route by content type.
   if (media?.url) {
     const ct = String(media.contentType || "").toLowerCase();
-    if (ct.startsWith("image/")) {
-      // Image + caption → combined handler that decides job-vs-gallery and
-      // commits everything atomically (image + gallery.json + locations.json
-      // if a job). Falls back to gallery-only if the caption is generic.
+    if (ct.startsWith("image/") || ct.startsWith("video/")) {
+      // Image or video + caption → combined handler.
+      //   - Image: decides job-vs-gallery, commits image + gallery.json
+      //     and (if job) locations.json.
+      //   - Video: requires a job-like caption with a known suburb.
+      //     Commits video binary + locations.json (no gallery).
+      // GBP draft is generated and queued for Slack on YES either way.
       return executeAddPhotoJob(fromWa, message, media);
     }
     if (ct.startsWith("audio/")) {
@@ -649,18 +652,39 @@ Suburb postcodes for gallery.postcode: Trinity Beach=4879, Holloways Beach=4878,
 
 Infer gallery.category from clues if not explicit (interior/exterior/house/door = residential; shop/office/cafe/strata = commercial; warehouse/factory = industrial; roof = roof).`;
 
+// Pick a sensible file extension from a Twilio mediaContentType.
+function pickExt(contentType) {
+  const ct = String(contentType || "").toLowerCase();
+  // images
+  if (ct.includes("png")) return "png";
+  if (ct.includes("webp")) return "webp";
+  if (ct.includes("gif")) return "gif";
+  // video
+  if (ct.includes("mp4")) return "mp4";
+  if (ct.includes("quicktime") || ct.includes("mov")) return "mov";
+  if (ct.includes("3gpp") || ct.includes("3gp")) return "3gp";
+  if (ct.includes("webm")) return "webm";
+  // default: jpg for image, mp4 for video
+  if (ct.startsWith("video/")) return "mp4";
+  return "jpg";
+}
+
 async function executeAddPhotoJob(fromWa, caption, media) {
+  const ct = String(media?.contentType || "").toLowerCase();
+  const isVideo = ct.startsWith("video/");
+  const mediaWord = isVideo ? "video" : "photo";
+
   if (!caption) {
     return sendMessage(fromWa,
-      "🤖 Got the photo but no caption. Tap the photo before sending and add a caption like:\n\n" +
+      `🤖 Got the ${mediaWord} but no caption. Tap the ${mediaWord} before sending and add a caption like:\n\n` +
       "• \"Just finished a Queenslander exterior in Edge Hill — Dulux Weathershield deep navy\"\n" +
       "• \"Commercial fit-out, Cairns CBD\"\n\n" +
-      "Then send again. If you mention the suburb I'll add it to that area page automatically."
+      `Then send again. If you mention the suburb I'll add it to that area page automatically.${isVideo ? "\n\nVideos need a job context (suburb + work description) — they go on the suburb page, not the gallery." : ""}`
     );
   }
   if (!media?.url) throw new Error("executeAddPhotoJob: missing media URL");
 
-  await sendMessage(fromWa, `🤖 Got the photo. Reading the caption…`);
+  await sendMessage(fromWa, `🤖 Got the ${mediaWord}. Reading the caption…`);
 
   // 1. Single classifier+extractor call.
   const meta = await callAnthropic({
@@ -671,30 +695,42 @@ async function executeAddPhotoJob(fromWa, caption, media) {
     parseJson: true,
   });
 
-  // 2. Download the image once.
-  const imageBuf = await downloadTwilioMedia(media.url);
-  const contentType = (media.contentType || "").toLowerCase();
-  const ext = contentType.includes("png") ? "png"
-            : contentType.includes("webp") ? "webp"
-            : contentType.includes("gif") ? "gif"
-            : "jpg";
-  const ts = Date.now();
-  const fileSlug = slug(meta.gallery?.title || meta.job?.summary || "photo");
-  const imagePath = `assets/images/work-${fileSlug}-${ts}.${ext}`;
+  // ── Video gating: video MUST be a job with a known suburb. There is no
+  //    gallery flow for video.
+  if (isVideo) {
+    if (!meta.is_job || !meta.job?.suburb) {
+      return sendMessage(fromWa,
+        `🎥 I can only post videos to a suburb page right now — I need a caption that names the suburb and what the job was.\n\n` +
+        "Example: *\"Just wrapped Trinity Beach exterior — Dulux Weathershield deep navy on the weatherboards\"*\n\n" +
+        "Resend the video with that kind of caption and I'll handle it from there."
+      );
+    }
+  }
 
-  // 3. Gallery entry (always created — the photo always goes to the gallery).
-  const galleryFile = await ghGetContents("_data/gallery.json", "main");
-  const gallery = JSON.parse(Buffer.from(galleryFile.content, "base64").toString("utf-8"));
-  const galleryItem = {
-    image: `/${imagePath}`,
-    alt: meta.gallery?.title || meta.job?.summary || "Paint job",
-    title: meta.gallery?.title || meta.job?.summary || "Paint job",
-    category: meta.gallery?.category || (meta.job?.job_type?.includes("commercial") ? "commercial" : "residential"),
-    location: meta.gallery?.location || meta.job?.suburb || "",
-    postcode: meta.gallery?.postcode || "",
-    note: meta.gallery?.note || "",
-  };
-  gallery.unshift(galleryItem);
+  // 2. Download the media once.
+  const mediaBuf = await downloadTwilioMedia(media.url);
+  const ext = pickExt(ct);
+  const ts = Date.now();
+  const fileSlug = slug(meta.gallery?.title || meta.job?.summary || mediaWord);
+  const assetDir = isVideo ? "assets/videos" : "assets/images";
+  const mediaPath = `${assetDir}/work-${fileSlug}-${ts}.${ext}`;
+
+  // 3. Gallery entry — only for images. Video skips the gallery.
+  let gallery, galleryItem;
+  if (!isVideo) {
+    const galleryFile = await ghGetContents("_data/gallery.json", "main");
+    gallery = JSON.parse(Buffer.from(galleryFile.content, "base64").toString("utf-8"));
+    galleryItem = {
+      image: `/${mediaPath}`,
+      alt: meta.gallery?.title || meta.job?.summary || "Paint job",
+      title: meta.gallery?.title || meta.job?.summary || "Paint job",
+      category: meta.gallery?.category || (meta.job?.job_type?.includes("commercial") ? "commercial" : "residential"),
+      location: meta.gallery?.location || meta.job?.suburb || "",
+      postcode: meta.gallery?.postcode || "",
+      note: meta.gallery?.note || "",
+    };
+    gallery.unshift(galleryItem);
+  }
 
   // 4. If job — match suburb, generate suburb-page entry, update locations.
   let locations, suburb, jobContent;
@@ -729,41 +765,58 @@ async function executeAddPhotoJob(fromWa, caption, media) {
           title: jobContent.title,
           body: jobContent.body,
           photo_alt: jobContent.photo_alt,
-          image: `/${imagePath}`,
         };
+        if (isVideo) recentJobEntry.video = `/${mediaPath}`;
+        else        recentJobEntry.image = `/${mediaPath}`;
         const current = Array.isArray(suburb.recent_jobs) ? suburb.recent_jobs : [];
         suburb.recent_jobs = [recentJobEntry, ...current].slice(0, 6);
         locations[suburbIdx] = suburb;
       } catch (err) {
         console.warn("[photojob] generateJobContent failed:", err.message);
-        suburb = null; // fall back to gallery-only commit
+        if (isVideo) {
+          // Without job content there's nothing to put on the suburb page
+          // and video has no gallery fallback. Bail out cleanly.
+          return sendMessage(fromWa, `⚠️ Couldn't draft the suburb page entry for that video: ${truncate(String(err.message || err), 120)}. Nothing has been committed.`);
+        }
+        suburb = null; // fall back to gallery-only commit (image only)
       }
+    } else if (isVideo) {
+      // Video + unknown suburb → bail out cleanly. Nothing committed.
+      return sendMessage(fromWa,
+        `📍 Caption mentioned "${meta.job.suburb}" but that doesn't match a known suburb on the site. Resend with one of the existing suburbs (Edge Hill, Trinity Beach, Palm Cove, Holloways Beach, Cairns CBD, Edmonton, Port Douglas) or ask Nick to add the new one.`
+      );
     } else {
-      // Suburb didn't match — fall back to gallery-only.
+      // Image + unknown suburb → fall back to gallery-only.
       await sendMessage(fromWa,
         `📍 Caption mentioned "${meta.job.suburb}" but that doesn't match a known suburb on the site. Saving to the gallery only — Nick can add the suburb to /_data/locations.json if you want a page for it.`
       ).catch(() => {});
     }
+  } else if (isVideo) {
+    // Defensive — already gated above, but guard against a Sonnet flip.
+    return sendMessage(fromWa, "🎥 Videos need a job caption with a suburb. Resend with that and I'll handle it.");
   }
 
-  // 5. Atomic commit — image + gallery.json + (if job) locations.json.
-  const branch = `bot/${ts}-${suburb ? `job-${suburb.slug}` : `gallery-${fileSlug}`}`.slice(0, 200);
+  // 5. Atomic commit — media binary + (image only) gallery.json + (if job)
+  //    locations.json.
+  const branch = `bot/${ts}-${suburb ? `${isVideo ? "videojob" : "job"}-${suburb.slug}` : `gallery-${fileSlug}`}`.slice(0, 200);
   const files = [
-    { path: imagePath, content: imageBuf.toString("base64"), encoding: "base64" },
-    { path: "_data/gallery.json", content: JSON.stringify(gallery, null, 2) + "\n", encoding: "utf-8" },
+    { path: mediaPath, content: mediaBuf.toString("base64"), encoding: "base64" },
   ];
+  if (!isVideo && gallery) {
+    files.push({ path: "_data/gallery.json", content: JSON.stringify(gallery, null, 2) + "\n", encoding: "utf-8" });
+  }
   if (suburb) {
     files.push({ path: "_data/locations.json", content: JSON.stringify(locations, null, 2) + "\n", encoding: "utf-8" });
   }
   const commitMsg = suburb
-    ? `Bot: add job in ${suburb.name} + gallery photo "${truncate(galleryItem.title, 60)}"`
+    ? `Bot: add ${isVideo ? "video" : "photo"} job in ${suburb.name}${galleryItem ? ` + gallery photo "${truncate(galleryItem.title, 60)}"` : ""}`
     : `Bot: add gallery photo "${truncate(galleryItem.title, 60)}"`;
   const sha = await ghCommitMulti({
     branch, baseRef: "main", message: commitMsg, files,
   });
 
   // 6. If job — insert Supabase row with pending_publish metadata so
-  //    handleApprove fires the GBP Slack ping (with image URL) on YES.
+  //    handleApprove fires the GBP Slack ping on YES.
   if (suburb && jobContent) {
     try {
       const { client: supa } = require("../lib/supabase.js");
@@ -771,9 +824,23 @@ async function executeAddPhotoJob(fromWa, caption, media) {
       const { data: client } = await supa()
         .from("clients").select("id, site_url").contains("allowed_phones", [phone]).maybeSingle();
       if (client?.id) {
-        const liveImageUrl = client.site_url
-          ? `${client.site_url.replace(/\/$/, "")}/${imagePath}`
-          : `https://mrpaint.vercel.app/${imagePath}`;
+        const liveMediaUrl = client.site_url
+          ? `${client.site_url.replace(/\/$/, "")}/${mediaPath}`
+          : `https://mrpaint.vercel.app/${mediaPath}`;
+        const pending_publish = {
+          branch,
+          sha,
+          suburb_slug: suburb.slug,
+          suburb_name: suburb.name,
+          gbp_text: jobContent.gbp_text,
+          job_title: jobContent.title,
+          photo_alt: jobContent.photo_alt,
+          created_at: new Date().toISOString(),
+          media_type: isVideo ? "video" : "image",
+        };
+        if (isVideo) pending_publish.video_url = liveMediaUrl;
+        else         pending_publish.image_url = liveMediaUrl;
+
         await supa()
           .from("jobs")
           .insert({
@@ -786,18 +853,8 @@ async function executeAddPhotoJob(fromWa, caption, media) {
               job_type: meta.job.job_type,
               brands_used: meta.job.brands_used,
               architectural_style: meta.job.architectural_style,
-              image_url: `/${imagePath}`,
-              pending_publish: {
-                branch,
-                sha,
-                suburb_slug: suburb.slug,
-                suburb_name: suburb.name,
-                gbp_text: jobContent.gbp_text,
-                job_title: jobContent.title,
-                image_url: liveImageUrl,
-                photo_alt: jobContent.photo_alt,
-                created_at: new Date().toISOString(),
-              },
+              ...(isVideo ? { video_url: `/${mediaPath}` } : { image_url: `/${mediaPath}` }),
+              pending_publish,
             },
             status: "pending_approval",
           });
@@ -809,7 +866,9 @@ async function executeAddPhotoJob(fromWa, caption, media) {
 
   // 7. Send preview message.
   const summary = suburb
-    ? `📍 *${suburb.name}* job drafted with photo:\n• Suburb page entry: ${truncate(jobContent.title, 60)}\n• Gallery: ${truncate(galleryItem.title, 60)}\n• GBP draft (${jobContent.gbp_text.length} chars) queued for Nick on approval`
+    ? `📍 *${suburb.name}* job drafted with ${mediaWord}:\n• Suburb page entry: ${truncate(jobContent.title, 60)}` +
+      (galleryItem ? `\n• Gallery: ${truncate(galleryItem.title, 60)}` : "") +
+      `\n• GBP draft (${jobContent.gbp_text.length} chars) queued for Nick on approval`
     : `Added to gallery:\n**${galleryItem.title}**\n` +
       `Category: ${galleryItem.category} · ${galleryItem.location || "—"}${galleryItem.postcode ? " · " + galleryItem.postcode : ""}` +
       (galleryItem.note ? `\nNote: ${galleryItem.note}` : "");
@@ -971,7 +1030,9 @@ async function handleApprove(fromWa) {
         gbpText: pp.gbp_text,
         previewUrl,
         imageUrl: pp.image_url,
+        videoUrl: pp.video_url,
         photoAlt: pp.photo_alt,
+        mediaType: pp.media_type || (pp.video_url ? "video" : "image"),
       });
       await clearJobPendingPublish(job.id, "published");
       return sendMessage(fromWa, `✅ Published to /areas/${pp.suburb_slug}/. Live in ~60s. GBP draft sent to Nick — he'll post it within 24h.`);
