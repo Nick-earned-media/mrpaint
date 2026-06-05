@@ -268,6 +268,11 @@ module.exports = async function handler(req, res) {
   const ts = Date.now();
   const fileSlug = slugify(meta.job?.summary || jobContent.title || "job");
   const today = new Date().toISOString().slice(0, 10);
+  // job_date overrides the displayed date — use the day Adrian did the work,
+  // not the day we ingested the post. Accepts YYYY-MM-DD; ignores anything else.
+  const entryDate = /^\d{4}-\d{2}-\d{2}$/.test(String(fields.job_date || "").trim())
+    ? String(fields.job_date).trim()
+    : today;
   const targetPage = String(fields.target_page || "").trim();
   const dryRun = String(fields.dry_run || "").toLowerCase() === "true" || fields.dry_run === true;
 
@@ -294,7 +299,7 @@ module.exports = async function handler(req, res) {
 
   const primary = mediaForEntry[0];
   const recentJobEntry = {
-    date: today,
+    date: entryDate,
     title: jobContent.title,
     body: jobContent.body,
     photo_alt: jobContent.photo_alt,
