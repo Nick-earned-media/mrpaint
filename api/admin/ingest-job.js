@@ -43,10 +43,19 @@ module.exports = async function handler(req, res) {
     return res.status(401).json({ error: "unauthorized" });
   }
 
-  // ── 2. Parse body — multipart OR JSON-with-URLs ────────────────────────
+  // ── 2. Parse body — multipart OR JSON ──────────────────────────────────
+  //    Media model: an ordered array of files/URLs (videos OR images, any mix).
+  //    First item becomes the card thumbnail; the rest expand inside the body.
+  //
+  //    Multipart fields: media_0, media_1, ..., audio, caption, suburb_override,
+  //    target_page, base_branch, dry_run, submitted_by
+  //    Backward compat: a single `video` and/or `image` field still works.
+  //
+  //    JSON body: { media_urls: [{ url, type?, alt? }], audio_url, ... }
+  //    Backward compat: video_url + image_url both still recognised.
   const contentType = String(req.headers["content-type"] || "").toLowerCase();
   let fields = {};
-  let video = null;
+  let mediaItems = []; // [{ buf, contentType, alt }]
   let audio = null;
 
   if (contentType.includes("multipart/form-data")) {
@@ -57,8 +66,21 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: `multipart parse failed: ${err.message || err}` });
     }
     fields = parsed.fields;
-    video = parsed.files.video;
-    audio = parsed.files.audio;
+    audio = parsed.files.audio || null;
+    // Collect media_0, media_1, ... in numeric order, then video/image fallbacks
+    const numbered = Object.keys(parsed.files)
+      .filter((k) => /^media_\d+$/.test(k))
+      .sort((a, b) => Number(a.split("_")[1]) - Number(b.split("_")[1]));
+    for (const k of numbered) {
+      const f = parsed.files[k];
+      mediaItems.push({ buf: f.buf, contentType: f.contentType, alt: fields[`${k}_alt`] || "" });
+    }
+    if (parsed.files.video) {
+      mediaItems.push({ buf: parsed.files.video.buf, contentType: parsed.files.video.contentType, alt: fields.video_alt || "" });
+    }
+    if (parsed.files.image) {
+      mediaItems.push({ buf: parsed.files.image.buf, contentType: parsed.files.image.contentType, alt: fields.image_alt || "" });
+    }
   } else if (contentType.includes("application/json")) {
     let body;
     try {
@@ -67,18 +89,39 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: `json parse failed: ${err.message || err}` });
     }
     fields = body || {};
-    if (!body.video_url) {
-      return res.status(400).json({ error: "video_url required when posting JSON" });
+    // Normalised list: media_urls[], then video_url + image_url fallbacks
+    const urls = Array.isArray(body.media_urls) ? body.media_urls : [];
+    for (const item of urls) {
+      const url = typeof item === "string" ? item : item.url;
+      if (!url) continue;
+      try {
+        const fetched = await fetchAsBuffer(url);
+        let ct = fetched.contentType || "";
+        if (!ct || (!ct.startsWith("image/") && !ct.startsWith("video/"))) {
+          ct = guessTypeFromUrl(url) || (item.type ? mimeForType(item.type, url) : "") || ct;
+        }
+        mediaItems.push({ buf: fetched.buf, contentType: ct, alt: (item.alt || "") });
+      } catch (err) {
+        return res.status(400).json({ error: `media_urls fetch failed (${url}): ${err.message || err}` });
+      }
     }
-    try {
-      video = await fetchAsBuffer(body.video_url);
-    } catch (err) {
-      return res.status(400).json({ error: `video_url fetch failed: ${err.message || err}` });
+    if (body.video_url) {
+      try {
+        const fetched = await fetchAsBuffer(body.video_url);
+        let ct = fetched.contentType || guessTypeFromUrl(body.video_url) || "video/mp4";
+        mediaItems.push({ buf: fetched.buf, contentType: ct, alt: body.video_alt || "" });
+      } catch (err) {
+        return res.status(400).json({ error: `video_url fetch failed: ${err.message || err}` });
+      }
     }
-    if (!String(video.contentType || "").toLowerCase().startsWith("video/")) {
-      // Trust the URL extension if the server didn't return a video/* content type.
-      const guess = guessTypeFromUrl(body.video_url);
-      if (guess) video.contentType = guess;
+    if (body.image_url) {
+      try {
+        const fetched = await fetchAsBuffer(body.image_url);
+        let ct = fetched.contentType || guessTypeFromUrl(body.image_url) || "image/jpeg";
+        mediaItems.push({ buf: fetched.buf, contentType: ct, alt: body.image_alt || "" });
+      } catch (err) {
+        return res.status(400).json({ error: `image_url fetch failed: ${err.message || err}` });
+      }
     }
     if (body.audio_url) {
       try {
@@ -93,13 +136,19 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  if (!video) {
-    return res.status(400).json({ error: "video is required (multipart field 'video' or JSON 'video_url')" });
-  }
-  if (!String(video.contentType || "").toLowerCase().startsWith("video/")) {
+  if (mediaItems.length === 0) {
     return res.status(400).json({
-      error: `video must be video/*; got ${video.contentType || "unknown"}`,
+      error: "at least one media item required (media_0 field, or media_urls/video_url/image_url in JSON)",
     });
+  }
+  // Validate each media item has a sane content-type
+  for (let i = 0; i < mediaItems.length; i++) {
+    const ct = String(mediaItems[i].contentType || "").toLowerCase();
+    if (!ct.startsWith("image/") && !ct.startsWith("video/")) {
+      return res.status(400).json({
+        error: `media[${i}] content-type must be image/* or video/*; got "${ct || "unknown"}"`,
+      });
+    }
   }
 
   // ── 3. Get caption (transcribe audio or use override) ──────────────────
@@ -156,11 +205,15 @@ module.exports = async function handler(req, res) {
   }
 
   // ── 5. Match suburb against locations.json ─────────────────────────────
+  //    base_branch lets callers chain ingests: each call uses the previous
+  //    branch as its starting point, so the final branch accumulates all the
+  //    new entries. Defaults to "main".
   const GITHUB_REPO = process.env.GITHUB_REPO;
   if (!GITHUB_REPO) return res.status(503).json({ error: "GITHUB_REPO not configured" });
   if (!process.env.GITHUB_TOKEN) return res.status(503).json({ error: "GITHUB_TOKEN not configured" });
+  const baseBranch = String(fields.base_branch || "main").trim();
 
-  const locFile = await ghGetContents(GITHUB_REPO, "_data/locations.json", "main");
+  const locFile = await ghGetContents(GITHUB_REPO, "_data/locations.json", baseBranch);
   const locations = JSON.parse(Buffer.from(locFile.content, "base64").toString("utf-8"));
   const norm = (s) => String(s || "").toLowerCase().trim().replace(/\s+/g, "-");
   const wantedSlug = norm(pageSearchTerm);
@@ -208,37 +261,76 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  // ── 7. Commit binary + content JSON atomically ─────────────────────────
+  // ── 7. Build the entry + (unless dry_run) commit binaries + JSON ───────
   //    target_page selects WHERE the entry lives:
   //      - default               → _data/locations.json[suburb].recent_jobs (suburb page)
   //      - "/painter-cairns/"    → _data/cairns_recent_jobs.json (the Cairns hub page)
   const ts = Date.now();
-  const ext = pickVideoExt(video.contentType);
-  const fileSlug = slugify(meta.job?.summary || jobContent.title || "video");
-  const videoPath = `assets/videos/work-${fileSlug}-${ts}.${ext}`;
+  const fileSlug = slugify(meta.job?.summary || jobContent.title || "job");
   const today = new Date().toISOString().slice(0, 10);
   const targetPage = String(fields.target_page || "").trim();
+  const dryRun = String(fields.dry_run || "").toLowerCase() === "true" || fields.dry_run === true;
 
+  // Allocate a path per media item; build the media array stored on the entry.
+  const mediaCommitFiles = [];
+  const mediaForEntry = mediaItems.map((m, i) => {
+    const ct = String(m.contentType || "").toLowerCase();
+    const isVideo = ct.startsWith("video/");
+    const ext = isVideo ? pickVideoExt(ct) : pickImageExt(ct);
+    const dir = isVideo ? "assets/videos" : "assets/images";
+    const suffix = mediaItems.length > 1 ? `-${i + 1}` : "";
+    const path = `${dir}/work-${fileSlug}-${ts}${suffix}.${ext}`;
+    mediaCommitFiles.push({
+      path,
+      content: m.buf.toString("base64"),
+      encoding: "base64",
+    });
+    return {
+      type: isVideo ? "video" : "image",
+      src: `/${path}`,
+      alt: m.alt || (i === 0 ? jobContent.photo_alt : `${jobContent.title} (${i + 1})`),
+    };
+  });
+
+  const primary = mediaForEntry[0];
   const recentJobEntry = {
     date: today,
     title: jobContent.title,
     body: jobContent.body,
     photo_alt: jobContent.photo_alt,
-    video: `/${videoPath}`,
+    media: mediaForEntry,
+    // Legacy single-media fields kept so older templates still render.
+    ...(primary.type === "video" ? { video: primary.src } : { image: primary.src }),
   };
+
+  // Dry run: skip the commit, return what would have been written.
+  if (dryRun) {
+    return res.status(200).json({
+      ok: true,
+      dry_run: true,
+      transcript,
+      classifier_output: meta,
+      generated_content: jobContent,
+      suburb: { name: suburb.name, slug: suburb.slug, postcode: suburb.postcode },
+      target_page: targetPage || `/areas/${suburb.slug}/`,
+      entry_preview: recentJobEntry,
+      media_count: mediaForEntry.length,
+      next_step: "Re-call without dry_run=true to commit.",
+    });
+  }
 
   let commitFiles;
   let commitContextLabel;
   if (targetPage === "/painter-cairns/") {
     let existing;
     try {
-      const cf = await ghGetContents(GITHUB_REPO, "_data/cairns_recent_jobs.json", "main");
+      const cf = await ghGetContents(GITHUB_REPO, "_data/cairns_recent_jobs.json", baseBranch);
       existing = JSON.parse(Buffer.from(cf.content, "base64").toString("utf-8"));
     } catch { existing = []; }
     if (!Array.isArray(existing)) existing = [];
-    const updated = [recentJobEntry, ...existing].slice(0, 12);
+    const updated = [recentJobEntry, ...existing].slice(0, 30);
     commitFiles = [
-      { path: videoPath, content: video.buf.toString("base64"), encoding: "base64" },
+      ...mediaCommitFiles,
       { path: "_data/cairns_recent_jobs.json", content: JSON.stringify(updated, null, 2) + "\n", encoding: "utf-8" },
     ];
     commitContextLabel = "/painter-cairns/";
@@ -246,20 +338,20 @@ module.exports = async function handler(req, res) {
     suburb.recent_jobs = [recentJobEntry, ...(Array.isArray(suburb.recent_jobs) ? suburb.recent_jobs : [])].slice(0, 6);
     locations[suburbIdx] = suburb;
     commitFiles = [
-      { path: videoPath, content: video.buf.toString("base64"), encoding: "base64" },
+      ...mediaCommitFiles,
       { path: "_data/locations.json", content: JSON.stringify(locations, null, 2) + "\n", encoding: "utf-8" },
     ];
     commitContextLabel = `/areas/${suburb.slug}/`;
   }
 
   const branchSlug = targetPage === "/painter-cairns/" ? "cairns-hub" : suburb.slug;
-  const branch = `bot/${ts}-videojob-${branchSlug}`.slice(0, 200);
+  const branch = `bot/${ts}-job-${branchSlug}`.slice(0, 200);
   let sha;
   try {
     sha = await ghCommitMulti({
       repo: GITHUB_REPO,
-      branch, baseRef: "main",
-      message: `Bot: add video job to ${commitContextLabel} (manual ingest)`,
+      branch, baseRef: baseBranch,
+      message: `Bot: add job to ${commitContextLabel} (manual ingest)`,
       files: commitFiles,
     });
   } catch (err) {
@@ -279,9 +371,10 @@ module.exports = async function handler(req, res) {
       const { data: client } = await supa()
         .from("clients").select("id, site_url").contains("allowed_phones", [phone]).maybeSingle();
       if (client?.id) {
+        const primarySrc = primary.src.replace(/^\//, "");
         const liveMediaUrl = client.site_url
-          ? `${client.site_url.replace(/\/$/, "")}/${videoPath}`
-          : `https://mrpaint.vercel.app/${videoPath}`;
+          ? `${client.site_url.replace(/\/$/, "")}/${primarySrc}`
+          : `https://mrpaint.vercel.app/${primarySrc}`;
         const livePageUrl = client.site_url
           ? `${client.site_url.replace(/\/$/, "")}${commitContextLabel}`
           : `https://mrpaint.vercel.app${commitContextLabel}`;
@@ -297,7 +390,7 @@ module.exports = async function handler(req, res) {
               job_type: meta.job?.job_type,
               brands_used: meta.job?.brands_used,
               architectural_style: meta.job?.architectural_style,
-              video_url: `/${videoPath}`,
+              media: mediaForEntry,
               pending_publish: {
                 branch, sha,
                 suburb_slug: suburb.slug,
@@ -307,8 +400,9 @@ module.exports = async function handler(req, res) {
                 job_title: jobContent.title,
                 photo_alt: jobContent.photo_alt,
                 created_at: new Date().toISOString(),
-                media_type: "video",
-                video_url: liveMediaUrl,
+                media_type: primary.type,
+                primary_media_url: liveMediaUrl,
+                media: mediaForEntry,
               },
             },
             status: "pending_approval",
@@ -381,6 +475,17 @@ function guessTypeFromUrl(url) {
   if (u.endsWith(".mov")) return "video/quicktime";
   if (u.endsWith(".webm")) return "video/webm";
   if (u.endsWith(".3gp")) return "video/3gpp";
+  if (u.endsWith(".jpg") || u.endsWith(".jpeg")) return "image/jpeg";
+  if (u.endsWith(".png")) return "image/png";
+  if (u.endsWith(".webp")) return "image/webp";
+  if (u.endsWith(".gif")) return "image/gif";
+  return null;
+}
+
+function mimeForType(type, url) {
+  const t = String(type || "").toLowerCase();
+  if (t === "video") return guessTypeFromUrl(url) || "video/mp4";
+  if (t === "image") return guessTypeFromUrl(url) || "image/jpeg";
   return null;
 }
 
@@ -390,7 +495,7 @@ function parseMultipart(req) {
   return new Promise((resolve, reject) => {
     let bb;
     try {
-      bb = Busboy({ headers: req.headers, limits: { files: 4, fileSize: 80 * 1024 * 1024 } });
+      bb = Busboy({ headers: req.headers, limits: { files: 12, fileSize: 80 * 1024 * 1024 } });
     } catch (err) {
       return reject(err);
     }
@@ -628,9 +733,18 @@ function pickVideoExt(contentType) {
   return "mp4";
 }
 
+function pickImageExt(contentType) {
+  const ct = String(contentType || "").toLowerCase();
+  if (ct.includes("png")) return "png";
+  if (ct.includes("webp")) return "webp";
+  if (ct.includes("gif")) return "gif";
+  if (ct.includes("avif")) return "avif";
+  return "jpg";
+}
+
 function slugify(s) {
   return String(s || "").toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 60) || "video";
+    .slice(0, 60) || "job";
 }

@@ -94,21 +94,198 @@ canonical: /painter-cairns/
   </div>
 </section>
 
-{# ─── RECENT JOBS (populated by the WhatsApp job-capture flow) ─── #}
+{# ─── RECENT JOBS (populated by the WhatsApp job-capture flow) ───
+   Layout: each entry is a <details> card with thumb left + title/preview right.
+   Click anywhere on the row to expand inline (full body + remaining media).
+   Native HTML — all content stays in the DOM whether collapsed or open, so
+   Google + LLM crawlers see every word. Entries are packed 5-per-column,
+   with a horizontal scroll-snap strip for additional packs.
+   Each entry also emits CreativeWork JSON-LD so search can structure it.
+#}
 {% if cairns_recent_jobs and cairns_recent_jobs.length > 0 %}
-<section class="copy-block">
+<section class="copy-block" id="cairns-recent">
   <div class="wrap-narrow">
     <h2 class="sec-head">Recent jobs around Cairns</h2>
-    {% for j in cairns_recent_jobs %}
-    <article style="border-top:1px solid var(--rule);padding-top:24px;margin-top:24px">
-      <span class="eyebrow">{{ j.date }}</span>
-      <h3 style="margin-top:8px">{{ j.title }}</h3>
-      <p>{{ j.body }}</p>
-      {% if j.video %}<video src="{{ j.video }}" controls muted playsinline preload="metadata" style="margin-top:16px;border-radius:10px;width:100%;height:auto;background:#000" {% if j.poster %}poster="{{ j.poster }}"{% endif %}></video>{% elif j.image %}<img src="{{ j.image }}" alt="{{ j.title }}" style="margin-top:16px;border-radius:10px;width:100%;height:auto" />{% endif %}
-    </article>
-    {% endfor %}
+    <p style="color:var(--ink-2);font-size:14px;margin-top:-6px">Real jobs from the team. Tap a card to read more or see the full gallery.</p>
+
+    <div class="cairns-jobs-strip">
+      {% for pack in cairns_recent_jobs | batch(5) %}
+      <div class="cairns-jobs-pack" aria-label="Recent jobs page {{ loop.index }} of {{ loop.length }}">
+        {% for j in pack %}
+          {%- set primary_media = (j.media and j.media.length > 0) and j.media[0] or null -%}
+          {%- set primary_type = primary_media and primary_media.type or (j.video and "video" or "image") -%}
+          {%- set primary_src = primary_media and primary_media.src or (j.video or j.image) -%}
+          {%- set body_preview = (j.body or "") | truncate(140) -%}
+          <details class="job-card">
+            <summary class="job-card-summary">
+              <div class="job-thumb">
+                {% if primary_type == "video" and primary_src %}
+                  <video src="{{ primary_src }}" muted playsinline preload="metadata" aria-label="{{ j.photo_alt or j.title }}"></video>
+                {% elif primary_src %}
+                  <img src="{{ primary_src }}" alt="{{ j.photo_alt or j.title }}" loading="lazy" />
+                {% else %}
+                  <div class="job-thumb-placeholder">📷</div>
+                {% endif %}
+              </div>
+              <div class="job-meta">
+                <span class="eyebrow">{{ j.date }}</span>
+                <h3>{{ j.title }}</h3>
+                <p>{{ body_preview }}</p>
+                <span class="job-expand-hint" aria-hidden="true">Tap to read more →</span>
+              </div>
+            </summary>
+            <div class="job-body">
+              <div class="job-body-text">{{ j.body }}</div>
+              {% if j.media and j.media.length > 0 %}
+              <div class="job-gallery" aria-label="Job gallery">
+                {% for m in j.media %}
+                  {% if m.type == "video" %}
+                    <video src="{{ m.src }}" controls muted playsinline preload="metadata"></video>
+                  {% else %}
+                    <img src="{{ m.src }}" alt="{{ m.alt or j.photo_alt or j.title }}" loading="lazy" />
+                  {% endif %}
+                {% endfor %}
+              </div>
+              {% elif j.video %}
+              <div class="job-gallery"><video src="{{ j.video }}" controls muted playsinline preload="metadata"></video></div>
+              {% elif j.image %}
+              <div class="job-gallery"><img src="{{ j.image }}" alt="{{ j.photo_alt or j.title }}" loading="lazy" /></div>
+              {% endif %}
+            </div>
+          </details>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if cairns_recent_jobs.length > 5 %}
+    <p style="margin-top:14px;font-size:13px;color:var(--ink-2);text-align:center">
+      Swipe or scroll sideways to see older jobs →
+    </p>
+    {% endif %}
   </div>
 </section>
+
+<style>
+  .cairns-jobs-strip {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 24px;
+    margin-top: 24px;
+    padding-bottom: 12px;
+    scrollbar-width: thin;
+  }
+  .cairns-jobs-pack {
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .job-card {
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+    transition: box-shadow .15s ease;
+  }
+  .job-card[open] { box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .job-card-summary {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    padding: 14px;
+    cursor: pointer;
+    list-style: none;
+    align-items: center;
+  }
+  .job-card-summary::-webkit-details-marker { display: none; }
+  .job-card-summary::marker { display: none; content: ""; }
+  .job-thumb {
+    width: 140px;
+    aspect-ratio: 4/3;
+    background: var(--bg-soft);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  .job-thumb img, .job-thumb video {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .job-thumb-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; opacity: .4;
+  }
+  .job-meta .eyebrow {
+    font-size: 12px; color: var(--ink-2); letter-spacing: .04em;
+  }
+  .job-meta h3 {
+    margin: 4px 0 6px; font-size: 17px; line-height: 1.3;
+  }
+  .job-meta p {
+    font-size: 14px; color: var(--ink-2); margin: 0; line-height: 1.45;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .job-expand-hint {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--yellow-dark, #a07700);
+    font-weight: 600;
+  }
+  .job-card[open] .job-expand-hint { display: none; }
+  .job-body {
+    padding: 6px 14px 18px 14px;
+    border-top: 1px solid var(--rule);
+  }
+  .job-body-text {
+    white-space: pre-line;
+    color: var(--ink);
+    line-height: 1.55;
+    margin-top: 14px;
+  }
+  .job-body p { margin: 14px 0; color: var(--ink); line-height: 1.55; }
+  .job-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .job-gallery img, .job-gallery video {
+    width: 100%; border-radius: 8px; aspect-ratio: 4/3; object-fit: cover; display: block;
+  }
+  @media (max-width: 640px) {
+    .job-card-summary { grid-template-columns: 100px 1fr; gap: 12px; padding: 10px; }
+    .job-thumb { width: 100px; }
+    .job-meta h3 { font-size: 15px; }
+    .job-meta p { -webkit-line-clamp: 2; font-size: 13px; }
+  }
+</style>
+
+{# JSON-LD per entry — structured for Google + LLM crawlers even when the
+   <details> card is visually collapsed. Minimal CreativeWork: name, date,
+   description, primary media if available. #}
+{% for j in cairns_recent_jobs %}
+{%- set primary_media = (j.media and j.media.length > 0) and j.media[0] or null -%}
+{%- set primary_src = primary_media and primary_media.src or (j.video or j.image) -%}
+{%- set primary_type = primary_media and primary_media.type or (j.video and "video" or (j.image and "image" or "")) -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "name": {{ j.title | dump | safe }},
+  "datePublished": "{{ j.date }}",
+  "description": {{ (j.body or "") | dump | safe }},
+  "creator": { "@type": "Organization", "name": "{{ site.name }}" }{% if primary_src %}{% if primary_type == "video" %},
+  "video": { "@type": "VideoObject", "name": {{ j.title | dump | safe }}, "contentUrl": "{{ site.url }}{{ primary_src }}", "uploadDate": "{{ j.date }}" }{% else %},
+  "image": "{{ site.url }}{{ primary_src }}"{% endif %}{% endif %}
+}
+</script>
+{% endfor %}
 {% endif %}
 
 {# ─── COPY 3: Satisfaction ─── #}
