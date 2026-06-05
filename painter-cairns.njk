@@ -94,6 +94,23 @@ canonical: /painter-cairns/
   </div>
 </section>
 
+{# ─── RECENT JOBS (populated by the WhatsApp job-capture flow) ─── #}
+{% if cairns_recent_jobs and cairns_recent_jobs.length > 0 %}
+<section class="copy-block">
+  <div class="wrap-narrow">
+    <h2 class="sec-head">Recent jobs around Cairns</h2>
+    {% for j in cairns_recent_jobs %}
+    <article style="border-top:1px solid var(--rule);padding-top:24px;margin-top:24px">
+      <span class="eyebrow">{{ j.date }}</span>
+      <h3 style="margin-top:8px">{{ j.title }}</h3>
+      <p>{{ j.body }}</p>
+      {% if j.video %}<video src="{{ j.video }}" controls muted playsinline preload="metadata" style="margin-top:16px;border-radius:10px;width:100%;height:auto;background:#000" {% if j.poster %}poster="{{ j.poster }}"{% endif %}></video>{% elif j.image %}<img src="{{ j.image }}" alt="{{ j.title }}" style="margin-top:16px;border-radius:10px;width:100%;height:auto" />{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
 {# ─── COPY 3: Satisfaction ─── #}
 <section class="copy-block">
   <div class="wrap-narrow">

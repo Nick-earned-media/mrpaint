@@ -136,18 +136,23 @@ module.exports = async function handler(req, res) {
     return res.status(502).json({ error: `classifier failed: ${err.message || err}`, transcript });
   }
 
-  // suburb_override forces is_job + sets suburb directly.
+  // suburb_override = the PAGE the entry will go on. It doesn't overwrite
+  // the detected job suburb — that's preserved as the "writing location" so
+  // the generated title/body keep the actual neighbourhood mention.
+  // Example: classifier detects Smithfield, override = Cairns CBD →
+  // entry lives on /areas/cairns-cbd/ but title says "Smithfield, Cairns".
+  let pageSearchTerm;
   if (fields.suburb_override) {
-    meta.is_job = true;
-    meta.job = meta.job || {};
-    meta.job.suburb = fields.suburb_override;
-  }
-
-  if (!meta.is_job || !meta.job?.suburb) {
-    return res.status(400).json({
-      error: "classifier did not detect a job with a known suburb. Provide a clearer caption or set suburb_override.",
-      transcript, classifier_output: meta,
-    });
+    if (!meta.is_job) { meta.is_job = true; meta.job = meta.job || {}; }
+    pageSearchTerm = fields.suburb_override;
+  } else {
+    if (!meta.is_job || !meta.job?.suburb) {
+      return res.status(400).json({
+        error: "classifier did not detect a job with a known suburb. Provide a clearer caption or set suburb_override.",
+        transcript, classifier_output: meta,
+      });
+    }
+    pageSearchTerm = meta.job.suburb;
   }
 
   // ── 5. Match suburb against locations.json ─────────────────────────────
@@ -158,18 +163,26 @@ module.exports = async function handler(req, res) {
   const locFile = await ghGetContents(GITHUB_REPO, "_data/locations.json", "main");
   const locations = JSON.parse(Buffer.from(locFile.content, "base64").toString("utf-8"));
   const norm = (s) => String(s || "").toLowerCase().trim().replace(/\s+/g, "-");
-  const wantedSlug = norm(meta.job.suburb);
+  const wantedSlug = norm(pageSearchTerm);
   const suburbIdx = locations.findIndex(
     (l) => norm(l.name) === wantedSlug || norm(l.slug) === wantedSlug
   );
   if (suburbIdx === -1) {
     const knownSuburbs = locations.map((l) => l.name).join(", ");
     return res.status(400).json({
-      error: `suburb "${meta.job.suburb}" doesn't match a known suburb on the site. Known: ${knownSuburbs}`,
+      error: `page "${pageSearchTerm}" doesn't match a known suburb on the site. Known: ${knownSuburbs}`,
       transcript, classifier_output: meta,
     });
   }
   const suburb = locations[suburbIdx];
+
+  // Writing location: prefer the classifier's detected suburb (more specific
+  // and what was actually said). When override sends the entry to a different
+  // page, append ", Cairns" so Sonnet writes "Smithfield, Cairns" naturally.
+  const detectedDifferent = meta.job?.suburb && norm(meta.job.suburb) !== norm(suburb.name);
+  const writingLocation = detectedDifferent
+    ? `${meta.job.suburb}, Cairns`
+    : suburb.name;
 
   // ── 6. Generate suburb-page entry + GBP draft ──────────────────────────
   let jobContent;
@@ -177,13 +190,13 @@ module.exports = async function handler(req, res) {
     const { generateJobContent } = require("../../lib/job-publisher.js");
     jobContent = await generateJobContent({
       job: {
-        suburb: suburb.name,
-        summary: meta.job.summary,
+        suburb: writingLocation,
+        summary: meta.job?.summary || `${meta.job?.job_type || "paint"} job in ${writingLocation}`,
         raw_transcript: caption,
         structured_facts: {
-          job_type: meta.job.job_type,
-          brands_used: meta.job.brands_used,
-          architectural_style: meta.job.architectural_style,
+          job_type: meta.job?.job_type,
+          brands_used: meta.job?.brands_used,
+          architectural_style: meta.job?.architectural_style,
         },
       },
       suburbCtx: suburb,
@@ -195,12 +208,16 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  // ── 7. Commit binary + updated locations.json atomically ───────────────
+  // ── 7. Commit binary + content JSON atomically ─────────────────────────
+  //    target_page selects WHERE the entry lives:
+  //      - default               → _data/locations.json[suburb].recent_jobs (suburb page)
+  //      - "/painter-cairns/"    → _data/cairns_recent_jobs.json (the Cairns hub page)
   const ts = Date.now();
   const ext = pickVideoExt(video.contentType);
-  const fileSlug = slugify(meta.job.summary || jobContent.title || "video");
+  const fileSlug = slugify(meta.job?.summary || jobContent.title || "video");
   const videoPath = `assets/videos/work-${fileSlug}-${ts}.${ext}`;
   const today = new Date().toISOString().slice(0, 10);
+  const targetPage = String(fields.target_page || "").trim();
 
   const recentJobEntry = {
     date: today,
@@ -209,20 +226,41 @@ module.exports = async function handler(req, res) {
     photo_alt: jobContent.photo_alt,
     video: `/${videoPath}`,
   };
-  suburb.recent_jobs = [recentJobEntry, ...(Array.isArray(suburb.recent_jobs) ? suburb.recent_jobs : [])].slice(0, 6);
-  locations[suburbIdx] = suburb;
 
-  const branch = `bot/${ts}-videojob-${suburb.slug}`.slice(0, 200);
+  let commitFiles;
+  let commitContextLabel;
+  if (targetPage === "/painter-cairns/") {
+    let existing;
+    try {
+      const cf = await ghGetContents(GITHUB_REPO, "_data/cairns_recent_jobs.json", "main");
+      existing = JSON.parse(Buffer.from(cf.content, "base64").toString("utf-8"));
+    } catch { existing = []; }
+    if (!Array.isArray(existing)) existing = [];
+    const updated = [recentJobEntry, ...existing].slice(0, 12);
+    commitFiles = [
+      { path: videoPath, content: video.buf.toString("base64"), encoding: "base64" },
+      { path: "_data/cairns_recent_jobs.json", content: JSON.stringify(updated, null, 2) + "\n", encoding: "utf-8" },
+    ];
+    commitContextLabel = "/painter-cairns/";
+  } else {
+    suburb.recent_jobs = [recentJobEntry, ...(Array.isArray(suburb.recent_jobs) ? suburb.recent_jobs : [])].slice(0, 6);
+    locations[suburbIdx] = suburb;
+    commitFiles = [
+      { path: videoPath, content: video.buf.toString("base64"), encoding: "base64" },
+      { path: "_data/locations.json", content: JSON.stringify(locations, null, 2) + "\n", encoding: "utf-8" },
+    ];
+    commitContextLabel = `/areas/${suburb.slug}/`;
+  }
+
+  const branchSlug = targetPage === "/painter-cairns/" ? "cairns-hub" : suburb.slug;
+  const branch = `bot/${ts}-videojob-${branchSlug}`.slice(0, 200);
   let sha;
   try {
     sha = await ghCommitMulti({
       repo: GITHUB_REPO,
       branch, baseRef: "main",
-      message: `Bot: add video job in ${suburb.name} (manual ingest)`,
-      files: [
-        { path: videoPath, content: video.buf.toString("base64"), encoding: "base64" },
-        { path: "_data/locations.json", content: JSON.stringify(locations, null, 2) + "\n", encoding: "utf-8" },
-      ],
+      message: `Bot: add video job to ${commitContextLabel} (manual ingest)`,
+      files: commitFiles,
     });
   } catch (err) {
     return res.status(502).json({
@@ -244,23 +282,27 @@ module.exports = async function handler(req, res) {
         const liveMediaUrl = client.site_url
           ? `${client.site_url.replace(/\/$/, "")}/${videoPath}`
           : `https://mrpaint.vercel.app/${videoPath}`;
+        const livePageUrl = client.site_url
+          ? `${client.site_url.replace(/\/$/, "")}${commitContextLabel}`
+          : `https://mrpaint.vercel.app${commitContextLabel}`;
         await supa()
           .from("jobs")
           .insert({
             client_id: client.id,
             captured_at: new Date().toISOString(),
             suburb: suburb.name,
-            summary: meta.job.summary,
+            summary: meta.job?.summary,
             raw_transcript: caption,
             structured_facts: {
-              job_type: meta.job.job_type,
-              brands_used: meta.job.brands_used,
-              architectural_style: meta.job.architectural_style,
+              job_type: meta.job?.job_type,
+              brands_used: meta.job?.brands_used,
+              architectural_style: meta.job?.architectural_style,
               video_url: `/${videoPath}`,
               pending_publish: {
                 branch, sha,
                 suburb_slug: suburb.slug,
                 suburb_name: suburb.name,
+                page_url: livePageUrl,
                 gbp_text: jobContent.gbp_text,
                 job_title: jobContent.title,
                 photo_alt: jobContent.photo_alt,
