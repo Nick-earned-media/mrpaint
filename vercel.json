@@ -6,7 +6,8 @@
   "trailingSlash": false,
   "crons": [
     { "path": "/api/cron-weekly", "schedule": "45 6 * * 5" },
-    { "path": "/api/cron-keyword-sync", "schedule": "0 20 * * *" }
+    { "path": "/api/cron-keyword-sync", "schedule": "0 20 * * *" },
+    { "path": "/api/cron-capture-reminders", "schedule": "*/5 * * * *" }
   ],
   "rewrites": [
     { "source": "/reports/:scope/:date", "destination": "/api/reports/:scope/:date" }

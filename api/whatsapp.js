@@ -87,21 +87,70 @@ async function handleMessage(fromWa, message, media) {
   if (!ANTHROPIC_API_KEY) {
     return sendMessage(fromWa, "⚠️ ANTHROPIC_API_KEY isn't set on the server.");
   }
-  // Media attached? Route by content type.
+
+  const phone = fromWa.replace(/^whatsapp:/, "");
+  const captures = require("../lib/captures.js");
+  const capture = await captures.getActiveCapture(phone).catch((err) => {
+    console.warn("[captures] lookup failed:", err.message);
+    return null;
+  });
+
+  // ── Media attached? Route by content type, capture-aware. ──────────────
   if (media?.url) {
     const ct = String(media.contentType || "").toLowerCase();
+
     if (ct.startsWith("image/") || ct.startsWith("video/")) {
-      // Image or video + caption → combined handler.
-      //   - Image: decides job-vs-gallery, commits image + gallery.json
-      //     and (if job) locations.json.
-      //   - Video: requires a job-like caption with a known suburb.
-      //     Commits video binary + locations.json (no gallery).
-      // GBP draft is generated and queued for Slack on YES either way.
-      return executeAddPhotoJob(fromWa, message, media);
+      const mediaWord = ct.startsWith("video/") ? "video" : "photo";
+
+      // Path 1 — Caption + media in the same message: direct publish.
+      // Treat any active capture as superseded by this fresh, complete post.
+      if (message && message.trim()) {
+        if (capture) {
+          await captures.markStatus(capture.id, "abandoned").catch(() => {});
+        }
+        return publishCairnsHubJob({
+          fromWa, phone,
+          mediaItems: [{ url: media.url, contentType: media.contentType }],
+          description: message.trim(),
+        });
+      }
+
+      // Path 2 — Media with NO caption: start or extend a capture.
+      if (!capture) {
+        const c = await captures.createCapture({
+          phone,
+          mediaItem: { url: media.url, contentType: media.contentType },
+        }).catch((err) => { throw new Error(`createCapture: ${err.message}`); });
+        return sendMessage(fromWa,
+          `📸 Got the ${mediaWord} boss. What was the job?\n\n` +
+          `Reply with a voice note or text — tell me the suburb, what you did, products you used. ` +
+          `Send more photos/videos if you've got them; I'll bundle them all together.`
+        );
+      }
+
+      if (capture.status === "awaiting_description") {
+        const updated = await captures.appendMediaToCapture(capture.id, {
+          url: media.url, contentType: media.contentType,
+        });
+        const n = (updated.media_items || []).length;
+        return sendMessage(fromWa,
+          `📸 Added (${n} now). Send the voice note or text description when you're ready.`
+        );
+      }
+
+      // Path 3 — Media arriving AFTER preview committed: ask same/new.
+      if (capture.status === "preview_pending" || capture.status === "awaiting_same_or_new") {
+        await captures.appendPendingMedia(capture.id, {
+          url: media.url, contentType: media.contentType,
+        });
+        return sendMessage(fromWa,
+          `📸 Got another one. *Same job as the last preview, or a new post?*\n\n` +
+          `Reply *SAME* (I'll add it to the current draft) or *NEW* (start a fresh post).`
+        );
+      }
     }
+
     if (ct.startsWith("audio/")) {
-      // Voice note → transcribe via Whisper, then treat as a normal text
-      // message and let the conversational orchestrator handle it.
       sendMessage(fromWa, "🎙️ Got your voice note — transcribing…").catch(() => {});
       const { transcribeTwilioAudio } = require("../lib/transcribe.js");
       const result = await transcribeTwilioAudio(media.url, media.contentType);
@@ -109,15 +158,37 @@ async function handleMessage(fromWa, message, media) {
         return sendMessage(fromWa, `⚠️ Couldn't transcribe that voice note: ${result.error}`);
       }
       const transcribed = result.text;
-      // If they also typed text alongside the voice note, prepend it.
+
+      // Voice as a description for the active capture, if one's waiting.
+      if (capture && capture.status === "awaiting_description") {
+        return finaliseCapture(fromWa, capture, transcribed);
+      }
+      if (capture && capture.status === "awaiting_same_or_new") {
+        return handleSameOrNew(fromWa, capture, transcribed);
+      }
+
+      // Otherwise the normal strategist-chat path.
       const combined = message ? `${message}\n\n${transcribed}` : transcribed;
       return executeChat(fromWa, combined);
     }
-    // Unknown media type — let them know.
+
     return sendMessage(fromWa,
-      `🤔 Got a "${ct || "unknown"}" attachment. I can handle photos (for the gallery) and voice notes (for any question). ` +
-      `Other media types aren't supported — type your message instead.`);
+      `🤔 Got a "${ct || "unknown"}" attachment. I can handle photos, videos, and voice notes — other types aren't supported.`);
   }
+
+  // ── Text-only messages. If there's an active capture waiting on us, route. ─
+  if (capture && message && message.trim()) {
+    if (capture.status === "awaiting_description") {
+      return finaliseCapture(fromWa, capture, message.trim());
+    }
+    if (capture.status === "awaiting_same_or_new") {
+      return handleSameOrNew(fromWa, capture, message.trim());
+    }
+    // status === preview_pending: fall through. The user might be sending
+    // YES/NO (handled by classifyIntent → routeIntent → handleApprove/Discard)
+    // or a different command (slash, audit, etc.).
+  }
+
   // Slash commands bypass the LLM classifier — they're explicit + cheap.
   const trimmed = message.trim().toLowerCase();
   if (trimmed === "/audit" || trimmed === "audit") {
@@ -667,6 +738,280 @@ function pickExt(contentType) {
   // default: jpg for image, mp4 for video
   if (ct.startsWith("video/")) return "mp4";
   return "jpg";
+}
+
+// ─── Capture-flow helpers ────────────────────────────────────────────────
+//
+// publishCairnsHubJob: shared pipeline used both for the direct caption-with-
+//   media flow and for finalising a capture once Adrian has sent his
+//   description. Writes the entry to _data/cairns_recent_jobs.json (the
+//   /painter-cairns/ hub page). Multi-media: each item in mediaItems becomes
+//   one entry in the post's `media: [...]` array.
+// finaliseCapture: called when the description arrives for a capture in
+//   awaiting_description state. Triggers the publish pipeline + draft preview.
+// handleSameOrNew: called when more media arrived after the preview (capture
+//   in awaiting_same_or_new). Detects SAME vs NEW from the reply and either
+//   rebuilds the current preview with the new media folded in, or starts a
+//   fresh capture seeded with the pending media.
+
+async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, captureId, replaceBranch }) {
+  if (!Array.isArray(mediaItems) || mediaItems.length === 0) {
+    throw new Error("publishCairnsHubJob: no media");
+  }
+  if (!description || !String(description).trim()) {
+    throw new Error("publishCairnsHubJob: no description");
+  }
+
+  await sendMessage(fromWa,
+    `🤖 Drafting the post (${mediaItems.length} ${mediaItems.length === 1 ? "item" : "items"}) — checking the suburb, writing the entry, queueing the GBP draft…`
+  );
+
+  // 1. Classify description for suburb + structured facts.
+  const meta = await callAnthropic({
+    model: "claude-haiku-4-5",
+    max_tokens: 700,
+    system: PHOTO_JOB_CLASSIFIER_SYSTEM,
+    user: description,
+    parseJson: true,
+  });
+
+  // 2. Always target the Cairns hub page. If Adrian named a sub-suburb
+  //    (Smithfield, Bungalow, Edge Hill, etc.) keep it in the writing.
+  const locFile = await ghGetContents("_data/locations.json", "main");
+  const locations = JSON.parse(Buffer.from(locFile.content, "base64").toString("utf-8"));
+  const norm = (s) => String(s || "").toLowerCase().trim().replace(/\s+/g, "-");
+  const cairnsIdx = locations.findIndex((l) => norm(l.slug) === "cairns-cbd" || norm(l.name) === "cairns-cbd");
+  if (cairnsIdx === -1) throw new Error("publishCairnsHubJob: Cairns CBD suburb not found in locations.json");
+  const cairns = locations[cairnsIdx];
+  const detectedDifferent = meta.job?.suburb && norm(meta.job.suburb) !== norm(cairns.name);
+  const writingLocation = detectedDifferent ? `${meta.job.suburb}, Cairns` : cairns.name;
+
+  // 3. Generate suburb-page entry + GBP draft.
+  const { generateJobContent } = require("../lib/job-publisher.js");
+  const jobContent = await generateJobContent({
+    job: {
+      suburb: writingLocation,
+      summary: meta.job?.summary || `paint job in ${writingLocation}`,
+      raw_transcript: description,
+      structured_facts: {
+        job_type: meta.job?.job_type,
+        brands_used: meta.job?.brands_used,
+        architectural_style: meta.job?.architectural_style,
+      },
+    },
+    suburbCtx: cairns,
+  });
+
+  // 4. Fetch each Twilio media URL, allocate paths, build media array.
+  const ts = Date.now();
+  const fileSlug = slug(meta.job?.summary || jobContent.title || "job");
+  const commitFiles = [];
+  const mediaForEntry = [];
+  for (let i = 0; i < mediaItems.length; i++) {
+    const m = mediaItems[i];
+    const ct = String(m.contentType || "").toLowerCase();
+    const isVideo = ct.startsWith("video/");
+    const ext = pickExt(ct);
+    const dir = isVideo ? "assets/videos" : "assets/images";
+    const suffix = mediaItems.length > 1 ? `-${i + 1}` : "";
+    const path = `${dir}/work-${fileSlug}-${ts}${suffix}.${ext}`;
+    const buf = await downloadTwilioMedia(m.url);
+    commitFiles.push({ path, content: buf.toString("base64"), encoding: "base64" });
+    mediaForEntry.push({
+      type: isVideo ? "video" : "image",
+      src: `/${path}`,
+      alt: m.alt || (i === 0 ? jobContent.photo_alt : `${jobContent.title} (${i + 1})`),
+    });
+  }
+  const primary = mediaForEntry[0];
+
+  // 5. Read current cairns_recent_jobs.json from main, prepend the entry.
+  let existing;
+  try {
+    const f = await ghGetContents("_data/cairns_recent_jobs.json", "main");
+    existing = JSON.parse(Buffer.from(f.content, "base64").toString("utf-8"));
+  } catch { existing = []; }
+  if (!Array.isArray(existing)) existing = [];
+  const today = new Date().toISOString().slice(0, 10);
+  const recentJobEntry = {
+    date: today,
+    title: jobContent.title,
+    body: jobContent.body,
+    photo_alt: jobContent.photo_alt,
+    media: mediaForEntry,
+    ...(primary.type === "video" ? { video: primary.src } : { image: primary.src }),
+  };
+  const updated = [recentJobEntry, ...existing].slice(0, 30);
+  commitFiles.push({
+    path: "_data/cairns_recent_jobs.json",
+    content: JSON.stringify(updated, null, 2) + "\n",
+    encoding: "utf-8",
+  });
+
+  // 6. Atomic commit. If we're replacing an earlier draft (SAME flow), clean
+  //    up the old branch after the new one is up.
+  const branch = `bot/${ts}-cairnshub-${fileSlug}`.slice(0, 200);
+  const sha = await ghCommitMulti({
+    branch, baseRef: "main",
+    message: `Bot: add job to /painter-cairns/ — ${truncate(jobContent.title, 80)}`,
+    files: commitFiles,
+  });
+  if (replaceBranch && replaceBranch !== branch) {
+    try { await ghDeleteBranch(replaceBranch); } catch (err) {
+      console.warn("[publishCairnsHubJob] couldn't delete replaceBranch:", err.message);
+    }
+  }
+
+  // 7. Insert Supabase pending_publish row so handleApprove fires the GBP
+  //    Slack ping on YES.
+  try {
+    const { client: supa } = require("../lib/supabase.js");
+    const { data: client } = await supa()
+      .from("clients").select("id, site_url, display_name").contains("allowed_phones", [phone]).maybeSingle();
+    if (client?.id) {
+      const liveMediaUrl = client.site_url
+        ? `${client.site_url.replace(/\/$/, "")}${primary.src}`
+        : `https://mrpaint.vercel.app${primary.src}`;
+      const livePageUrl = client.site_url
+        ? `${client.site_url.replace(/\/$/, "")}/painter-cairns/`
+        : `https://mrpaint.vercel.app/painter-cairns/`;
+      await supa()
+        .from("jobs").insert({
+          client_id: client.id,
+          captured_at: new Date().toISOString(),
+          suburb: cairns.name,
+          summary: meta.job?.summary,
+          raw_transcript: description,
+          structured_facts: {
+            job_type: meta.job?.job_type,
+            brands_used: meta.job?.brands_used,
+            architectural_style: meta.job?.architectural_style,
+            media: mediaForEntry,
+            pending_publish: {
+              branch, sha,
+              suburb_slug: cairns.slug,
+              suburb_name: cairns.name,
+              page_url: livePageUrl,
+              gbp_text: jobContent.gbp_text,
+              job_title: jobContent.title,
+              photo_alt: jobContent.photo_alt,
+              created_at: new Date().toISOString(),
+              media_type: primary.type,
+              primary_media_url: liveMediaUrl,
+              media: mediaForEntry,
+            },
+          },
+          status: "pending_approval",
+        });
+    }
+  } catch (err) {
+    console.warn("[publishCairnsHubJob] Supabase write failed:", err.message);
+  }
+
+  // 8. Preview message.
+  const summary = `📍 *Cairns hub* job drafted (${mediaItems.length} ${mediaItems.length === 1 ? "item" : "items"}):\n` +
+    `• ${truncate(jobContent.title, 70)}\n` +
+    `• GBP draft (${jobContent.gbp_text.length} chars) queued for Nick on approval`;
+  await sendPreviewMessage(fromWa, { summary, branch, sha });
+
+  return { branch, sha, entry: recentJobEntry, jobContent, meta };
+}
+
+async function finaliseCapture(fromWa, capture, description) {
+  const captures = require("../lib/captures.js");
+  await captures.setDescription(capture.id, description);
+  try {
+    const result = await publishCairnsHubJob({
+      fromWa,
+      phone: capture.phone,
+      mediaItems: capture.media_items,
+      description,
+      captureId: capture.id,
+    });
+    await captures.setDraft(capture.id, {
+      draft_branch: result.branch,
+      draft_sha: result.sha,
+      draft_target_page: "/painter-cairns/",
+      draft_payload: result.entry,
+    });
+  } catch (err) {
+    console.error("finaliseCapture failed:", err);
+    await captures.markStatus(capture.id, "abandoned").catch(() => {});
+    await sendMessage(fromWa, `⚠️ Couldn't draft the post: ${truncate(String(err.message || err), 200)}`);
+  }
+}
+
+async function handleSameOrNew(fromWa, capture, reply) {
+  const captures = require("../lib/captures.js");
+  const r = String(reply || "").trim().toLowerCase();
+
+  // Quick keyword pass.
+  let decision = null;
+  if (/\b(same|same job|continue|append|add to|together|with that|with the last|same one|previous)\b/.test(r)) decision = "same";
+  else if (/\b(new|new post|different|separate|other|fresh|new job|different job)\b/.test(r)) decision = "new";
+
+  // Ambiguous → quick Haiku classify.
+  if (!decision) {
+    try {
+      const out = await callAnthropic({
+        model: "claude-haiku-4-5",
+        max_tokens: 30,
+        system: `Did the user mean "same job" (extend the previous photo upload) or "new post" (different job)? Reply with EXACTLY one word: same | new | unclear`,
+        user: reply,
+      });
+      const t = String(out || "").trim().toLowerCase();
+      if (t.startsWith("same")) decision = "same";
+      else if (t.startsWith("new")) decision = "new";
+    } catch {}
+  }
+
+  if (!decision) {
+    return sendMessage(fromWa,
+      `🤔 Should I add these to the *same job* as the last preview, or treat them as a *new post*?\n\nReply SAME or NEW.`
+    );
+  }
+
+  if (decision === "same") {
+    await sendMessage(fromWa, "🤖 Same job — rebuilding the preview with all the photos…");
+    const merged = await captures.moveSameJobMedia(capture.id);
+    try {
+      const result = await publishCairnsHubJob({
+        fromWa,
+        phone: capture.phone,
+        mediaItems: merged.media_items,
+        description: merged.description,
+        captureId: capture.id,
+        replaceBranch: capture.draft_branch,
+      });
+      await captures.setDraft(capture.id, {
+        draft_branch: result.branch,
+        draft_sha: result.sha,
+        draft_target_page: "/painter-cairns/",
+        draft_payload: result.entry,
+      });
+    } catch (err) {
+      console.error("SAME rebuild failed:", err);
+      await sendMessage(fromWa, `⚠️ Couldn't rebuild the preview: ${truncate(String(err.message || err), 200)}`);
+    }
+    return;
+  }
+
+  // NEW — fold the prior preview to "preview_pending" (Adrian can still YES it),
+  // pull the pending media off, and start a brand-new capture seeded with them.
+  await captures.markStatus(capture.id, "preview_pending");
+  const newMedia = await captures.takePendingMediaForNewCapture(capture.id);
+  const created = await captures.createCapture({
+    phone: capture.phone,
+    mediaItem: newMedia[0],
+  });
+  for (const m of newMedia.slice(1)) {
+    await captures.appendMediaToCapture(created.id, m);
+  }
+  return sendMessage(fromWa,
+    `🆕 Starting a fresh post with the new photos.\n\n` +
+    `_(The earlier draft is still waiting — reply YES to publish it or NO to discard.)_\n\n` +
+    `What was the job for these new photos?`
+  );
 }
 
 async function executeAddPhotoJob(fromWa, caption, media) {
