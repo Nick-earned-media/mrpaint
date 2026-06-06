@@ -289,7 +289,7 @@ async function executeUpdateBusinessInfo(fromWa, intent) {
   const { field, value } = intent;
   if (!field || !value) throw new Error(`update_business_info: missing field/value`);
 
-  await sendMessage(fromWa, `🤖 Updating ${field} to "${value}"…`);
+  await sendMessage(fromWa, `👍 On it boss — sorting the ${field} now…`);
 
   const file = await ghGetContents("_data/site.json", "main");
   const site = JSON.parse(Buffer.from(file.content, "base64").toString("utf-8"));
@@ -335,7 +335,7 @@ function applyBusinessFieldUpdate(site, field, value) {
 // ─── /audit ───────────────────────────────────────────────────────────────
 
 async function executeAudit(fromWa) {
-  await sendMessage(fromWa, "🔍 Running full audit on mrpaint.com.au — SEO + competitors + GSC. Back in ~30-40s.");
+  await sendMessage(fromWa, "🔍 On it chief — running the full check now, give me 30 secs or so…");
   const { runAudit, formatAuditMessages } = require("../lib/audit.js");
   const audit = await runAudit();
   const messages = formatAuditMessages(audit);
@@ -348,7 +348,7 @@ async function executeAudit(fromWa) {
 // ─── /rankings ────────────────────────────────────────────────────────────
 
 async function executeRankings(fromWa) {
-  await sendMessage(fromWa, "📊 Pulling Rank Tracker data from Ahrefs…");
+  await sendMessage(fromWa, "📊 On it boss — pulling your rankings now, give me a sec…");
   const { fetchRankings, formatRankingsMessages } = require("../lib/rankings.js");
   const r = await fetchRankings();
   for (const m of formatRankingsMessages(r)) {
@@ -359,7 +359,7 @@ async function executeRankings(fromWa) {
 // ─── /semrush ─────────────────────────────────────────────────────────────
 
 async function executeSemrush(fromWa) {
-  await sendMessage(fromWa, "📊 Pulling Semrush snapshot — domain overview + competitors. Back in ~15s.");
+  await sendMessage(fromWa, "📊 Right-o chief — checking on that for you now, give me ~15 secs…");
   const { runSemrushSnapshot, formatSemrushMessages } = require("../lib/semrush.js");
   try {
     const snap = await runSemrushSnapshot();
@@ -375,7 +375,7 @@ async function executeSemrushKw(fromWa, phrase) {
   if (!phrase) {
     return sendMessage(fromWa, '🤖 Usage: "/semrush kw painter cairns"');
   }
-  await sendMessage(fromWa, `🔎 Researching "${phrase}" on Semrush…`);
+  await sendMessage(fromWa, `🔎 On it boss — looking into "${phrase}" now, give me a min…`);
   const { keywordOverview, keywordRelated, formatKeywordResearch } = require("../lib/semrush.js");
   try {
     const database = process.env.SEMRUSH_DATABASE || "au";
@@ -394,7 +394,7 @@ async function executeSemrushKw(fromWa, phrase) {
 // ─── /digest — manually fire the Friday digest right now ────────────────
 
 async function executeDigest(fromWa) {
-  await sendMessage(fromWa, "📊 Generating this week's report URL…");
+  await sendMessage(fromWa, "📊 On it chief — pulling this week's report for you now…");
   const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || "https://mrpaint.vercel.app";
   const today = new Date().toISOString().slice(0, 10);
   const url = `${PUBLIC_BASE_URL}/reports/cairns/${today}`;
@@ -406,7 +406,7 @@ async function executeDigest(fromWa) {
 // ─── /sync — manually trigger Semrush → Supabase keyword sync ────────────
 
 async function executeSyncKeywords(fromWa) {
-  await sendMessage(fromWa, "📊 Syncing Semrush position tracking → Supabase. Back in ~15s.");
+  await sendMessage(fromWa, "📊 On it boss — syncing your rank tracking now, give me ~15 secs…");
   const phone = fromWa.replace(/^whatsapp:/, "");
   let supaMod, syncMod;
   try {
@@ -451,7 +451,7 @@ async function executeReset(fromWa) {
     .eq("client_id", clientRow.id)
     .eq("phone_number", phone);
   if (error) return sendMessage(fromWa, `⚠️ Reset failed: ${error.message}`);
-  return sendMessage(fromWa, "🧹 Conversation cleared. Next message starts a fresh thread with no past context.");
+  return sendMessage(fromWa, "🧹 All clear boss — fresh start. Send through whenever you're ready.");
 }
 
 // ─── chat (conversational strategist with retrieval + tools) ─────────────
@@ -606,7 +606,7 @@ async function executeUpdateText(fromWa, intent) {
   const { description } = intent;
   if (!description) throw new Error("update_text: missing description");
 
-  await sendMessage(fromWa, `🤖 Working on: ${truncate(description, 120)}\n(scanning templates, ~10-25s)`);
+  await sendMessage(fromWa, `👍 On it chief — finding the right spot to change, give me ~15 secs…`);
 
   // Pull editable files from main in parallel.
   const fileResults = await Promise.all(EDITABLE_FILES.map(async (path) => {
@@ -666,7 +666,7 @@ async function executeAddBlogPost(fromWa, intent) {
   const summary = body_markdown.split("\n").find((l) => l.trim().length > 40)?.slice(0, 180) || "";
   const md = `---\ntitle: ${title.replace(/"/g, '\\"')}\ndate: ${today}\nsummary: ${summary.replace(/"/g, '\\"')}\n---\n\n${body_markdown}\n`;
 
-  await sendMessage(fromWa, `🤖 Drafting blog post "${title}"…`);
+  await sendMessage(fromWa, `✏️ On it boss — drafting "${truncate(title, 60)}" for you now, give me a min…`);
 
   const branch = `bot/${Date.now()}-blog-${slugTitle}`;
   const sha = await ghCommit({
@@ -763,7 +763,7 @@ async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, cap
   }
 
   await sendMessage(fromWa,
-    `🤖 Drafting the post (${mediaItems.length} ${mediaItems.length === 1 ? "item" : "items"}) — checking the suburb, writing the entry, queueing the GBP draft…`
+    `👍 On it boss — writing this up now, give me a min…`
   );
 
   // 1. Classify description for suburb + structured facts.
@@ -972,7 +972,7 @@ async function handleSameOrNew(fromWa, capture, reply) {
   }
 
   if (decision === "same") {
-    await sendMessage(fromWa, "🤖 Same job — rebuilding the preview with all the photos…");
+    await sendMessage(fromWa, "👍 Got it boss — pulling them all together now, give me a min…");
     const merged = await captures.moveSameJobMedia(capture.id);
     try {
       const result = await publishCairnsHubJob({
@@ -1349,9 +1349,9 @@ async function clearJobPendingPublish(jobId, finalStatus) {
 
 async function handleApprove(fromWa) {
   const branch = await findLatestBotBranch();
-  if (!branch) return sendMessage(fromWa, "🤖 No pending changes to publish.");
+  if (!branch) return sendMessage(fromWa, "🤔 Nothing waiting to publish boss — send me a photo or change first.");
 
-  await sendMessage(fromWa, `🤖 Merging \`${branch}\` to main…`);
+  await sendMessage(fromWa, `🚀 On it boss — pushing that live now…`);
   await ghMergeToMain(branch);
   await ghDeleteBranch(branch);
 
@@ -1393,7 +1393,7 @@ async function handleApprove(fromWa) {
 
 async function handleDiscard(fromWa) {
   const branch = await findLatestBotBranch();
-  if (!branch) return sendMessage(fromWa, "🤖 No pending changes to discard.");
+  if (!branch) return sendMessage(fromWa, "🤔 Nothing waiting to discard boss.");
   await ghDeleteBranch(branch);
 
   // If this branch was a job publish, clear the pending state on the job.
