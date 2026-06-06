@@ -867,14 +867,10 @@ async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, cap
   try {
     const { client: supa } = require("../lib/supabase.js");
     const { data: client } = await supa()
-      .from("clients").select("id, site_url, display_name").contains("allowed_phones", [phone]).maybeSingle();
+      .from("clients").select("id, display_name").contains("allowed_phones", [phone]).maybeSingle();
     if (client?.id) {
-      const liveMediaUrl = client.site_url
-        ? `${client.site_url.replace(/\/$/, "")}${primary.src}`
-        : `https://mrpaint.vercel.app${primary.src}`;
-      const livePageUrl = client.site_url
-        ? `${client.site_url.replace(/\/$/, "")}/painter-cairns/`
-        : `https://mrpaint.vercel.app/painter-cairns/`;
+      const liveMediaUrl = `https://mrpaint.vercel.app${primary.src}`;
+      const livePageUrl = `https://mrpaint.vercel.app/painter-cairns/`;
       await supa()
         .from("jobs").insert({
           client_id: client.id,
@@ -1167,11 +1163,9 @@ async function executeAddPhotoJob(fromWa, caption, media) {
       const { client: supa } = require("../lib/supabase.js");
       const phone = fromWa.replace(/^whatsapp:/, "");
       const { data: client } = await supa()
-        .from("clients").select("id, site_url").contains("allowed_phones", [phone]).maybeSingle();
+        .from("clients").select("id").contains("allowed_phones", [phone]).maybeSingle();
       if (client?.id) {
-        const liveMediaUrl = client.site_url
-          ? `${client.site_url.replace(/\/$/, "")}/${mediaPath}`
-          : `https://mrpaint.vercel.app/${mediaPath}`;
+        const liveMediaUrl = `https://mrpaint.vercel.app/${mediaPath}`;
         const pending_publish = {
           branch,
           sha,
@@ -1362,12 +1356,11 @@ async function handleApprove(fromWa) {
     try {
       const { client: supa } = require("../lib/supabase.js");
       const { data: client } = await supa()
-        .from("clients").select("display_name, site_url")
+        .from("clients").select("display_name")
         .eq("id", job.client_id).maybeSingle();
       const { notifyGbpPost } = require("../lib/slack.js");
-      const previewUrl = client?.site_url
-        ? `${client.site_url.replace(/\/$/, "")}/areas/${pp.suburb_slug}/`
-        : `https://mrpaint.vercel.app/areas/${pp.suburb_slug}/`;
+      const previewUrl = pp.page_url
+        || `https://mrpaint.vercel.app/areas/${pp.suburb_slug}/`;
       await notifyGbpPost({
         clientName: client?.display_name || "client",
         suburb: pp.suburb_name || pp.suburb_slug,

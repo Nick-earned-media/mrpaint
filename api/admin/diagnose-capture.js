@@ -37,7 +37,7 @@ module.exports = async function handler(req, res) {
   // All clients (so Nick can see the row layout)
   try {
     const { data, error } = await supa()
-      .from("clients").select("id, display_name, primary_phone, allowed_phones, site_url");
+      .from("clients").select("id, display_name, primary_phone, allowed_phones");
     out.clients = error ? { error: error.message } : data;
   } catch (err) {
     out.clients = { error: String(err.message || err) };

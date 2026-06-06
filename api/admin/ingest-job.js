@@ -374,15 +374,11 @@ module.exports = async function handler(req, res) {
       const { client: supa } = require("../../lib/supabase.js");
       const phone = submittedBy.replace(/^whatsapp:/, "");
       const { data: client } = await supa()
-        .from("clients").select("id, site_url").contains("allowed_phones", [phone]).maybeSingle();
+        .from("clients").select("id").contains("allowed_phones", [phone]).maybeSingle();
       if (client?.id) {
         const primarySrc = primary.src.replace(/^\//, "");
-        const liveMediaUrl = client.site_url
-          ? `${client.site_url.replace(/\/$/, "")}/${primarySrc}`
-          : `https://mrpaint.vercel.app/${primarySrc}`;
-        const livePageUrl = client.site_url
-          ? `${client.site_url.replace(/\/$/, "")}${commitContextLabel}`
-          : `https://mrpaint.vercel.app${commitContextLabel}`;
+        const liveMediaUrl = `https://mrpaint.vercel.app/${primarySrc}`;
+        const livePageUrl = `https://mrpaint.vercel.app${commitContextLabel}`;
         await supa()
           .from("jobs")
           .insert({
