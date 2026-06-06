@@ -78,8 +78,12 @@ module.exports = async function handler(req, res) {
   ack(res);
 
   waitUntil(handleMessage(fromRaw, messageBody, media).catch(async (err) => {
+    // Log the technical detail for debugging, but never dump it to the user —
+    // raw API errors (GitHub 409, Twilio 401, etc.) look like garbage in chat.
     console.error("bot error:", err);
-    await sendMessage(fromRaw, `⚠️ ${truncate(String(err.message || err), 400)}`);
+    await sendMessage(fromRaw,
+      "⚠️ Hit a snag on that one boss — give me a sec and try again. If it keeps failing, message me what you were trying to do."
+    );
   }));
 };
 
@@ -1301,9 +1305,17 @@ async function findLatestBotBranch() {
   const branches = await ghListBranches();
   const bot = branches.filter((b) => b.name.startsWith("bot/"));
   if (!bot.length) return null;
-  // Branch name suffix encodes timestamp — newest = highest sort.
-  bot.sort((a, b) => b.name.localeCompare(a.name));
-  return bot[0].name;
+  // Branch name suffix encodes Date.now() — drop anything older than 24h so a
+  // stale draft from days ago can't get accidentally merged when the user
+  // says YES to a more recent conversational context.
+  const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+  const recent = bot.filter((b) => {
+    const m = b.name.match(/^bot\/(\d{10,})-/);
+    return m ? Number(m[1]) >= cutoff : true;
+  });
+  if (!recent.length) return null;
+  recent.sort((a, b) => b.name.localeCompare(a.name));
+  return recent[0].name;
 }
 
 // Look up the job (if any) whose pending_publish.branch matches the given
@@ -1346,7 +1358,26 @@ async function handleApprove(fromWa) {
   if (!branch) return sendMessage(fromWa, "🤔 Nothing waiting to publish boss — send me a photo or change first.");
 
   await sendMessage(fromWa, `🚀 On it boss — pushing that live now…`);
-  await ghMergeToMain(branch);
+  try {
+    await ghMergeToMain(branch);
+  } catch (err) {
+    const msg = String(err?.message || err);
+    if (/409|merge conflict/i.test(msg)) {
+      // The draft conflicts with what's currently on the site. Scrap the
+      // stale branch + tell Adrian in friendly terms.
+      try { await ghDeleteBranch(branch); } catch {}
+      const job = await findJobByPendingBranch(branch);
+      if (job) await clearJobPendingPublish(job.id, "discarded");
+      return sendMessage(fromWa,
+        "🤔 Couldn't push that one through boss — the site's moved on since the draft was made, so it doesn't slot in cleanly anymore. " +
+        "I've scrapped that draft. Send the photo again and I'll start a fresh one."
+      );
+    }
+    console.error("ghMergeToMain failed:", err);
+    return sendMessage(fromWa,
+      "⚠️ Hit a snag pushing that live boss — I've left the draft alone, give me a sec and try YES again. If it keeps failing, message me what happened."
+    );
+  }
   await ghDeleteBranch(branch);
 
   // If this branch was a job publish, fire the GBP Slack ping for Nick.
