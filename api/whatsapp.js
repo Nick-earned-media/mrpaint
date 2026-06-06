@@ -121,36 +121,49 @@ async function handleMessage(fromWa, message, media) {
 
       // Path 2 — Media with NO caption: start or extend a capture.
       if (!capture) {
-        const c = await captures.createCapture({
+        await captures.createCapture({
           phone,
           mediaItem: { url: media.url, contentType: media.contentType },
         }).catch((err) => { throw new Error(`createCapture: ${err.message}`); });
         return sendMessage(fromWa,
-          `📸 Got the ${mediaWord} boss. What was the job?\n\n` +
-          `Reply with a voice note or text — tell me the suburb, what you did, products you used. ` +
-          `Send more photos/videos if you've got them; I'll bundle them all together.`
+          `📸 Got the ${mediaWord} boss — tell me about the job. Voice note or text works.\n\n` +
+          `The bits that help the post show up in Google:\n` +
+          `• *Where was it?* Cairns suburb (Trinity Beach, Edge Hill, Smithfield…)\n` +
+          `• *What kind of place* — Queenslander, fibro cottage, commercial fit-out, roof job?\n` +
+          `• *What was tricky or special* — heritage timber, salt damage, big colour change, etc.\n` +
+          `• *Products/gear used* — paints, primers, sprayers\n\n` +
+          `Keep sending more photos if you've got them — I'll bundle the lot into one post.`
         );
       }
 
       if (capture.status === "awaiting_description") {
-        const updated = await captures.appendMediaToCapture(capture.id, {
+        // Silent append — the initial prompt already told Adrian we're
+        // collecting. Sending an "added (N)" message per photo turns a
+        // 5-photo batch into 5 chatty acks.
+        await captures.appendMediaToCapture(capture.id, {
           url: media.url, contentType: media.contentType,
         });
-        const n = (updated.media_items || []).length;
-        return sendMessage(fromWa,
-          `📸 Added (${n} now). Send the voice note or text description when you're ready.`
-        );
+        return;
       }
 
-      // Path 3 — Media arriving AFTER preview committed: ask same/new.
-      if (capture.status === "preview_pending" || capture.status === "awaiting_same_or_new") {
+      // Path 3 — Media arriving AFTER preview committed: ask same/new ONCE.
+      if (capture.status === "preview_pending") {
+        // First arrival after the preview — ask. appendPendingMedia flips the
+        // status to awaiting_same_or_new so subsequent media stay silent.
         await captures.appendPendingMedia(capture.id, {
           url: media.url, contentType: media.contentType,
         });
         return sendMessage(fromWa,
-          `📸 Got another one. *Same job as the last preview, or a new post?*\n\n` +
-          `Reply *SAME* (I'll add it to the current draft) or *NEW* (start a fresh post).`
+          `📸 Got another one — *same job as the last preview, or a new post?*\n\n` +
+          `Reply *SAME* (add to the current draft) or *NEW* (start fresh).`
         );
+      }
+      if (capture.status === "awaiting_same_or_new") {
+        // Already asked the same/new question — silently append while we wait.
+        await captures.appendPendingMedia(capture.id, {
+          url: media.url, contentType: media.contentType,
+        });
+        return;
       }
     }
 
@@ -1354,8 +1367,16 @@ async function clearJobPendingPublish(jobId, finalStatus) {
 }
 
 async function handleApprove(fromWa) {
+  const phone = fromWa.replace(/^whatsapp:/, "");
+  const captures = require("../lib/captures.js");
   const branch = await findLatestBotBranch();
-  if (!branch) return sendMessage(fromWa, "🤔 Nothing waiting to publish boss — send me a photo or change first.");
+  if (!branch) {
+    // Also clean up any orphan captures sitting in preview_pending for this
+    // phone — they'd just confuse the next interaction.
+    const orphan = await captures.getActiveCapture(phone).catch(() => null);
+    if (orphan) await captures.markStatus(orphan.id, "abandoned").catch(() => {});
+    return sendMessage(fromWa, "🤔 Nothing waiting to publish boss — send me a photo or change first.");
+  }
 
   await sendMessage(fromWa, `🚀 On it boss — pushing that live now…`);
   try {
@@ -1363,11 +1384,11 @@ async function handleApprove(fromWa) {
   } catch (err) {
     const msg = String(err?.message || err);
     if (/409|merge conflict/i.test(msg)) {
-      // The draft conflicts with what's currently on the site. Scrap the
-      // stale branch + tell Adrian in friendly terms.
       try { await ghDeleteBranch(branch); } catch {}
       const job = await findJobByPendingBranch(branch);
       if (job) await clearJobPendingPublish(job.id, "discarded");
+      const cap = await captures.getActiveCapture(phone).catch(() => null);
+      if (cap) await captures.markStatus(cap.id, "abandoned").catch(() => {});
       return sendMessage(fromWa,
         "🤔 Couldn't push that one through boss — the site's moved on since the draft was made, so it doesn't slot in cleanly anymore. " +
         "I've scrapped that draft. Send the photo again and I'll start a fresh one."
@@ -1379,6 +1400,9 @@ async function handleApprove(fromWa) {
     );
   }
   await ghDeleteBranch(branch);
+  // Merge succeeded — clean up the active capture too.
+  const cap = await captures.getActiveCapture(phone).catch(() => null);
+  if (cap) await captures.markStatus(cap.id, "completed").catch(() => {});
 
   // If this branch was a job publish, fire the GBP Slack ping for Nick.
   const job = await findJobByPendingBranch(branch);
@@ -1416,13 +1440,22 @@ async function handleApprove(fromWa) {
 }
 
 async function handleDiscard(fromWa) {
+  const phone = fromWa.replace(/^whatsapp:/, "");
+  const captures = require("../lib/captures.js");
   const branch = await findLatestBotBranch();
-  if (!branch) return sendMessage(fromWa, "🤔 Nothing waiting to discard boss.");
+  if (!branch) {
+    // Clean up any orphan captures even if no branch exists.
+    const orphan = await captures.getActiveCapture(phone).catch(() => null);
+    if (orphan) await captures.markStatus(orphan.id, "abandoned").catch(() => {});
+    return sendMessage(fromWa, "🤔 Nothing waiting to discard boss.");
+  }
   await ghDeleteBranch(branch);
 
-  // If this branch was a job publish, clear the pending state on the job.
+  // Clear the legacy job row + the capture row both.
   const job = await findJobByPendingBranch(branch);
   if (job) await clearJobPendingPublish(job.id, "discarded");
+  const cap = await captures.getActiveCapture(phone).catch(() => null);
+  if (cap) await captures.markStatus(cap.id, "abandoned").catch(() => {});
 
   await sendMessage(fromWa, `🗑 Discarded \`${branch}\`.`);
 }

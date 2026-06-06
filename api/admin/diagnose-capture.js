@@ -19,6 +19,7 @@ module.exports = async function handler(req, res) {
   }
 
   const phone = String(req.query?.phone || "").trim();
+  const cleanup = String(req.query?.cleanup || "").toLowerCase() === "true";
   const out = {
     env: {
       SLACK_WEBHOOK_URL: !!process.env.SLACK_WEBHOOK_URL,
@@ -76,8 +77,35 @@ module.exports = async function handler(req, res) {
     out.recent_jobs = { error: String(err.message || err) };
   }
 
-  // Slack reachability (HEAD request — webhook URLs don't accept GET/HEAD
-  // gracefully, so we just check we have one).
+  // Active pending_captures (so we can see what's wedged)
+  try {
+    let q = supa().from("pending_captures")
+      .select("id, phone, status, started_at, last_activity_at, media_items, draft_branch")
+      .in("status", ["awaiting_description", "preview_pending", "awaiting_same_or_new"])
+      .order("started_at", { ascending: false });
+    if (phone) q = q.eq("phone", phone);
+    const { data, error } = await q.limit(20);
+    out.active_captures = error ? { error: error.message } : data;
+  } catch (err) {
+    out.active_captures = { error: String(err.message || err) };
+  }
+
+  // Cleanup — mark any active captures for the phone (or all if no phone) as
+  // abandoned. Useful when a previous test left a stuck row.
+  if (cleanup) {
+    try {
+      let q = supa().from("pending_captures")
+        .update({ status: "abandoned", last_activity_at: new Date().toISOString() })
+        .in("status", ["awaiting_description", "preview_pending", "awaiting_same_or_new"]);
+      if (phone) q = q.eq("phone", phone);
+      const { data, error } = await q.select("id, phone, status");
+      out.cleanup = error ? { error: error.message } : { abandoned: data };
+    } catch (err) {
+      out.cleanup = { error: String(err.message || err) };
+    }
+  }
+
+  // Slack reachability
   out.slack_ready = !!process.env.SLACK_WEBHOOK_URL;
 
   return res.status(200).json(out);
