@@ -17,7 +17,7 @@ eleventyExcludeFromCollections: true
 {%- endif %}
 {%- endfor %}
 {%- for a in locations %}
-{%- if a.publish %}
+{%- if a.publish and a.slug != "cairns-cbd" and a.slug != "trinity-beach" %}
   <url>
     <loc>{{ site.url }}/areas/{{ a.slug }}/</loc>
     <changefreq>monthly</changefreq>

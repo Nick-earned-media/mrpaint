@@ -15,6 +15,7 @@
   ],
   "redirects": [
     { "source": "/areas/trinity-beach", "destination": "/painter-trinity-beach/", "permanent": true },
+    { "source": "/areas/cairns-cbd", "destination": "/painter-cairns/", "permanent": true },
     { "source": "/about", "destination": "/about-us", "permanent": true },
     { "source": "/contact", "destination": "/contact-us", "permanent": true },
     { "source": "/category/:path*", "destination": "/blog", "permanent": true },

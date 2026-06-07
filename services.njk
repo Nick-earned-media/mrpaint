@@ -169,8 +169,8 @@ canonical: /services/
     </div>
     <div class="area-chips">
       <a class="hub" href="/painter-cairns/">Painter Cairns — the hub →</a>
-      {%- for a in locations %}{% if a.publish %}
-      <a href="/areas/{{ a.slug }}/">{{ a.name }}</a>
+      {%- for a in locations %}{% if a.publish and a.slug != "cairns-cbd" %}
+      <a href="{% if a.slug == 'trinity-beach' %}/painter-trinity-beach/{% else %}/areas/{{ a.slug }}/{% endif %}">{{ a.name }}</a>
       {% endif %}{%- endfor %}
     </div>
   </div>

@@ -118,7 +118,7 @@ eleventyComputed:
         {% if a.slug == area.slug %}
           <span style="padding:6px 14px;background:var(--yellow);border:1px solid var(--yellow);border-radius:999px;font-size:13px;color:var(--ink);font-weight:600">{{ a.name }}</span>
         {% else %}
-          <a href="/areas/{{ a.slug }}/" style="padding:6px 14px;background:#fff;border:1px solid var(--rule);border-radius:999px;font-size:13px;color:var(--ink-2);font-weight:500;text-decoration:none">{{ a.name }}</a>
+          <a href="{% if a.slug == 'cairns-cbd' %}/painter-cairns/{% elif a.slug == 'trinity-beach' %}/painter-trinity-beach/{% else %}/areas/{{ a.slug }}/{% endif %}" style="padding:6px 14px;background:#fff;border:1px solid var(--rule);border-radius:999px;font-size:13px;color:var(--ink-2);font-weight:500;text-decoration:none">{{ a.name }}</a>
         {% endif %}
       {% endfor %}
     </div>
