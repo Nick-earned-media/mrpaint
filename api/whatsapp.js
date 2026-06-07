@@ -921,11 +921,9 @@ async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, cap
     console.warn("[publishCairnsHubJob] Supabase write failed:", err.message);
   }
 
-  // 8. Preview message.
-  const summary = `📍 *Cairns hub* job drafted (${mediaItems.length} ${mediaItems.length === 1 ? "item" : "items"}):\n` +
-    `• ${truncate(jobContent.title, 70)}\n` +
-    `• GBP draft (${jobContent.gbp_text.length} chars) queued for Nick on approval`;
-  await sendPreviewMessage(fromWa, { summary, branch, sha });
+  // 8. Preview message — keep it short + human. No tool/jargon language.
+  const summary = `✅ Drafted boss — *${truncate(jobContent.title, 80)}*`;
+  await sendPreviewMessage(fromWa, { summary });
 
   return { branch, sha, entry: recentJobEntry, jobContent, meta };
 }
@@ -1222,13 +1220,9 @@ async function executeAddPhotoJob(fromWa, caption, media) {
 
   // 7. Send preview message.
   const summary = suburb
-    ? `📍 *${suburb.name}* job drafted with ${mediaWord}:\n• Suburb page entry: ${truncate(jobContent.title, 60)}` +
-      (galleryItem ? `\n• Gallery: ${truncate(galleryItem.title, 60)}` : "") +
-      `\n• GBP draft (${jobContent.gbp_text.length} chars) queued for Nick on approval`
-    : `Added to gallery:\n**${galleryItem.title}**\n` +
-      `Category: ${galleryItem.category} · ${galleryItem.location || "—"}${galleryItem.postcode ? " · " + galleryItem.postcode : ""}` +
-      (galleryItem.note ? `\nNote: ${galleryItem.note}` : "");
-  await sendPreviewMessage(fromWa, { summary, branch, sha });
+    ? `✅ Drafted boss — *${truncate(jobContent.title, 80)}*`
+    : `✅ Added to the gallery boss — *${truncate(galleryItem.title, 70)}*`;
+  await sendPreviewMessage(fromWa, { summary });
 }
 
 // ─── add_gallery_photo ───────────────────────────────────────────────────
@@ -1428,15 +1422,15 @@ async function handleApprove(fromWa) {
         mediaType: pp.media_type || (pp.video_url ? "video" : "image"),
       });
       await clearJobPendingPublish(job.id, "published");
-      return sendMessage(fromWa, `✅ Published to /areas/${pp.suburb_slug}/. Live in ~60s. GBP draft sent to Nick — he'll post it within 24h.`);
+      return sendMessage(fromWa, `🎉 Live in about a minute boss — that's done. Cheers!`);
     } catch (err) {
       console.error("GBP Slack post failed:", err);
       await clearJobPendingPublish(job.id, "published");
-      return sendMessage(fromWa, `✅ Published. Live in ~60s. (Heads up — couldn't auto-ping Nick for the GBP post: ${truncate(String(err.message || err), 120)}. He'll catch it on the weekly digest.)`);
+      return sendMessage(fromWa, `🎉 Live in about a minute boss — that's done.`);
     }
   }
 
-  return sendMessage(fromWa, `✅ Published. Live in ~60s at https://mrpaint.vercel.app`);
+  return sendMessage(fromWa, `🎉 Live in about a minute boss — that's done.`);
 }
 
 async function handleDiscard(fromWa) {
@@ -1460,70 +1454,15 @@ async function handleDiscard(fromWa) {
   await sendMessage(fromWa, `🗑 Discarded \`${branch}\`.`);
 }
 
-async function sendPreviewMessage(fromWa, { summary, branch, sha }) {
-  const diffUrl = sha
-    ? `https://github.com/${GITHUB_REPO}/commit/${sha}`
-    : `https://github.com/${GITHUB_REPO}/tree/${branch.replace(/\//g, "%2F")}`;
-
-  // Acknowledge the commit first so the user knows we're working.
+async function sendPreviewMessage(fromWa, { summary }) {
+  // Single, clean message — no commit URLs, no build-wait, no jargon.
+  // Preview is rendered on-demand by /api/preview from the latest bot/*
+  // branch, so the URL is stable and works the instant the commit lands.
   await sendMessage(fromWa,
-    `✅ ${summary}\n\n` +
-    `Diff (code): ${diffUrl}\n\n` +
-    `🛠 Building preview… (~30-60s)`
+    `${summary}\n\n` +
+    `🌐 Preview: https://mrpaint.vercel.app/preview\n\n` +
+    `Reply YES to publish, NO to bin it.`
   );
-
-  // If we have a Vercel token, poll for the branch's auto-built preview URL
-  // and send a follow-up with the rendered page link. Otherwise fall back
-  // to just the diff URL + YES/NO prompt now.
-  if (VERCEL_TOKEN && sha) {
-    try {
-      const previewUrl = await findVercelPreviewUrl({ commitSha: sha });
-      if (previewUrl) {
-        return sendMessage(fromWa,
-          `🌐 Preview ready:\n${previewUrl}\n\n` +
-          `Reply YES to publish, NO to discard.`
-        );
-      }
-      return sendMessage(fromWa,
-        `⏰ Preview build is taking longer than expected — try the diff link above, or wait a minute and refresh.\n\n` +
-        `Reply YES to publish, NO to discard.`
-      );
-    } catch (err) {
-      console.error("vercel preview poll failed:", err);
-      return sendMessage(fromWa,
-        `⚠️ Couldn't get a preview URL (${truncate(String(err.message || err), 120)}). Use the diff link above.\n\n` +
-        `Reply YES to publish, NO to discard.`
-      );
-    }
-  }
-
-  await sendMessage(fromWa, `Reply YES to publish, NO to discard.`);
-}
-
-// Poll Vercel's Deployments API until the branch preview is READY (or fail).
-async function findVercelPreviewUrl({ commitSha, timeoutMs = 90000, intervalMs = 5000 }) {
-  const start = Date.now();
-  const teamQuery = VERCEL_TEAM_ID ? `&teamId=${encodeURIComponent(VERCEL_TEAM_ID)}` : "";
-  const url = `https://api.vercel.com/v6/deployments?projectId=${encodeURIComponent(VERCEL_PROJECT_SLUG)}&meta-githubCommitSha=${encodeURIComponent(commitSha)}&limit=1${teamQuery}`;
-
-  while (Date.now() - start < timeoutMs) {
-    const r = await fetch(url, { headers: { Authorization: `Bearer ${VERCEL_TOKEN}` } });
-    if (r.ok) {
-      const data = await r.json();
-      const dep = (data.deployments || [])[0];
-      if (dep) {
-        const state = dep.readyState || dep.state;
-        if (state === "READY") return `https://${dep.url}`;
-        if (state === "ERROR" || state === "CANCELED") {
-          throw new Error(`Vercel build ${state}`);
-        }
-      }
-    } else if (r.status === 401 || r.status === 403) {
-      throw new Error(`Vercel auth ${r.status} — check VERCEL_TOKEN scope`);
-    }
-    await new Promise((resolve) => setTimeout(resolve, intervalMs));
-  }
-  return null; // timed out
 }
 
 // ─── Anthropic helper ─────────────────────────────────────────────────────

@@ -10,7 +10,8 @@
     { "path": "/api/cron-capture-reminders", "schedule": "*/5 * * * *" }
   ],
   "rewrites": [
-    { "source": "/reports/:scope/:date", "destination": "/api/reports/:scope/:date" }
+    { "source": "/reports/:scope/:date", "destination": "/api/reports/:scope/:date" },
+    { "source": "/preview", "destination": "/api/preview" }
   ],
   "headers": [
     {
