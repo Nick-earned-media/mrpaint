@@ -1422,15 +1422,26 @@ async function handleApprove(fromWa) {
         mediaType: pp.media_type || (pp.video_url ? "video" : "image"),
       });
       await clearJobPendingPublish(job.id, "published");
-      return sendMessage(fromWa, `🎉 Live in about a minute boss — that's done. Cheers!`);
+      const liveUrl = pp.page_url || "https://mrpaint.vercel.app/painter-cairns/";
+      return sendMessage(fromWa,
+        `🎉 Live in about a minute boss — that's done.\n\n` +
+        `If you want to see the live version it's here — ${liveUrl}`
+      );
     } catch (err) {
       console.error("GBP Slack post failed:", err);
       await clearJobPendingPublish(job.id, "published");
-      return sendMessage(fromWa, `🎉 Live in about a minute boss — that's done.`);
+      const liveUrl = pp.page_url || "https://mrpaint.vercel.app/painter-cairns/";
+      return sendMessage(fromWa,
+        `🎉 Live in about a minute boss — that's done.\n\n` +
+        `If you want to see the live version it's here — ${liveUrl}`
+      );
     }
   }
 
-  return sendMessage(fromWa, `🎉 Live in about a minute boss — that's done.`);
+  return sendMessage(fromWa,
+    `🎉 Live in about a minute boss — that's done.\n\n` +
+    `If you want to see the live version it's here — https://mrpaint.vercel.app/painter-cairns/`
+  );
 }
 
 async function handleDiscard(fromWa) {
