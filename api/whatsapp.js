@@ -251,6 +251,12 @@ async function handleMessage(fromWa, message, media) {
     }
     return executeNewAreaPage(fromWa, phone, suburb);
   }
+  // BUILD Bungalow  /  build Smithfield  — shortcut the bot's own prompt uses
+  // after a post lands on the Cairns hub with no dedicated suburb page.
+  if (/^\/?build\s+[a-z][a-z\s]{2,30}$/i.test(message.trim())) {
+    const suburb = message.trim().replace(/^\/?build\s+/i, "").trim();
+    return executeNewAreaPage(fromWa, phone, suburb);
+  }
   const intent = await classifyIntent(message);
   intent._original_message = message;
   await routeIntent(fromWa, intent);
@@ -981,9 +987,20 @@ async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, cap
     console.warn("[publishCairnsHubJob] Supabase write failed:", err.message);
   }
 
-  // 8. Preview message — keep it short + human. No tool/jargon language.
-  const summary = `✅ Drafted boss — *${truncate(jobContent.title, 80)}*`;
-  await sendPreviewMessage(fromWa, { summary });
+  // 8. Preview message — keep it short + human. Mention the destination
+  //    page so Adrian can see where it's going to land; if the detected
+  //    suburb doesn't have a dedicated page yet, offer to build one.
+  const targetLabel = dedicated
+    ? `*${dedicated.name}* page (${targetPageUrl})`
+    : `*Cairns* hub (${targetPageUrl})`;
+  const detectedSuburb = meta.job?.suburb;
+  const isCairnsCore = detectedSlug === "cairns-cbd" || detectedSlug === "cairns";
+  const offerBuild = detectedSuburb && !dedicated && !isCairnsCore;
+  const summary = `✅ Drafted boss — *${truncate(jobContent.title, 80)}*\n📍 Going on the ${targetLabel}`;
+  await sendPreviewMessage(fromWa, {
+    summary,
+    buildOffer: offerBuild ? detectedSuburb : null,
+  });
 
   return { branch, sha, entry: recentJobEntry, jobContent, meta };
 }
@@ -1640,15 +1657,17 @@ async function handleDiscard(fromWa, originalMessage) {
   await sendMessage(fromWa, `🗑 Binned that draft boss.`);
 }
 
-async function sendPreviewMessage(fromWa, { summary }) {
+async function sendPreviewMessage(fromWa, { summary, buildOffer }) {
   // Single, clean message — no commit URLs, no build-wait, no jargon.
   // Preview is rendered on-demand by /api/preview from the latest bot/*
   // branch, so the URL is stable and works the instant the commit lands.
-  await sendMessage(fromWa,
-    `${summary}\n\n` +
+  let msg = `${summary}\n\n` +
     `🌐 Preview: https://mrpaint.vercel.app/preview\n\n` +
-    `Reply YES to publish, NO to bin it.`
-  );
+    `Reply YES to publish, NO to bin it.`;
+  if (buildOffer) {
+    msg += `\n\n_${buildOffer} doesn't have its own page yet — reply *BUILD ${buildOffer.toUpperCase()}* if you want me to make one (takes a few mins, I'll ask you a quick voice note about the suburb)._`;
+  }
+  await sendMessage(fromWa, msg);
 }
 
 // ─── Anthropic helper ─────────────────────────────────────────────────────
