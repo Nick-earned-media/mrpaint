@@ -11,7 +11,12 @@ const { postToSlack } = require("../lib/slack.js");
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const TWILIO_FROM = process.env.TWILIO_FROM || "whatsapp:+14155238886";
-const ADRIAN_WA = process.env.LEADS_WHATSAPP_TO || "whatsapp:+61478659766";
+// Same delivery target as the weekly digest: LEADS_WHATSAPP_TO override,
+// else the first ALLOWED_PHONES entry (Adrian's actual WhatsApp number).
+const ADRIAN_WA =
+  process.env.LEADS_WHATSAPP_TO ||
+  (process.env.ALLOWED_PHONES || "").split(",").map((s) => s.trim()).filter(Boolean)[0] ||
+  "whatsapp:+61478659766";
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
