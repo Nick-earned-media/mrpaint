@@ -13,6 +13,9 @@
     { "source": "/reports/:scope/:date", "destination": "/api/reports/:scope/:date" },
     { "source": "/preview", "destination": "/api/preview" }
   ],
+  "redirects": [
+    { "source": "/areas/trinity-beach", "destination": "/painter-trinity-beach/", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
