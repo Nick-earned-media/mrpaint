@@ -244,9 +244,9 @@ async function routeIntent(fromWa, intent) {
     case "add_blog_post":
       return executeAddBlogPost(fromWa, intent);
     case "approve":
-      return handleApprove(fromWa);
+      return handleApprove(fromWa, intent._original_message);
     case "discard":
-      return handleDiscard(fromWa);
+      return handleDiscard(fromWa, intent._original_message);
     case "needs_image":
     case "add_gallery_photo":
       return sendMessage(fromWa,
@@ -1360,7 +1360,7 @@ async function clearJobPendingPublish(jobId, finalStatus) {
   }
 }
 
-async function handleApprove(fromWa) {
+async function handleApprove(fromWa, originalMessage) {
   const phone = fromWa.replace(/^whatsapp:/, "");
   const captures = require("../lib/captures.js");
   const branch = await findLatestBotBranch();
@@ -1369,6 +1369,11 @@ async function handleApprove(fromWa) {
     // phone — they'd just confuse the next interaction.
     const orphan = await captures.getActiveCapture(phone).catch(() => null);
     if (orphan) await captures.markStatus(orphan.id, "abandoned").catch(() => {});
+    // Nothing to publish — likely the user said "yes" in answer to a
+    // strategist question. Hand off to chat so the conversation context
+    // carries through. Strategist will gracefully ask "yes to what?" if
+    // there's no thread to pick up.
+    if (originalMessage) return executeChat(fromWa, originalMessage);
     return sendMessage(fromWa, "🤔 Nothing waiting to publish boss — send me a photo or change first.");
   }
 
@@ -1444,7 +1449,7 @@ async function handleApprove(fromWa) {
   );
 }
 
-async function handleDiscard(fromWa) {
+async function handleDiscard(fromWa, originalMessage) {
   const phone = fromWa.replace(/^whatsapp:/, "");
   const captures = require("../lib/captures.js");
   const branch = await findLatestBotBranch();
@@ -1452,6 +1457,9 @@ async function handleDiscard(fromWa) {
     // Clean up any orphan captures even if no branch exists.
     const orphan = await captures.getActiveCapture(phone).catch(() => null);
     if (orphan) await captures.markStatus(orphan.id, "abandoned").catch(() => {});
+    // Nothing to discard — likely "no" was the answer to a strategist
+    // question. Route to chat so the context is preserved.
+    if (originalMessage) return executeChat(fromWa, originalMessage);
     return sendMessage(fromWa, "🤔 Nothing waiting to discard boss.");
   }
   await ghDeleteBranch(branch);
