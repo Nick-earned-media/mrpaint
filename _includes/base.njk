@@ -158,5 +158,11 @@
     </div>
   </div>
 </footer>
+
+{# Trustindex floating Google-reviews widget — same setup as earnedmedia.com.au.
+   Activates when trustindex_widget_id is set in _data/site.json. #}
+{% if site.trustindex_widget_id %}
+<script defer async src="https://cdn.trustindex.io/loader.js?{{ site.trustindex_widget_id }}"></script>
+{% endif %}
 </body>
 </html>
