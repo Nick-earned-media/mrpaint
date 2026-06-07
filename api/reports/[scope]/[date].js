@@ -44,6 +44,22 @@ module.exports = async function handler(req, res) {
       endDate,
     });
 
+    // Debug view: ?debug=1 returns the raw structured data instead of HTML.
+    if (req.query?.debug === "1" || req.query?.debug === "true") {
+      res.setHeader("Content-Type", "application/json; charset=utf-8");
+      res.setHeader("Cache-Control", "no-store");
+      res.status(200).send(JSON.stringify({
+        kpis: data.kpis,
+        competitors: data.competitors,
+        ai_visibility: data.ai_visibility,
+        ai_engines_raw_count: Array.isArray(data.raw?.semrush?.aiEngines) ? data.raw.semrush.aiEngines.length : null,
+        ai_engines_raw: data.raw?.semrush?.aiEngines,
+        trackedCompetitors_present: !!data.raw?.semrush?.trackedCompetitors,
+        narrative: data.narrative,
+      }, null, 2));
+      return;
+    }
+
     const html = renderReport(data);
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
