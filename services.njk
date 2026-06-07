@@ -1,0 +1,195 @@
+---
+layout: base.njk
+title: Painting Services Cairns — Residential, Commercial, Industrial & Roof
+description: Every painting service MrPaint offers in Cairns — residential, commercial, industrial, strata and roof painting, plus pressure cleaning, mould and graffiti removal. Free quotes.
+permalink: /services/
+canonical: /services/
+---
+
+<style>
+.page-hero{ padding: clamp(48px,7vw,90px) 0 clamp(28px,4vw,56px); position:relative; overflow:hidden }
+.page-hero::before{ content:""; position:absolute; right:-160px; top:-100px; width:480px; height:480px; border-radius:50%; background:var(--yellow); opacity:.5; z-index:0 }
+.page-hero .wrap{ position:relative; z-index:1 }
+.page-hero h1{ font-size: clamp(48px, 6vw, 100px); }
+.page-hero h1 .high{ background:var(--yellow); padding:0 .1em .04em; border-radius:8px; display:inline-block; box-decoration-break:clone; -webkit-box-decoration-break:clone }
+
+.svc-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px }
+.svc-card{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius-l); overflow:hidden; display:flex; flex-direction:column }
+.svc-card .img{ aspect-ratio: 16/7; overflow:hidden }
+.svc-card .img img{ width:100%; height:100%; object-fit:cover; transition: transform .4s ease }
+.svc-card:hover .img img{ transform: scale(1.03) }
+.svc-card .body{ padding: 26px; display:flex; flex-direction:column; gap:12px; flex:1 }
+.svc-card h3{ font-size: 24px }
+.svc-card p{ color:var(--ink-2); font-size:15px; line-height:1.55; flex:1 }
+.svc-card .more{ font-weight:600 }
+@media (max-width: 860px){ .svc-grid{ grid-template-columns: 1fr } }
+
+.checklist{ list-style:none; padding:0; margin:24px 0 0; display:grid; grid-template-columns:repeat(3,1fr); gap: 12px 24px }
+.checklist li{ display:flex; gap:10px; align-items:flex-start; font-size:15.5px; color: var(--ink-2) }
+.checklist li::before{
+  content:""; width:18px; height:18px; flex:0 0 auto; margin-top:3px;
+  background: var(--ink);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M5 12l4 4L19 6' stroke='black' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M5 12l4 4L19 6' stroke='black' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/contain no-repeat;
+}
+@media (max-width: 860px){ .checklist{ grid-template-columns:1fr 1fr } }
+@media (max-width: 540px){ .checklist{ grid-template-columns:1fr } }
+
+.area-chips{ display:flex; gap:10px; flex-wrap:wrap; margin-top:22px }
+.area-chips a{ padding:8px 16px; background:#fff; border:1px solid var(--rule); border-radius:999px; font-size:13.5px; color:var(--ink-2); font-weight:500 }
+.area-chips a:hover{ border-color:var(--ink); color:var(--ink) }
+.area-chips a.hub{ background:var(--yellow); border-color:var(--yellow); color:var(--ink); font-weight:700 }
+</style>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow">Painting services · Cairns</span>
+    <h1 style="margin-top:14px">From residential to commercial,<br/><span class="high">we have you covered</span></h1>
+    <p class="lede" style="margin-top:24px;max-width:62ch">
+      MrPaint provides a comprehensive range of painting services across Cairns and surrounds — from small interior touch-ups to commercial fit-outs, industrial coatings and full roof restorations.
+    </p>
+    <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
+      <a class="btn btn--yellow btn--lg" href="/contact-us/">Get a free quote <span class="arr">→</span></a>
+      <a class="btn btn--ghost btn--lg" href="{{ site.phone_link }}">📞 {{ site.phone_display }}</a>
+    </div>
+  </div>
+</section>
+
+<div class="trust" aria-hidden="true">
+  <div class="track">
+    <span>Family-run business</span><span class="dot"></span>
+    <span>Trade-qualified painters</span><span class="dot"></span>
+    <span>Fully licensed &amp; insured</span><span class="dot"></span>
+    <span>Free on-site quotes</span><span class="dot"></span>
+    <span>Best-quality paints only</span><span class="dot"></span>
+    <span>Residential · Commercial · Industrial</span><span class="dot"></span>
+    <span>Family-run business</span><span class="dot"></span>
+    <span>Trade-qualified painters</span><span class="dot"></span>
+    <span>Fully licensed &amp; insured</span><span class="dot"></span>
+    <span>Free on-site quotes</span><span class="dot"></span>
+    <span>Best-quality paints only</span><span class="dot"></span>
+    <span>Residential · Commercial · Industrial</span><span class="dot"></span>
+  </div>
+</div>
+
+{# ─── Four service cards ─── #}
+<section style="background:var(--bg-soft)">
+  <div class="wrap">
+    <div class="sec-head split">
+      <div>
+        <span class="eyebrow">What we do</span>
+        <h2>Four ways we can help.</h2>
+      </div>
+      <div class="right">
+        <p class="lede">Every job, big or small, gets the same treatment — proper prep, quality products and a tidy finish.</p>
+      </div>
+    </div>
+    <div class="svc-grid">
+      <article class="svc-card">
+        <div class="img"><img src="/assets/images/work-cottage-entry-door.jpg" alt="Residential painting — cottage entry and front door" loading="lazy" /></div>
+        <div class="body">
+          <h3>Residential Painting</h3>
+          <p>A comprehensive range of interior and exterior painting, plastering and special finish services for all your residential needs in Cairns — from rental refreshes to full Queenslander restorations.</p>
+          <a class="more" href="/painter-cairns/">Residential painting in Cairns →</a>
+        </div>
+      </article>
+      <article class="svc-card">
+        <div class="img"><img src="/assets/images/work-commercial-fitout.jpg" alt="Commercial painting — retail fit-out" loading="lazy" /></div>
+        <div class="body">
+          <h3>Commercial Painting</h3>
+          <p>A full commercial painting service including interior and exterior painting, line marking, graffiti removal and floor coating systems — with after-hours work to keep your doors open.</p>
+          <a class="more" href="/commercial-painter-cairns/">Commercial painting →</a>
+        </div>
+      </article>
+      <article class="svc-card">
+        <div class="img"><img src="/assets/images/work-roof-safety-access.jpg" alt="Industrial painting at height" loading="lazy" /></div>
+        <div class="body">
+          <h3>Industrial Painting</h3>
+          <p>Epoxy finishes, 2-pacs, solvents, protective coatings and industrial floor systems. High-pressure cleaning and lead paint removal. We cover all of Cairns and surrounds.</p>
+          <a class="more" href="/industrial-painting/">Industrial painting →</a>
+        </div>
+      </article>
+      <article class="svc-card">
+        <div class="img"><img src="/assets/images/work-window-trim-roofline.jpg" alt="Roof painting in Cairns" loading="lazy" /></div>
+        <div class="body">
+          <h3>Roof Painting</h3>
+          <p>Terracotta, concrete, slate and metal/Colorbond roofs — plus gutters and downpipes. Quality roof restoration is a cheaper and often better option than roof replacement.</p>
+          <a class="more" href="/roof-painter-cairns/">Roof painting →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+{# ─── Full checklist ─── #}
+<section style="background:#fff">
+  <div class="wrap">
+    <div class="sec-head split">
+      <div>
+        <span class="eyebrow">The full list</span>
+        <h2>Our Cairns painting services include:</h2>
+      </div>
+      <div class="right">
+        <p class="lede">The MrPaint team are all trade-qualified and have had significant on-the-job training. We use the best quality products, from the right paint for each job to the appropriate brushes and rollers for that extra professional finish.</p>
+      </div>
+    </div>
+    <ul class="checklist">
+      <li>Commercial painting</li>
+      <li>Touch-ups</li>
+      <li>Wall paint</li>
+      <li>Painting the interior &amp; home exterior</li>
+      <li>Paint removal</li>
+      <li>Interior painting</li>
+      <li>Strata painting</li>
+      <li>Mould removal</li>
+      <li>Spray painting &amp; pressure cleaning</li>
+      <li>Graffiti removal</li>
+      <li>Office painting</li>
+      <li>Residential painting</li>
+      <li>Roof painting</li>
+      <li>Special-finish work</li>
+      <li>Gutter &amp; downpipe painting</li>
+      <li>Insurance work — water, smoke &amp; vandalism</li>
+    </ul>
+    <p style="margin-top:28px;color:var(--ink-2)">Our team of experienced painters in Cairns is committed to providing quality workmanship, making your property look amazing, inside and out. See the results in <a href="/gallery/" style="font-weight:600">our gallery</a>.</p>
+  </div>
+</section>
+
+{# ─── Areas served ─── #}
+<section style="background:var(--bg-soft)">
+  <div class="wrap">
+    <div class="sec-head split">
+      <div>
+        <span class="eyebrow">Where we work</span>
+        <h2>Servicing all Cairns metro areas.</h2>
+      </div>
+      <div class="right">
+        <p class="lede">Our yard is in Holloways Beach. Most of our work is between Edmonton and Palm Cove, with occasional jobs out to Port Douglas.</p>
+      </div>
+    </div>
+    <div class="area-chips">
+      <a class="hub" href="/painter-cairns/">Painter Cairns — the hub →</a>
+      {%- for a in locations %}{% if a.publish %}
+      <a href="/areas/{{ a.slug }}/">{{ a.name }}</a>
+      {% endif %}{%- endfor %}
+    </div>
+  </div>
+</section>
+
+{# ─── CTA ─── #}
+<section class="cta">
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <span class="eyebrow">Free, no-obligation</span>
+        <h2>Not sure which service<br/>you need? Just ask.</h2>
+        <p class="lede">Tell us what you're looking at and we'll point you the right way — information over the phone, or a written quote on site. Either works for us.</p>
+        <div class="contact-list">
+          <div class="row"><span class="lbl">Phone</span><a href="{{ site.phone_link }}">{{ site.phone_display }}</a></div>
+          <div class="row"><span class="lbl">Email</span><a href="mailto:{{ site.email }}">{{ site.email }}</a></div>
+        </div>
+        <div style="margin-top:28px"><a class="btn btn--yellow btn--lg" href="/contact-us/">Get a free quote <span class="arr">→</span></a></div>
+      </div>
+    </div>
+  </div>
+</section>
