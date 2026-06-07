@@ -1,128 +1,200 @@
 [
   {
-    "image": "/assets/images/work-residential-paint-job-1779575081084.jpg",
-    "alt": "Residential Paint Job",
-    "title": "Residential Paint Job",
+    "image": "/assets/images/work-full-weatherboard-strip-and-repaint-on-high-set-queenslander-1780633803164-2.jpg",
+    "alt": "Freshly painted olive-green weatherboard on a high-set Queenslander",
+    "title": "Weatherboard strip & repaint — high-set Queenslander",
     "category": "residential",
-    "location": "Hella Vista",
-    "postcode": "",
-    "note": "Residential painting project"
+    "location": "Bungalow",
+    "postcode": "4870",
+    "note": "Full strip back, board repairs and exterior repaint."
   },
   {
-    "image": "/assets/images/work-interior-water-colour-night-time-saigon-street-view-1778999424381.jpg",
-    "alt": "Interior Water Colour - Night Time Saigon Street View",
-    "title": "Interior Water Colour - Night Time Saigon Street View",
+    "image": "/assets/images/work-full-weatherboard-strip-and-repaint-on-high-set-queenslander-1780633803164-1.jpg",
+    "alt": "Stripping and prepping weatherboard around a window",
+    "title": "Weatherboard prep — strip and sand",
+    "category": "residential",
+    "location": "Bungalow",
+    "postcode": "4870",
+    "note": "Proper prep is most of the job — stripped back to sound timber before a single coat goes on."
+  },
+  {
+    "image": "/assets/images/work-pressure-washing-eaves-on-balinese-style-bungalow-in-cairns-1780633751921.jpg",
+    "alt": "Pressure washing eaves on a Balinese-style bungalow",
+    "title": "Pressure wash prep — Balinese-style bungalow",
+    "category": "residential",
+    "location": "Cairns",
+    "postcode": "4870",
+    "note": "Wash-down before painting in the tropics — mould and salt don't get painted over."
+  },
+  {
+    "image": "/assets/images/work-window-trim-roofline.jpg",
+    "alt": "Painter working on upstairs window trim from the roofline",
+    "title": "Window trim & roofline repaint",
     "category": "residential",
     "location": "",
     "postcode": "",
-    "note": "Interior water colour depicting a night time Saigon street view"
+    "note": "Two-storey exterior trim work — careful access, no scaffold needed."
   },
   {
-    "image": "/assets/images/work-outdoor.png",
-    "alt": "Weatherboard exterior repaint",
-    "title": "Weatherboard exterior repaint",
+    "image": "/assets/images/work-heritage-cottage-crew.jpg",
+    "alt": "Crew painting a heritage cottage with lacework verandah",
+    "title": "Heritage cottage exterior — full crew",
     "category": "residential",
-    "location": "Edge Hill",
-    "postcode": "4870",
-    "note": "Strip back, lead-safe prep, full UV-rated exterior system."
+    "location": "",
+    "postcode": "",
+    "note": "Period homes need gentle prep and the right products — lacework and all."
   },
   {
-    "image": "/assets/images/work-orange-roof.png",
-    "alt": "Terracotta tile roof",
-    "title": "Terracotta tile roof & facade",
+    "image": "/assets/images/work-heritage-terrace-repaint.jpg",
+    "alt": "Two painters on ladders repainting a heritage terrace facade",
+    "title": "Heritage terrace facade repaint",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Full facade restoration on a classic terrace."
+  },
+  {
+    "image": "/assets/images/work-victorian-terrace-lacework.jpg",
+    "alt": "Victorian terrace in white with black cast-iron lacework",
+    "title": "Victorian terrace — cast-iron lacework",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Crisp two-tone scheme on an ornate period facade."
+  },
+  {
+    "image": "/assets/images/work-heritage-verandah-restoration.jpg",
+    "alt": "Restored heritage home with intricate white verandah lacework",
+    "title": "Restored heritage verandah",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Pale grey body with bright white detail work."
+  },
+  {
+    "image": "/assets/images/work-prestige-home-exterior.jpg",
+    "alt": "Grand rendered home entrance above a marina view",
+    "title": "Prestige home exterior",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Large rendered exterior, full repaint."
+  },
+  {
+    "image": "/assets/images/work-townhouse-facade.jpg",
+    "alt": "Painter on a tall ladder on a modern townhouse facade",
+    "title": "Multi-level townhouse facade",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Modern render, multi-level access work."
+  },
+  {
+    "image": "/assets/images/work-exterior-eaves-detail.jpg",
+    "alt": "Painter on a ladder painting exterior eaves",
+    "title": "Exterior eaves & trim",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Cutting in eaves and trim on a single-storey home."
+  },
+  {
+    "image": "/assets/images/work-eaves-high-access.jpg",
+    "alt": "Painter on a plank between ladder and roof painting eaves",
+    "title": "High-access eaves repaint",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "The awkward spots still get done properly."
+  },
+  {
+    "image": "/assets/images/work-staircase-before-after.jpg",
+    "alt": "Before and after of an ornate timber staircase painted black and white",
+    "title": "Staircase transformation — before & after",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Varnished timber to a crisp black-and-white scheme."
+  },
+  {
+    "image": "/assets/images/work-kitchen-repaint.jpg",
+    "alt": "Bright white modern kitchen and dining area",
+    "title": "Kitchen & dining repaint",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Clean white scheme to lift the whole space."
+  },
+  {
+    "image": "/assets/images/work-open-plan-living.jpg",
+    "alt": "Open-plan living room with exposed timber roof trusses",
+    "title": "Open-plan living repaint",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Whites and neutrals around exposed timber."
+  },
+  {
+    "image": "/assets/images/work-apartment-interior-repaint.jpg",
+    "alt": "Freshly painted white open-plan apartment living area",
+    "title": "Apartment refresh",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Full interior repaint, walls and ceilings."
+  },
+  {
+    "image": "/assets/images/work-apartment-ceiling-roll.jpg",
+    "alt": "Painter rolling a ceiling in a waterfront apartment",
+    "title": "Apartment ceiling repaint",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Furniture covered, ceilings rolled, no mess left behind."
+  },
+  {
+    "image": "/assets/images/work-cottage-entry-door.jpg",
+    "alt": "Pale blue weatherboard cottage entry with timber front door",
+    "title": "Cottage entry & front door",
+    "category": "residential",
+    "location": "",
+    "postcode": "",
+    "note": "Entry detail work — door, trim and porch."
+  },
+  {
+    "image": "/assets/images/work-commercial-fitout.jpg",
+    "alt": "Painter finishing floors in a commercial fit-out",
+    "title": "Commercial fit-out",
+    "category": "commercial",
+    "location": "",
+    "postcode": "",
+    "note": "Dark feature ceiling and full internal repaint for a retail fit-out."
+  },
+  {
+    "image": "/assets/images/work-office-reception-fitout.jpg",
+    "alt": "Office reception with exposed brick and glass partition",
+    "title": "Office reception fit-out",
+    "category": "commercial",
+    "location": "",
+    "postcode": "",
+    "note": "Office repaint around polished concrete, brick and glass."
+  },
+  {
+    "image": "/assets/images/work-commercial-corner-facade.jpg",
+    "alt": "Painter on an awning painting a commercial corner building",
+    "title": "Commercial corner building facade",
+    "category": "commercial",
+    "location": "",
+    "postcode": "",
+    "note": "Shopfront facade work done outside trading hours."
+  },
+  {
+    "image": "/assets/images/work-roof-safety-access.jpg",
+    "alt": "Worker in safety harness on a rooftop platform",
+    "title": "High-access roof work",
     "category": "roof",
-    "location": "Trinity Beach",
-    "postcode": "4879",
-    "note": "Pressure clean, tile repair, prime, two-coat spray."
-  },
-  {
-    "image": "/assets/images/work-residential-door.png",
-    "alt": "Heritage stained-glass door",
-    "title": "Heritage entry restoration",
-    "category": "residential",
-    "location": "Edge Hill",
-    "postcode": "4870",
-    "note": "Period stained-glass entry, surrounding architraves, vestibule walls."
-  },
-  {
-    "image": "/assets/images/work-major-upgrade.png",
-    "alt": "Commercial fit-out",
-    "title": "Commercial fit-out — bathroom block",
-    "category": "commercial",
-    "location": "CBD",
-    "postcode": "4870",
-    "note": "Render-look feature finish, ceiling, lighting alcove. After-hours over 4 nights."
-  },
-  {
-    "image": "/assets/images/work-ceiling.png",
-    "alt": "Tobacco-stained ceiling restored",
-    "title": "Heritage pressed ceiling",
-    "category": "residential",
-    "location": "Manunda",
-    "postcode": "4870",
-    "note": "Tobacco-stained pressed-metal ceiling. Stain block, prime, two-coat ceiling white."
-  },
-  {
-    "image": "/assets/images/work-door.png",
-    "alt": "Weathered front door",
-    "title": "Front door & surround",
-    "category": "residential",
-    "location": "Palm Cove",
-    "postcode": "4879",
-    "note": "Weather-rotted timber door, full strip, repair, primer + 2-pack enamel."
-  },
-  {
-    "image": "/assets/images/work-major-upgrade.png",
-    "alt": "Strata exterior",
-    "title": "14-unit strata exterior",
-    "category": "commercial",
-    "location": "Cairns North",
-    "postcode": "4870",
-    "note": "Render, balustrades, doors and number plates. Three weeks around the residents."
-  },
-  {
-    "image": "/assets/images/work-stained-glass.png",
-    "alt": "Stained-glass entry",
-    "title": "Period entry & sidelights",
-    "category": "residential",
-    "location": "Edge Hill",
-    "postcode": "4870",
-    "note": "Original 1920s entry, hand-cut leaded glass surrounds. Patient prep, semi-gloss enamel."
-  },
-  {
-    "image": "/assets/images/work-outdoor.png",
-    "alt": "Café exterior",
-    "title": "Café exterior & awnings",
-    "category": "commercial",
-    "location": "Smithfield",
-    "postcode": "4878",
-    "note": "Strip back, anti-mould wash, weather-rated exterior system. Started Sat 6am, open Mon."
-  },
-  {
-    "image": "/assets/images/work-orange-roof.png",
-    "alt": "Warehouse roof",
-    "title": "Warehouse roof — heat-reflective",
-    "category": "industrial",
-    "location": "Portsmith",
-    "postcode": "4870",
-    "note": "1,200m² Colorbond. De-rust, prime, 2-pack heat-reflective topcoat."
-  },
-  {
-    "image": "/assets/images/work-ceiling.png",
-    "alt": "Bedroom ceiling",
-    "title": "Master bedroom & ensuite",
-    "category": "residential",
-    "location": "Edmonton",
-    "postcode": "4869",
-    "note": "Walls, ceiling, trim and wardrobe respray. Two days in and out."
-  },
-  {
-    "image": "/assets/images/work-major-upgrade.png",
-    "alt": "Hallway transformation",
-    "title": "Hallway & living transformation",
-    "category": "residential",
-    "location": "Holloways",
-    "postcode": "4878",
-    "note": "Render-effect feature walls and ceilings, integrated lighting. Family in residence."
+    "location": "",
+    "postcode": "",
+    "note": "Harnessed up for the high stuff — safety first."
   }
 ]
