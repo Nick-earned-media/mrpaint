@@ -95,10 +95,20 @@ canonical: /blog/
       </div>
     </div>
     {% if posts.length > 1 %}
+      {% set blogThumbs = [
+        "/assets/images/work-kitchen-repaint.jpg",
+        "/assets/images/work-heritage-verandah-restoration.jpg",
+        "/assets/images/work-staircase-before-after.jpg",
+        "/assets/images/work-cottage-entry-door.jpg",
+        "/assets/images/work-open-plan-living.jpg",
+        "/assets/images/work-victorian-terrace-lacework.jpg",
+        "/assets/images/work-apartment-ceiling-roll.jpg",
+        "/assets/images/work-eaves-high-access.jpg"
+      ] %}
       <div class="post-grid">
         {% for post in posts.slice(1) %}
         <article class="post">
-          <div class="ph"><img src="/assets/images/work-open-plan-living.jpg" alt=""/></div>
+          <div class="ph"><img src="{{ blogThumbs[loop.index0 % 8] }}" alt="" loading="lazy"/></div>
           <div class="body">
             <div class="meta-row"><span>Post</span><span>{{ post.date | isoDate }}</span></div>
             <h4>{{ post.data.title }}</h4>
