@@ -1,0 +1,241 @@
+---
+permalink: /admin/
+eleventyExcludeFromCollections: true
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>MrPaint — Site Editor</title>
+<style>
+  :root { --bg:#0d1117; --panel:#161b22; --ink:#e6edf3; --dim:#8b949e; --accent:#f7c948; --green:#3fb950; --red:#f85149; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { height:100%; }
+  body { background:var(--bg); color:var(--ink); font:14px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .shell { display:flex; flex-direction:column; height:100%; max-width:880px; margin:0 auto; padding:0 14px; }
+  header { padding:14px 2px 10px; border-bottom:1px solid #21262d; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  header h1 { font-size:15px; font-weight:600; }
+  header h1 .dot { color:var(--accent); }
+  #draftBadge { font-size:12px; color:var(--accent); display:none; }
+  header .spacer { flex:1; }
+  header .hint { font-size:12px; color:var(--dim); }
+  #out { flex:1; overflow-y:auto; padding:14px 2px; white-space:pre-wrap; word-break:break-word; }
+  .line { margin-bottom:2px; }
+  .line.you { color:var(--accent); }
+  .line.you::before { content:"you > "; color:var(--dim); }
+  .line.bot { color:var(--ink); margin-bottom:10px; }
+  .line.act { color:var(--dim); font-size:13px; }
+  .line.err { color:var(--red); }
+  .line.sys { color:var(--dim); font-style:italic; }
+  .line a { color:#58a6ff; }
+  #inputRow { display:flex; gap:8px; align-items:center; border-top:1px solid #21262d; padding:12px 2px calc(14px + env(safe-area-inset-bottom)); }
+  #inputRow .prompt { color:var(--green); }
+  #cmd { flex:1; background:transparent; border:none; outline:none; color:var(--ink); font:inherit; }
+  #cmd:disabled { opacity:.5; }
+  /* login overlay */
+  #login { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; }
+  #login form { background:var(--panel); border:1px solid #21262d; border-radius:10px; padding:30px 34px; width:min(360px, 90vw); }
+  #login h2 { font-size:16px; margin-bottom:6px; }
+  #login p { font-size:12.5px; color:var(--dim); margin-bottom:16px; }
+  #login input { width:100%; background:var(--bg); border:1px solid #30363d; border-radius:6px; padding:9px 11px; color:var(--ink); font:inherit; margin-bottom:12px; }
+  #login button { width:100%; background:var(--accent); border:none; border-radius:6px; padding:9px; font:inherit; font-weight:700; cursor:pointer; }
+  #loginErr { color:var(--red); font-size:12.5px; margin-bottom:10px; display:none; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <h1><span class="dot">●</span> mrpaint site editor</h1>
+    <span id="draftBadge">● draft pending — preview / publish / discard</span>
+    <span class="spacer"></span>
+    <span class="hint">type "help" for commands</span>
+  </header>
+  <div id="out"></div>
+  <div id="inputRow">
+    <span class="prompt">mrpaint&gt;</span>
+    <input id="cmd" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="tell me what to change…" disabled>
+  </div>
+</div>
+
+<div id="login" hidden>
+  <form id="loginForm">
+    <h2>MrPaint site editor</h2>
+    <p>Enter the admin password to manage your website.</p>
+    <div id="loginErr">Wrong password — try again.</div>
+    <input id="pw" type="password" placeholder="Password" autofocus>
+    <button type="submit">Log in</button>
+  </form>
+</div>
+
+<script>
+(function () {
+  var out = document.getElementById("out");
+  var cmd = document.getElementById("cmd");
+  var login = document.getElementById("login");
+  var loginErr = document.getElementById("loginErr");
+  var draftBadge = document.getElementById("draftBadge");
+
+  var HKEY = "mp_admin_history", DKEY = "mp_admin_draft";
+  var history = load(HKEY) || [];
+  var draft = load(DKEY) || null;
+  var busy = false;
+
+  function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+  function esc(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function linkify(s) {
+    return s.replace(/https?:\/\/[^\s)<>"]+/g, function (u) {
+      return '<a href="' + u + '" target="_blank" rel="noopener">' + u + "</a>";
+    });
+  }
+  function print(text, cls) {
+    var div = document.createElement("div");
+    div.className = "line " + (cls || "bot");
+    div.innerHTML = linkify(esc(text));
+    out.appendChild(div);
+    out.scrollTop = out.scrollHeight;
+    return div;
+  }
+  function setDraft(d) {
+    draft = d;
+    save(DKEY, d);
+    draftBadge.style.display = d ? "inline" : "none";
+  }
+  function setBusy(b) {
+    busy = b;
+    cmd.disabled = b;
+    if (!b) cmd.focus();
+  }
+
+  function greet() {
+    if (!history.length) {
+      print("G'day. I can edit anything on the website — text, prices, FAQs, business details — and create new blog posts, suburb pages and service pages.", "sys");
+      print("Nothing goes live until you say \"publish\". Type what you want changed, or \"help\".", "sys");
+    }
+  }
+
+  function renderHistory() {
+    history.forEach(function (m) {
+      print(m.content, m.role === "user" ? "you" : "bot");
+    });
+  }
+
+  var HELP = [
+    "Just type what you want in plain English, e.g.:",
+    '  change the phone number to 0400 123 456',
+    '  write a blog post about choosing exterior colours in the tropics',
+    '  create a page for Smithfield',
+    '  update the FAQ about how long a quote takes',
+    "",
+    "Draft commands:",
+    "  preview   - get a link to see your changes before they go live",
+    "  publish   - push the draft live",
+    "  discard   - throw the draft away",
+    "",
+    "Terminal commands:  help · clear · logout",
+  ].join("\n");
+
+  function handleLocal(text) {
+    var t = text.trim().toLowerCase();
+    if (t === "help") { print(HELP, "sys"); return true; }
+    if (t === "clear") {
+      history = [];
+      save(HKEY, history);
+      out.innerHTML = "";
+      greet();
+      return true;
+    }
+    if (t === "logout") {
+      fetch("/api/admin/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ logout: true }) })
+        .then(function () { location.reload(); });
+      return true;
+    }
+    return false;
+  }
+
+  function send(text) {
+    print(text, "you");
+    history.push({ role: "user", content: text });
+    save(HKEY, history);
+    setBusy(true);
+    var working = print("working…", "sys");
+    var dots = setInterval(function () {
+      working.textContent = working.textContent.length > 12 ? "working…" : working.textContent + ".";
+    }, 600);
+
+    fetch("/api/admin/terminal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: history.slice(-30), draft: draft }),
+    })
+      .then(function (r) { return r.json().then(function (j) { return { status: r.status, j: j }; }); })
+      .then(function (res) {
+        clearInterval(dots);
+        working.remove();
+        if (res.status === 401) { showLogin(); return; }
+        var j = res.j || {};
+        (j.actions || []).forEach(function (a) { print(a, "act"); });
+        if (j.reply) {
+          print(j.reply, "bot");
+          history.push({ role: "assistant", content: j.reply });
+          save(HKEY, history);
+        } else if (j.error) {
+          print(j.error + (j.detail ? "  [" + j.detail + "]" : ""), "err");
+        }
+        if ("draft" in j) setDraft(j.draft);
+      })
+      .catch(function (e) {
+        clearInterval(dots);
+        working.remove();
+        print("Connection problem — check your internet and try again. (" + e.message + ")", "err");
+      })
+      .then(function () { setBusy(false); });
+  }
+
+  cmd.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || busy) return;
+    var text = cmd.value.trim();
+    cmd.value = "";
+    if (!text) return;
+    if (handleLocal(text)) return;
+    send(text);
+  });
+
+  function showLogin() {
+    login.hidden = false;
+    document.getElementById("pw").focus();
+  }
+  function hideLogin() {
+    login.hidden = true;
+    setBusy(false);
+    setDraft(draft);
+    renderHistory();
+    greet();
+  }
+
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var pw = document.getElementById("pw").value;
+    if (!pw) return;
+    fetch("/api/admin/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw }) })
+      .then(function (r) {
+        if (r.ok) { hideLogin(); }
+        else { loginErr.style.display = "block"; document.getElementById("pw").value = ""; }
+      })
+      .catch(function () { loginErr.style.display = "block"; });
+  });
+
+  // Boot: check session.
+  fetch("/api/admin/auth")
+    .then(function (r) { return r.json(); })
+    .then(function (j) { if (j.authenticated) hideLogin(); else showLogin(); })
+    .catch(function () { showLogin(); });
+})();
+</script>
+</body>
+</html>
