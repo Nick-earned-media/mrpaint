@@ -818,16 +818,49 @@ async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, cap
     parseJson: true,
   });
 
-  // 2. Always target the Cairns hub page. If Adrian named a sub-suburb
-  //    (Smithfield, Bungalow, Edge Hill, etc.) keep it in the writing.
+  // 2. Decide which page this post belongs on.
+  //    Registry: _data/suburb_pages.json — each entry maps a suburb to its
+  //    dedicated page + data file. If the classifier-detected suburb has a
+  //    dedicated page, route there. Otherwise fall back to the Cairns hub.
   const locFile = await ghGetContents("_data/locations.json", "main");
   const locations = JSON.parse(Buffer.from(locFile.content, "base64").toString("utf-8"));
   const norm = (s) => String(s || "").toLowerCase().trim().replace(/\s+/g, "-");
-  const cairnsIdx = locations.findIndex((l) => norm(l.slug) === "cairns-cbd" || norm(l.name) === "cairns-cbd");
-  if (cairnsIdx === -1) throw new Error("publishCairnsHubJob: Cairns CBD suburb not found in locations.json");
-  const cairns = locations[cairnsIdx];
-  const detectedDifferent = meta.job?.suburb && norm(meta.job.suburb) !== norm(cairns.name);
-  const writingLocation = detectedDifferent ? `${meta.job.suburb}, Cairns` : cairns.name;
+
+  let suburbRegistry = [];
+  try {
+    const reg = await ghGetContents("_data/suburb_pages.json", "main");
+    suburbRegistry = JSON.parse(Buffer.from(reg.content, "base64").toString("utf-8"));
+    if (!Array.isArray(suburbRegistry)) suburbRegistry = [];
+  } catch { suburbRegistry = []; }
+
+  const detectedSlug = norm(meta.job?.suburb);
+  const dedicated = detectedSlug
+    ? suburbRegistry.find((s) => norm(s.slug) === detectedSlug || norm(s.name) === detectedSlug)
+    : null;
+
+  let targetPageUrl, targetDataFile, writingLocation, suburbCtx;
+  if (dedicated) {
+    // Detected suburb has its own page. Write the post there.
+    targetPageUrl = dedicated.page_url;
+    targetDataFile = dedicated.data_file;
+    writingLocation = meta.job.suburb;
+    // Build a minimal suburb context — use locations.json entry if it exists,
+    // otherwise synthesise one from the registry.
+    const locIdx = locations.findIndex((l) => norm(l.slug) === detectedSlug || norm(l.name) === detectedSlug);
+    suburbCtx = locIdx !== -1
+      ? locations[locIdx]
+      : { name: dedicated.name, slug: dedicated.slug, postcode: dedicated.postcode || "", intro: "", common_jobs: "" };
+  } else {
+    // No dedicated page → Cairns hub. Keep sub-suburb in the writing.
+    const cairnsIdx = locations.findIndex((l) => norm(l.slug) === "cairns-cbd" || norm(l.name) === "cairns-cbd");
+    if (cairnsIdx === -1) throw new Error("publishCairnsHubJob: Cairns CBD suburb not found in locations.json");
+    const cairns = locations[cairnsIdx];
+    targetPageUrl = "/painter-cairns/";
+    targetDataFile = "_data/cairns_recent_jobs.json";
+    suburbCtx = cairns;
+    const detectedDifferent = meta.job?.suburb && norm(meta.job.suburb) !== norm(cairns.name);
+    writingLocation = detectedDifferent ? `${meta.job.suburb}, Cairns` : cairns.name;
+  }
 
   // 3. Generate suburb-page entry + GBP draft.
   const { generateJobContent } = require("../lib/job-publisher.js");
@@ -842,7 +875,7 @@ async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, cap
         architectural_style: meta.job?.architectural_style,
       },
     },
-    suburbCtx: cairns,
+    suburbCtx,
   });
 
   // 4. Fetch each Twilio media URL, allocate paths, build media array.
@@ -868,10 +901,10 @@ async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, cap
   }
   const primary = mediaForEntry[0];
 
-  // 5. Read current cairns_recent_jobs.json from main, prepend the entry.
+  // 5. Read the target data file from main, prepend the entry, commit back.
   let existing;
   try {
-    const f = await ghGetContents("_data/cairns_recent_jobs.json", "main");
+    const f = await ghGetContents(targetDataFile, "main");
     existing = JSON.parse(Buffer.from(f.content, "base64").toString("utf-8"));
   } catch { existing = []; }
   if (!Array.isArray(existing)) existing = [];
@@ -886,17 +919,18 @@ async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, cap
   };
   const updated = [recentJobEntry, ...existing].slice(0, 30);
   commitFiles.push({
-    path: "_data/cairns_recent_jobs.json",
+    path: targetDataFile,
     content: JSON.stringify(updated, null, 2) + "\n",
     encoding: "utf-8",
   });
 
   // 6. Atomic commit. If we're replacing an earlier draft (SAME flow), clean
   //    up the old branch after the new one is up.
-  const branch = `bot/${ts}-cairnshub-${fileSlug}`.slice(0, 200);
+  const branchTag = dedicated ? `suburb-${dedicated.slug}` : "cairnshub";
+  const branch = `bot/${ts}-${branchTag}-${fileSlug}`.slice(0, 200);
   const sha = await ghCommitMulti({
     branch, baseRef: "main",
-    message: `Bot: add job to /painter-cairns/ — ${truncate(jobContent.title, 80)}`,
+    message: `Bot: add job to ${targetPageUrl} — ${truncate(jobContent.title, 80)}`,
     files: commitFiles,
   });
   if (replaceBranch && replaceBranch !== branch) {
@@ -913,12 +947,12 @@ async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, cap
       .from("clients").select("id, display_name").contains("allowed_phones", [phone]).maybeSingle();
     if (client?.id) {
       const liveMediaUrl = `https://mrpaint.vercel.app${primary.src}`;
-      const livePageUrl = `https://mrpaint.vercel.app/painter-cairns/`;
+      const livePageUrl = `https://mrpaint.vercel.app${targetPageUrl}`;
       await supa()
         .from("jobs").insert({
           client_id: client.id,
           captured_at: new Date().toISOString(),
-          suburb: cairns.name,
+          suburb: suburbCtx.name,
           summary: meta.job?.summary,
           raw_transcript: description,
           structured_facts: {
@@ -928,8 +962,8 @@ async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, cap
             media: mediaForEntry,
             pending_publish: {
               branch, sha,
-              suburb_slug: cairns.slug,
-              suburb_name: cairns.name,
+              suburb_slug: suburbCtx.slug,
+              suburb_name: suburbCtx.name,
               page_url: livePageUrl,
               gbp_text: jobContent.gbp_text,
               job_title: jobContent.title,
