@@ -130,6 +130,11 @@ p{ margin:0; line-height:1.65 }
 .topbar .yel{ color:var(--yellow) }
 @media (max-width: 980px){ .topbar .hide-md{ display:none } }
 @media (max-width: 720px){ .topbar .hide-sm{ display:none } }
+@media (max-width: 600px){
+  /* phone number lives in the header icon; stop the topbar forcing the page wider than the viewport */
+  .topbar .right{ display:none }
+  .topbar .row{ white-space:normal; justify-content:center }
+}
 
 .site-hd{
   position:sticky; top:0; z-index:60;
@@ -161,7 +166,52 @@ nav.main a.current::after{
 }
 .phone:hover{ background:var(--ink); color:#fff; border-color:var(--ink) }
 .phone svg{ width:16px; height:16px }
-@media (max-width: 980px){ nav.main{ display:none } .hd-cta .phone .phone-text{ display:none } }
+/* Hamburger + mobile nav (≤980px: phones and iPads) */
+.nav-toggle{
+  display:none;
+  flex-direction:column; justify-content:center; gap:5px;
+  width:44px; height:44px; padding:10px;
+  background:none; border:1px solid var(--rule-2); border-radius:6px;
+  cursor:pointer;
+}
+.nav-toggle .bar{
+  display:block; height:2px; width:100%;
+  background:var(--ink); border-radius:2px;
+  transition: transform .25s ease, opacity .2s ease;
+}
+.nav-toggle.is-open .bar:nth-child(1){ transform: translateY(7px) rotate(45deg) }
+.nav-toggle.is-open .bar:nth-child(2){ opacity:0 }
+.nav-toggle.is-open .bar:nth-child(3){ transform: translateY(-7px) rotate(-45deg) }
+
+.mobile-nav{
+  display:none;
+  flex-direction:column;
+  background:#fff;
+  border-top:1px solid var(--rule);
+  box-shadow: 0 14px 24px rgba(0,0,0,.08);
+}
+.mobile-nav a{
+  padding:15px clamp(20px, 5vw, 40px);
+  font-size:16px; font-weight:500; color:var(--ink-2);
+  border-bottom:1px solid var(--rule);
+}
+.mobile-nav a:hover{ color:var(--ink); background:var(--bg-soft) }
+.mobile-nav a.current{ color:var(--ink); font-weight:700; box-shadow: inset 4px 0 0 var(--yellow) }
+.mobile-nav a.mobile-nav-cta{
+  background:var(--yellow); color:var(--ink); font-weight:700; border-bottom:0;
+}
+
+@media (max-width: 980px){
+  nav.main{ display:none }
+  .hd-cta .phone .phone-text{ display:none }
+  .nav-toggle{ display:flex }
+  .mobile-nav:not([hidden]){ display:flex }
+}
+@media (max-width: 600px){
+  /* keep phone icon + hamburger; the quote CTA lives in the menu and hero */
+  .hd-cta .btn{ display:none }
+  .brand img{ height:56px }
+}
 
 /* ────────────────────────────────────────────────────────────
    Hero

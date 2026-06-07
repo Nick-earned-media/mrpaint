@@ -77,9 +77,39 @@
         <span class="phone-text">{{ site.phone_display }}</span>
       </a>
       <a class="btn btn--yellow" href="/contact/">Get a free quote <span class="arr">→</span></a>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
     </div>
   </div>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile" hidden>
+    <a href="/"{% if page.url == "/" %} class="current"{% endif %}>Home</a>
+    <a href="/about/"{% if page.url == "/about/" %} class="current"{% endif %}>About</a>
+    <a href="/painter-cairns/"{% if page.url == "/painter-cairns/" %} class="current"{% endif %}>Cairns</a>
+    <a href="/commercial-painter-cairns/"{% if page.url == "/commercial-painter-cairns/" %} class="current"{% endif %}>Commercial</a>
+    <a href="/industrial-painting/"{% if page.url == "/industrial-painting/" %} class="current"{% endif %}>Industrial</a>
+    <a href="/gallery/"{% if page.url == "/gallery/" %} class="current"{% endif %}>Gallery</a>
+    <a href="/blog/"{% if page.url == "/blog/" %} class="current"{% endif %}>Blog</a>
+    <a href="/contact/" class="mobile-nav-cta">Get a free quote →</a>
+  </nav>
 </header>
+<script>
+(function () {
+  var btn = document.querySelector(".nav-toggle");
+  var nav = document.getElementById("mobile-nav");
+  if (!btn || !nav) return;
+  btn.addEventListener("click", function () {
+    var open = nav.hasAttribute("hidden");
+    if (open) { nav.removeAttribute("hidden"); } else { nav.setAttribute("hidden", ""); }
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    btn.classList.toggle("is-open", open);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !nav.hasAttribute("hidden")) btn.click();
+  });
+})();
+</script>
 
 <main id="main">
   {{ content | safe }}
