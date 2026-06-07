@@ -52,8 +52,11 @@ module.exports = async function handler(req, res) {
         kpis: data.kpis,
         competitors: data.competitors,
         ai_visibility: data.ai_visibility,
+        semrush_mode: data.raw?.semrush?.mode,
+        semrush_campaignId: data.raw?.semrush?.campaignId,
+        semrush_error: data.raw?.semrush?.error || data.raw?.semrush?.skipped,
+        semrush_keys: data.raw?.semrush ? Object.keys(data.raw.semrush) : null,
         ai_engines_raw_count: Array.isArray(data.raw?.semrush?.aiEngines) ? data.raw.semrush.aiEngines.length : null,
-        ai_engines_raw: data.raw?.semrush?.aiEngines,
         trackedCompetitors_present: !!data.raw?.semrush?.trackedCompetitors,
         narrative: data.narrative,
       }, null, 2));
