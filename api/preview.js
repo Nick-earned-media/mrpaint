@@ -60,11 +60,36 @@ module.exports = async function handler(req, res) {
   }
 
   if (!entry) {
+    // No cairns_recent_jobs entry on the branch — check whether the branch
+    // is an area-page draft. Sonnet stored the preview HTML on the row.
+    try {
+      const { getPreviewPendingAreaPage } = require("../lib/area-pages.js");
+      const ap = await getPreviewPendingAreaPage();
+      if (ap && ap.draft_branch === branchName) {
+        return res.status(200).send(renderAreaPagePreview(ap));
+      }
+    } catch (err) {
+      console.warn("preview area-page lookup failed:", err?.message || err);
+    }
     return res.status(200).send(renderEmpty());
   }
 
   return res.status(200).send(renderPreview(entry, branchName));
 };
+
+function renderAreaPagePreview(ap) {
+  const inner = `
+<div class="banner">
+  <strong>Preview</strong> — new suburb page for <strong>${escapeHtml(ap.suburb)}</strong>. Reply <strong>YES</strong> on WhatsApp to publish, <strong>NO</strong> to discard.
+</div>
+<main style="max-width:none;padding:0">
+  <div style="max-width:960px;margin:0 auto;padding:24px 20px 60px">
+    ${ap.preview_html_body || "<p>No preview body available.</p>"}
+  </div>
+  <p class="footnote">This is a draft. It's not live on the website yet.</p>
+</main>`;
+  return pageShell(inner);
+}
 
 async function ghJson(path) {
   const r = await fetch(`https://api.github.com${path}`, {

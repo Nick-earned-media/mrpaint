@@ -94,10 +94,15 @@ async function handleMessage(fromWa, message, media) {
 
   const phone = fromWa.replace(/^whatsapp:/, "");
   const captures = require("../lib/captures.js");
-  const capture = await captures.getActiveCapture(phone).catch((err) => {
-    console.warn("[captures] lookup failed:", err.message);
-    return null;
-  });
+  const areaPages = require("../lib/area-pages.js");
+  const [capture, areaPage] = await Promise.all([
+    captures.getActiveCapture(phone).catch((err) => {
+      console.warn("[captures] lookup failed:", err.message); return null;
+    }),
+    areaPages.getActiveAreaPage(phone).catch((err) => {
+      console.warn("[area-pages] lookup failed:", err.message); return null;
+    }),
+  ]);
 
   // ── Media attached? Route by content type, capture-aware. ──────────────
   if (media?.url) {
@@ -183,6 +188,10 @@ async function handleMessage(fromWa, message, media) {
       if (capture && capture.status === "awaiting_same_or_new") {
         return handleSameOrNew(fromWa, capture, transcribed);
       }
+      // Voice as the discovery transcript for an active area-page build.
+      if (areaPage && areaPage.status === "awaiting_voice_note") {
+        return finaliseAreaPage(fromWa, areaPage, transcribed);
+      }
 
       // Otherwise the normal strategist-chat path.
       const combined = message ? `${message}\n\n${transcribed}` : transcribed;
@@ -193,7 +202,11 @@ async function handleMessage(fromWa, message, media) {
       `🤔 Got a "${ct || "unknown"}" attachment. I can handle photos, videos, and voice notes — other types aren't supported.`);
   }
 
-  // ── Text-only messages. If there's an active capture waiting on us, route. ─
+  // ── Text-only messages. If there's an active capture/area-page waiting, route. ─
+  if (areaPage && message && message.trim() && areaPage.status === "awaiting_voice_note") {
+    // Adrian replied with text instead of a voice note — treat as the transcript.
+    return finaliseAreaPage(fromWa, areaPage, message.trim());
+  }
   if (capture && message && message.trim()) {
     if (capture.status === "awaiting_description") {
       return finaliseCapture(fromWa, capture, message.trim());
@@ -230,6 +243,14 @@ async function handleMessage(fromWa, message, media) {
   if (trimmed === "/digest" || trimmed === "digest") {
     return executeDigest(fromWa);
   }
+  // /new-area Bungalow  OR  /area Bungalow  → start the area-page builder
+  if (/^\/?(new-area|area|new area|new page|build page)\b/i.test(message.trim())) {
+    const suburb = message.trim().replace(/^\/?(new-area|area|new area|new page|build page)\s*(for\s+)?/i, "").trim();
+    if (!suburb) {
+      return sendMessage(fromWa, `👍 Tell me which suburb boss — try *"new area Bungalow"* or *"build me a page for Brinsmead"*.`);
+    }
+    return executeNewAreaPage(fromWa, phone, suburb);
+  }
   const intent = await classifyIntent(message);
   intent._original_message = message;
   await routeIntent(fromWa, intent);
@@ -243,6 +264,8 @@ async function routeIntent(fromWa, intent) {
       return executeUpdateText(fromWa, intent);
     case "add_blog_post":
       return executeAddBlogPost(fromWa, intent);
+    case "new_area_page":
+      return executeNewAreaPage(fromWa, fromWa.replace(/^whatsapp:/, ""), intent.suburb);
     case "approve":
       return handleApprove(fromWa, intent._original_message);
     case "discard":
@@ -272,6 +295,7 @@ const CLASSIFIER_SYSTEM_PROMPT = `You are the backend webhook for a Cairns paint
 Operations:
 - update_business_info: change a sitewide business field. {"operation":"update_business_info","field":"phone"|"email"|"address"|"hours","value":string}
 - add_blog_post: write a new blog post from a topic or short brief. {"operation":"add_blog_post","title":string,"body_markdown":string}. Generate a 250-450 word body in tradie-friendly Cairns voice.
+- new_area_page: user wants a fresh suburb/service-area page built. {"operation":"new_area_page","suburb":string}. Triggers: "build me a page for X", "new area X", "create a suburb page for X", "do a page for X". Extract the suburb name only.
 - add_gallery_photo: not doable with text only. {"operation":"needs_image","message":string}
 - update_text: change specific text on the site (hero copy, an FAQ answer, a button label, etc.). {"operation":"update_text","description":string}
 - approve: user is confirming a pending change ("yes", "publish", "ship", "ok go", "yes please"). {"operation":"approve"}
@@ -284,6 +308,8 @@ Examples:
 "yes publish it" → {"operation":"approve"}
 "nope cancel that" → {"operation":"discard"}
 "add a blog post about prepping a Queenslander" → {"operation":"add_blog_post","title":"Prepping a Queenslander for an exterior repaint","body_markdown":"..."}
+"build me a page for Bungalow" → {"operation":"new_area_page","suburb":"Bungalow"}
+"do a suburb page for Brinsmead" → {"operation":"new_area_page","suburb":"Brinsmead"}
 "swap the hero photo on the homepage" → {"operation":"needs_image","message":"send me the photo to use"}
 "add a . at the end of the homepage h1" → {"operation":"update_text","description":"add a period at the end of the homepage h1"}
 "when will it be done" → {"operation":"unknown","reason":"question about timeline/status, not a website edit request"}
@@ -1025,6 +1051,100 @@ async function handleSameOrNew(fromWa, capture, reply) {
   );
 }
 
+// ─── Area-page builder ───────────────────────────────────────────────────
+//
+// Trigger: "build me a page for {suburb}", "/new-area {suburb}", or the
+// intent classifier picking it up. Two-step flow:
+//   1. executeNewAreaPage — creates pending_area_pages row + prompts Adrian
+//      for a single discovery voice note.
+//   2. finaliseAreaPage — runs Whisper transcript through Sonnet
+//      (lib/area-generator.js), commits the .njk file to a bot/* branch,
+//      stores preview_html_body for /api/preview, sends the preview link.
+// YES merges the .njk to main; Vercel rebuild publishes /painter-{slug}/.
+
+async function executeNewAreaPage(fromWa, phone, suburbInput) {
+  const suburb = String(suburbInput || "").trim().replace(/[",.!?]+$/, "");
+  if (!suburb) {
+    return sendMessage(fromWa, `👍 Tell me which suburb boss — e.g. *"build me a page for Bungalow"*.`);
+  }
+  const suburbSlug = slug(suburb);
+  const areaPages = require("../lib/area-pages.js");
+
+  // Close any active area-page build first (one per phone).
+  const existing = await areaPages.getActiveAreaPage(phone).catch(() => null);
+  if (existing) await areaPages.markStatus(existing.id, "abandoned").catch(() => {});
+
+  await areaPages.createAreaPage({ phone, suburb, suburbSlug });
+
+  return sendMessage(fromWa,
+    `👍 On it boss — I'll build the *${suburb}* page. Send me one voice note covering these bits (take your time, one note is fine):\n\n` +
+    `• *What houses dominate ${suburb}?* Queenslander, fibro cottage, modern brick, mix?\n` +
+    `• *Paint problems specific there?* Salt, mould, sun fade, render cracks…\n` +
+    `• *Jobs you've done in ${suburb}* — quick rundown (or "none yet").\n` +
+    `• *Anything tricky working there?* Parking, council rules, narrow lanes, hill access…\n` +
+    `• *Nearby landmarks or features locals would recognise.*\n` +
+    `• *Typical customer there* — homeowner, landlord, commercial, holiday rental?\n\n` +
+    `Once you send the voice note I'll draft the page and ping you a preview.`
+  );
+}
+
+async function finaliseAreaPage(fromWa, areaPage, transcript) {
+  const areaPages = require("../lib/area-pages.js");
+  await sendMessage(fromWa, `✍️ On it boss — drafting the *${areaPage.suburb}* page now, give me a min…`);
+
+  try {
+    await areaPages.setAreaPageTranscript(areaPage.id, transcript);
+  } catch (err) {
+    console.error("setAreaPageTranscript failed:", err);
+  }
+
+  let drafted;
+  try {
+    const { generateAreaPage } = require("../lib/area-generator.js");
+    drafted = await generateAreaPage({ suburb: areaPage.suburb, transcript });
+  } catch (err) {
+    console.error("generateAreaPage failed:", err);
+    await areaPages.markStatus(areaPage.id, "abandoned").catch(() => {});
+    return sendMessage(fromWa,
+      `⚠️ Couldn't draft the ${areaPage.suburb} page boss — give me a sec and try sending the voice note again.`
+    );
+  }
+
+  // Commit the new .njk file to a bot/* branch.
+  const ts = Date.now();
+  const branch = `bot/${ts}-areapage-${drafted.suburb_slug}`.slice(0, 200);
+  let sha;
+  try {
+    sha = await ghCommitMulti({
+      branch, baseRef: "main",
+      message: `Bot: add area page for ${areaPage.suburb}`,
+      files: [
+        { path: drafted.njk_filename, content: drafted.njk_content, encoding: "utf-8" },
+      ],
+    });
+  } catch (err) {
+    console.error("ghCommitMulti area page failed:", err);
+    await areaPages.markStatus(areaPage.id, "abandoned").catch(() => {});
+    return sendMessage(fromWa,
+      `⚠️ Couldn't save the ${areaPage.suburb} draft boss — try again in a sec.`
+    );
+  }
+
+  await areaPages.setAreaPageDraft(areaPage.id, {
+    njk_filename: drafted.njk_filename,
+    njk_content: drafted.njk_content,
+    preview_html_body: drafted.preview_html_body,
+    draft_branch: branch,
+    draft_sha: sha,
+  }).catch((err) => console.warn("setAreaPageDraft warn:", err.message));
+
+  await sendMessage(fromWa,
+    `✅ Drafted boss — *${drafted.title}*\n\n` +
+    `🌐 Preview: https://mrpaint.vercel.app/preview\n\n` +
+    `Reply YES to publish, NO to bin it.`
+  );
+}
+
 async function executeAddPhotoJob(fromWa, caption, media) {
   const ct = String(media?.contentType || "").toLowerCase();
   const isVideo = ct.startsWith("video/");
@@ -1399,9 +1519,19 @@ async function handleApprove(fromWa, originalMessage) {
     );
   }
   await ghDeleteBranch(branch);
-  // Merge succeeded — clean up the active capture too.
+  // Merge succeeded — clean up the active capture + area-page rows.
   const cap = await captures.getActiveCapture(phone).catch(() => null);
   if (cap) await captures.markStatus(cap.id, "completed").catch(() => {});
+  const areaPages = require("../lib/area-pages.js");
+  const ap = await areaPages.getActiveAreaPage(phone).catch(() => null);
+  if (ap && ap.draft_branch === branch) {
+    await areaPages.markStatus(ap.id, "completed").catch(() => {});
+    const liveUrl = `https://mrpaint.vercel.app/painter-${ap.suburb_slug}/`;
+    return sendMessage(fromWa,
+      `🎉 ${ap.suburb} page is live in about a minute boss — that's done.\n\n` +
+      `If you want to see the live version it's here — ${liveUrl}`
+    );
+  }
 
   // If this branch was a job publish, fire the GBP Slack ping for Nick.
   const job = await findJobByPendingBranch(branch);
@@ -1464,13 +1594,16 @@ async function handleDiscard(fromWa, originalMessage) {
   }
   await ghDeleteBranch(branch);
 
-  // Clear the legacy job row + the capture row both.
+  // Clear the legacy job row, the capture row, and any area-page row all.
   const job = await findJobByPendingBranch(branch);
   if (job) await clearJobPendingPublish(job.id, "discarded");
   const cap = await captures.getActiveCapture(phone).catch(() => null);
   if (cap) await captures.markStatus(cap.id, "abandoned").catch(() => {});
+  const areaPages = require("../lib/area-pages.js");
+  const ap = await areaPages.getActiveAreaPage(phone).catch(() => null);
+  if (ap) await areaPages.markStatus(ap.id, "abandoned").catch(() => {});
 
-  await sendMessage(fromWa, `🗑 Discarded \`${branch}\`.`);
+  await sendMessage(fromWa, `🗑 Binned that draft boss.`);
 }
 
 async function sendPreviewMessage(fromWa, { summary }) {
