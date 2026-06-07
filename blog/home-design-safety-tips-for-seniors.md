@@ -43,7 +43,7 @@ So in order to allow easy access for people in wheelchairs or who use walkers, t
 
 Another option is powered automatic opening doors for the main entries, but they’re obviously quite expensive to have installed into your home. And, if you need a hand with painting your home, then get in touch with [MrPaint](/) today!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

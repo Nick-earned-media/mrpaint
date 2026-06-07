@@ -41,7 +41,7 @@ Alignment issues or debris stuck anywhere on your roof are both issues which cou
 
 Noticing any of the signs above is just the start because the underlying problems need to be addressed to avoid them getting any worse. Just remember to make sure these issues are definitely caused by your roof and not by faulty plumbing before going ahead with a roof replacement.
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

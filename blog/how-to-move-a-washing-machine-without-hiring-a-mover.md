@@ -47,7 +47,7 @@ But if this article has made you think twice about taking on the responsibility 
 
 If you’re in any doubt about doing it yourself, this may be your best course of action, to avoid mistakes that could end up costing you more than your washer is worth.
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

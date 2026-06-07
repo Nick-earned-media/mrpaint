@@ -55,7 +55,7 @@ Not only does it have a positive impact on the environment, but it is also a sma
 
 Going green also increases the comfort of a building, with better performing heating and cooling systems, as well as passive features like green spaces, increasing the well-being of tenants. If you need a hand with painting your new multi-storey building, then get in touch with [MrPaint](/) today! MrPaint is your solution for all of your home and [commercial painting needs](/commercial-painter-cairns/).
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

@@ -38,7 +38,7 @@ For modern homes, using neutral tones with a bold accent to offset and lift can 
 
 If colour isn’t your thing, you can also add bold accents with the use of timbers or textured walls, pairing well with black or grey paint. Coloured accents can significantly improve a home’s overall appearance, and are easy to maintain and repaint in the future if tastes change.
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

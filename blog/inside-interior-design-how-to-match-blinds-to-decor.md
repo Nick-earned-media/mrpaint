@@ -39,7 +39,7 @@ Remember, you want to think about what each space is for and what primary job yo
 
 It’s okay to be practical, you can also be stylish at the same time. In addition to all of that, you will also want to pay attention to the size and shape of each window, as well as what accessories will be featured in the area, from curtains to art. And, if you are looking [to paint the interior of your home](/blog/how-much-does-it-cost-to-paint-a-house/) to match your decor—then, [get in touch with MrPaint](/contact/) today.
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

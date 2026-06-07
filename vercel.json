@@ -14,7 +14,12 @@
     { "source": "/preview", "destination": "/api/preview" }
   ],
   "redirects": [
-    { "source": "/areas/trinity-beach", "destination": "/painter-trinity-beach/", "permanent": true }
+    { "source": "/areas/trinity-beach", "destination": "/painter-trinity-beach/", "permanent": true },
+    { "source": "/about", "destination": "/about-us", "permanent": true },
+    { "source": "/contact", "destination": "/contact-us", "permanent": true },
+    { "source": "/category/:path*", "destination": "/blog", "permanent": true },
+    { "source": "/tag/:path*", "destination": "/blog", "permanent": true },
+    { "source": "/blog/page/:n", "destination": "/blog", "permanent": true }
   ],
   "headers": [
     {

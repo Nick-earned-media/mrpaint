@@ -33,7 +33,7 @@ The great thing about interior design is that there are no right or wrong answer
 
 However, if you choose to decorate your small space, remember that it doesn’t have to be a big, expensive, stressful task. Keep it simple and think big. How can you maximize the small space? That’s up to you. We’re just here to help you think about it. And, if you need a hand with painting your new house or apartment, contact [MrPaint](/) today!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

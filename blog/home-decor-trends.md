@@ -37,7 +37,7 @@ After last year slowed us all down and gave us a chance to be more aware of our 
 
 Our homes have historically been where we only got to spend around one-third of our lives, but the COVID-19 pandemic changed everything. Because everyone is now spending so much more time around the house, their above trends are all about making sure our home looks good and feels good, while also being functional for all the increased use.
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

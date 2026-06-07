@@ -192,7 +192,7 @@ Because of this, it would be a good idea to contact a professional painter for a
 
 If you need a hand painting a home, unit, apartment, or upcoming renovation project, contact [MrPaint today](/contact/)!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

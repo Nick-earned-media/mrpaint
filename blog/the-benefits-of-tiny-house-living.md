@@ -47,7 +47,7 @@ The tiny house movement provides a viable solution to climbing housing costs and
 
 These single mobile dwellings may not be for everyone, but they do influence the way home buyers choose their dream house. There are now a plethora of tiny home designs or kits available to purchase so that you can fulfill your dream of living more simply. 
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

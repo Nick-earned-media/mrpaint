@@ -61,7 +61,7 @@ Nautical homes often also contain many other decorative elements and themed acce
 
 While these are some of the most in-vogue interiors design styles of the moment, remember that they are always constantly evolving and changing. And if you can’t find one that perfectly suits you, you can always blend different styles to create your own. And, if you need a hand with painting your home or commercial building, then [get in touch with MrPaint today](/)!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

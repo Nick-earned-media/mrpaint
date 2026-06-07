@@ -35,7 +35,7 @@ If you’re looking to add something to your garden that wasn’t there before, 
 
 Making the most of your old home’s sale value is really important, and with a little investment, your garden can make up that extra 15-25% and provide an awesome first impression to any prospective buyer. After all, your garden is the first thing that they’re going to see — make it a good one. And, if you need a hand with painting your house, then get in touch [with MrPaint today](/)!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

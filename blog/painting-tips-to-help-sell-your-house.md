@@ -33,7 +33,7 @@ For larger jobs, or if you are simply pushed for time, consider hiring a paintin
 
 Finding the right real estate agent can make all the difference when it comes to selling your house. The right agent can help add more value to your property or increase rental returns. They will help you to prepare your house for the sale, develop a strategy, and set a sale price. Generally, the fees involved in hiring a real estate agent cover the costs of advertising and marketing, with the agent’s commission being paid with a percentage of the sale price of the house. From what I can see in [NSW the average fee is 2.03%](https://www.localagentfinder.com.au/real-estate-agent-commission-fees/nsw/) so ensure you take your time to compare real estate agent commission fees. Also, it is a good idea to find someone who is a local area expert to ensure you can get the highest price possible.
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

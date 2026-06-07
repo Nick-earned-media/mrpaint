@@ -47,7 +47,7 @@ One or two cups of coffee is more than sufficient. Don’t forget that caffeine 
 
 Finally, don’t allow snacking to replace proper meals. Your wellbeing will be at its best, and you’ll get the most out of your day, if you stick to a schedule of three proper meals at similar times each day.
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

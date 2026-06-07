@@ -33,7 +33,7 @@ Take a look at your lighting and shower fixtures and consider what will make the
 
 Bathroom lighting fixtures often go ignored and they can be fairly dated. Look for something modern or dramatic to change the entire look of your bathroom in one fell swoop. 
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

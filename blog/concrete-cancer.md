@@ -86,7 +86,7 @@ It’s best to get in a professional to diagnose the primary cause of your concr
 
 Contact [MrPaint](/) today if you need a hand with painting your residential or commercial building. We paint everything from roofs to walls and ceilings.
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

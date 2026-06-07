@@ -45,7 +45,7 @@ Your paint palette will ultimately become one of the defining features of your h
 
 Remember that it’s all about balance because an entirely neutral home would simply be boring. If you need a hand with painting your new home, then get in touch [with MrPaint today](/)!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

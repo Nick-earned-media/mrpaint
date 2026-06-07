@@ -41,7 +41,7 @@ Though it is unusual for renters to shoulder the costs of paint jobs, some contr
 
 For renovations and repainting of properties, it’s best to [call experts in the field](/painter-cairns/). Mr.Paint has years of experience and will be able to provide you with a stellar paint job. Contact us [today for a painting quote](/contact/).  
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

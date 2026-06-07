@@ -39,7 +39,7 @@ When it comes to decorating your walls with art, you can save money while giving
 
 No matter what you choose to do with your space, saving money while doing it doesn’t have to be complicated or stressful, simply get creative and think outside the box. If you feel as though you can’t do it alone, you might even consider investing in an interior decorator or designer to assist.
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

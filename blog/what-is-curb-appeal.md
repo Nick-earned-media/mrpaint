@@ -39,7 +39,7 @@ They’re a reflection (the puns just write themselves) of the interior of the h
 
 Whatever your reason for selling your house, the first impression that you leave any prospective buyer with is the most important one. Almost every first impression is made from the outside looking in, so make sure that the house looks as good from the outside as it does inside. If you need a hand with painting your home, then [get in touch with MrPaint today](/contact/)!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

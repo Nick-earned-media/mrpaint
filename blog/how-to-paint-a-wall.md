@@ -121,7 +121,7 @@ If you’re unsure about colours, consider a colour consultation before buying. 
 
 If you need a hand painting of a home, unit, apartment, or [upcoming renovation](/blog/renovation-project-tips/) project, [get in touch with MrPaint today](/contact/)!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

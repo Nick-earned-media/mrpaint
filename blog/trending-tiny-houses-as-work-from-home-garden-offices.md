@@ -41,7 +41,7 @@ For employees to continue to enjoy the many benefits of working from home, they 
 
 Tiny homeowners have long touted the benefits of tiny home living and today, remote workers are beginning to listen. Get in touch with [MrPaint](/) today if you need a hand with painting your new tiny home. Contact us now [for a quote](/contact/).
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

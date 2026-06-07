@@ -49,7 +49,7 @@ While furniture won’t boost the home’s value as you’ll be taking it with y
 
 Lastly, be mindful of spending money in the right places to ensure it is tailored to meet your needs while securing the interest of others if you decide to sell. And, if you need a hand with painting your outdoor area, then get in touch [with MrPaint today](/)!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

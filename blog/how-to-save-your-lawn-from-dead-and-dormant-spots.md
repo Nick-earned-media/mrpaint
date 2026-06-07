@@ -53,7 +53,7 @@ Instead of playing a guessing game and over watering or over fertilising certain
 
 Being able to tell the difference between the two and thus going through the right treatment program will save you time and money and ultimately result in healthy, luscious lawns year-round. 
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

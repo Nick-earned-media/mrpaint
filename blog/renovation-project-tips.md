@@ -37,7 +37,7 @@ During the planning stage and throughout the renovation project, it’s importan
 
 Maybe you’ve fallen in love with the idea of installing fake grass on the ceiling of your lounge. Or now that you’ve seen how voice-controlled heated flooring works, you can’t imagine life without it. While these trends or tech toys may seem like a good idea, will you still feel the same in a few years? Don’t forget that you’ll be paying extra for these unique features. If you’re renovating your house and need a hand with painting, then get in touch with [MrPaint today](/contact/)! 
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

@@ -41,7 +41,7 @@ Do you have a good friend group? If so, feel your friends out for favors. If som
 
 Whether you shop for home renovation items during the sales, you maintain a strict budget to ensure you stay in the black, there is always some way to save money. It doesn’t matter what home renovations you have on the cards, if you tackle it with the right approach you can create the home of your dreams without spending big. If you need a hand with painting your home, get in touch with [Mr.Paint](/) today!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

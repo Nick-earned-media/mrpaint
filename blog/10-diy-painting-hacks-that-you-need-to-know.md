@@ -55,7 +55,7 @@ Painting can be fun and exciting, especially for first-time owners or anyone who
 
 Purchasing the right tools and using them properly is key to making your space look flawless, and can also prevent future mishaps from happening. If you want to get quality results that will last, however, it might be a better idea to [book the experts](/painter-cairns/) as bad paint jobs can end up costing you more in the future. Contact [Mr.Paint today for a painting quote](/contact/).
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

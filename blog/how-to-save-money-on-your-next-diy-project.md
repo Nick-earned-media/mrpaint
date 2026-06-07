@@ -35,7 +35,7 @@ Over the last decade or two, there has been a growing trend of hiding everything
 
 If you have fragile items you hideaway to keep safe, just put them on display up high, out of reach. If it’s something that you love, don’t hide it away when it can be incorporated into the décor of your home. [DIY’ing your home](/blog/10-diy-painting-hacks-that-you-need-to-know/) doesn’t have to send you broke. With the above advice, you can enjoy a fresh new look without breaking the bank. If you need a hand with painting your home, then get in touch [with MrPaint today](/contact/)!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

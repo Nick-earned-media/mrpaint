@@ -64,7 +64,7 @@ Now that you’ve got the key facts, all that’s left is for you to find your p
 
 Follow these tips and you will gain all the advantages that come with purchasing a rental property. And, if you need a hand with painting your rental property, then [get in touch with MrPaint today](/)!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

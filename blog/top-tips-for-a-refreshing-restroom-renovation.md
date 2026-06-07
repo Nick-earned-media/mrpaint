@@ -37,7 +37,7 @@ Opting for a solid wall rather than a metal divider increases privacy, enhancing
 
 Whatever you choose, know that the restroom space reflects on your organisation just as every other area of the space does. It might reflect on you even more than those other areas. And, if you need a handing with painting your restroom, get in touch with [MrPaint](/) today!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

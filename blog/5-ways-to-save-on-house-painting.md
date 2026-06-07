@@ -33,7 +33,7 @@ A lot of homeowners make the mistake of waiting too long before repainting, part
 
 Since the preparation is one of the biggest costs and labour-intensive parts of [painting a house](/blog/painting-tips-to-help-sell-your-house/), regular maintenance will prevent any major paint deterioration, cracks, rot, mould, and water damage. Touching up the surface of your walls [every 5 years](http://www.housepaintingtutorials.com/interior-home-painting.html) and being proactive when it comes to maintaining your house will prevent you from spending thousands. 
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

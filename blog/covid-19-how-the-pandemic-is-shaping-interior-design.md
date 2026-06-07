@@ -41,7 +41,7 @@ Many families decided to change up their interior designs throughout 2020 by ins
 
 If you’re searching for fresh ideas to update your life at home in 2021, the above trends for interior design are already huge and are only going to get bigger. As the world continues living and working from home, how we decorate and design our homes has become more important than ever before. And, if you need help painting your new home, then [get in touch with MrPaint](/contact/) today!
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 

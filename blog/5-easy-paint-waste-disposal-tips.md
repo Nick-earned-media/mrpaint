@@ -89,7 +89,7 @@ While some might consider keeping leftover paints for future touch-ups, others j
 
 If you need a hand with painting your home, strata building, or apartment, get in touch with [MrPaint](/) today.
 
-![](/wp-content/uploads/2020/06/adrian-127x150-1.png)
+![](/assets/images/adrian-avatar.png)
 
 [Adrian Tucci](/about/)
 
