@@ -1,0 +1,24 @@
+---
+layout: base.njk
+title: Thanks — we've got your request
+description: Your quote request has been sent to the MrPaint team.
+permalink: /thank-you/
+eleventyExcludeFromCollections: true
+---
+
+<section style="padding: clamp(64px,10vw,140px) 0; text-align:center">
+  <div class="wrap-narrow">
+    <span class="eyebrow">Request received</span>
+    <h1 style="margin-top:14px">Beauty. We've got it.</h1>
+    <p class="lede" style="margin:24px auto 0">
+      Your quote request has gone straight through to {{ site.owner.split(' ')[0] }} — he'll give you a call back, usually the same day (Mon–Sat, 7am–5pm).
+    </p>
+    <p class="lede" style="margin:14px auto 0">
+      Need us sooner? Call <a href="{{ site.phone_link }}" style="font-weight:700">{{ site.phone_display }}</a>.
+    </p>
+    <div style="margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn--yellow" href="/gallery/">See our recent work <span class="arr">→</span></a>
+      <a class="btn btn--ghost" href="/">Back to the homepage</a>
+    </div>
+  </div>
+</section>

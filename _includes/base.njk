@@ -15,6 +15,17 @@
 
   <link rel="stylesheet" href="/assets/css/style.css" />
 
+  {% if site.ga4_id %}
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.ga4_id }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ site.ga4_id }}');
+  </script>
+  {% endif %}
+
   <meta property="og:title" content="{% if title %}{{ title }} · {% endif %}{{ site.name }}" />
   <meta property="og:description" content="{{ description or site.tagline_long }}" />
   <meta property="og:type" content="website" />
@@ -160,6 +171,43 @@
     </div>
   </div>
 </footer>
+
+{% if site.ga4_id %}
+<script>
+/* GA4 conversion events: tap-to-call, email clicks, form activity, lead. */
+(function () {
+  function send(name, params) {
+    if (typeof gtag === "function") gtag("event", name, params || {});
+  }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a[href]");
+    if (!a) return;
+    var href = a.getAttribute("href") || "";
+    if (href.indexOf("tel:") === 0) {
+      send("tap_to_call", { link_text: (a.textContent || "").trim().slice(0, 60), page_path: location.pathname });
+    } else if (href.indexOf("mailto:") === 0) {
+      send("email_click", { page_path: location.pathname });
+    } else if (href.indexOf("/contact-us") === 0) {
+      send("quote_cta_click", { link_text: (a.textContent || "").trim().slice(0, 60), page_path: location.pathname });
+    }
+  });
+  // Form interactions on the quote forms (which POST to /api/contact).
+  var started = false;
+  document.querySelectorAll('form[action="/api/contact"]').forEach(function (f) {
+    f.addEventListener("input", function () {
+      if (!started) { started = true; send("form_start", { page_path: location.pathname }); }
+    }, { once: false });
+    f.addEventListener("submit", function () {
+      send("form_submit", { page_path: location.pathname });
+    });
+  });
+  // Lead conversion: landing on /thank-you/ after a successful submission.
+  if (location.pathname.indexOf("/thank-you") === 0) {
+    send("generate_lead", { page_path: document.referrer ? new URL(document.referrer).pathname : "(direct)" });
+  }
+})();
+</script>
+{% endif %}
 
 {# Trustindex floating Google-reviews widget — same setup as earnedmedia.com.au.
    Activates when trustindex_widget_id is set in _data/site.json. #}
