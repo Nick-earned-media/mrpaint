@@ -221,8 +221,8 @@ nav.main a.current::after{
   /* keep phone icon + hamburger; the quote CTA lives in the menu and hero */
   .hd-cta .btn{ display:none }
   .brand img{ height:56px }
-  /* tap-to-call: ~50% larger touch target on phones */
-  .phone{ padding:14px 20px; border-radius:8px }
+  /* tap-to-call: ~50% larger touch target on phones; both buttons exactly 54px tall */
+  .phone{ padding:0 20px; height:54px; border-radius:12px }
   .phone svg{ width:24px; height:24px }
   .wa-btn img{ width:54px; height:54px; border-radius:12px }
 }
