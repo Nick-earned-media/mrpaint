@@ -41,6 +41,23 @@ canonical: /contact-us/
 }
 .map-embed iframe{ width:100%; height:100%; border:0; display:block }
 @media (max-width: 860px){ .map-row .grid{ grid-template-columns: 1fr } }
+
+/* WhatsApp conversion block — the mobile focus; hidden on desktop where the form leads */
+.wa-cta-mobile{ display:none; padding-top: clamp(20px,3vw,28px) }
+.wa-cta-btn{
+  display:flex; align-items:center; gap:14px;
+  background:#25D366; color:#fff;
+  border-radius: var(--radius-l);
+  padding: 18px 20px;
+  box-shadow: 0 6px 18px rgba(37,211,102,.35);
+}
+.wa-cta-btn img{ flex:0 0 auto; border-radius:8px }
+.wa-cta-btn span{ display:flex; flex-direction:column; gap:2px; flex:1 }
+.wa-cta-btn strong{ font-size:17px; font-weight:700 }
+.wa-cta-btn small{ font-size:13px; opacity:.92; line-height:1.4 }
+.wa-cta-btn .arr{ font-size:22px; flex:0 0 auto }
+.wa-cta-btn:active{ transform: scale(.99) }
+@media (max-width: 768px){ .wa-cta-mobile{ display:block } }
 </style>
 
 <section class="page-hero">
@@ -50,6 +67,19 @@ canonical: /contact-us/
     <p class="lede" style="margin-top:22px;max-width:62ch">
       For the quickest response, please call me ({{ site.owner }}) directly on {{ site.phone_display }}. I am always more than happy to provide information over the phone, or come and provide you with a quote — free, on-site and obligation-free.
     </p>
+  </div>
+</section>
+
+<section class="wa-cta-mobile">
+  <div class="wrap">
+    <a class="wa-cta-btn" href="https://wa.me/61478659766?text=Hi%20Adrian%2C%20I%27m%20after%20a%20painting%20quote%20%E2%80%94%20" target="_blank" rel="noopener">
+      <img src="/assets/images/whatsapp-icon.png" alt="" width="34" height="34" />
+      <span>
+        <strong>Message Adrian on WhatsApp</strong>
+        <small>Fastest way to get a quote — send a photo of the job and he'll come straight back to you.</small>
+      </span>
+      <span class="arr">→</span>
+    </a>
   </div>
 </section>
 
