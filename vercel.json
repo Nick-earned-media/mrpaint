@@ -5,6 +5,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "crons": [
+    { "path": "/api/cron-gsc-ingest", "schedule": "0 4 * * 5" },
     { "path": "/api/cron-weekly", "schedule": "45 6 * * 5" },
     { "path": "/api/cron-keyword-sync", "schedule": "0 20 * * *" },
     { "path": "/api/cron-capture-reminders", "schedule": "*/5 * * * *" }
