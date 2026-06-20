@@ -1608,6 +1608,20 @@ async function handleApprove(fromWa, originalMessage) {
         mediaType: pp.media_type || (pp.video_url ? "video" : "image"),
       });
       await clearJobPendingPublish(job.id, "published");
+      // Record the publish as a behaviour event for the bot's KB.
+      try {
+        const { recordJobPublished } = require("../lib/behaviour-kb.js");
+        recordJobPublished({
+          clientId: job.client_id,
+          jobId: job.id,
+          jobTitle: pp.job_title,
+          suburb: pp.suburb_name || pp.suburb_slug,
+          jobType: job.structured_facts?.job_type,
+          products: job.structured_facts?.brands_used,
+          pagePath: pp.page_url,
+          mediaType: pp.media_type || (pp.video_url ? "video" : "image"),
+        }).catch(() => {});
+      } catch {}
       const liveUrl = pp.page_url || "https://mrpaint.vercel.app/painter-cairns/";
       return sendMessage(fromWa,
         `🎉 Live in about a minute boss — that's done.\n\n` +
@@ -1647,7 +1661,22 @@ async function handleDiscard(fromWa, originalMessage) {
 
   // Clear the legacy job row, the capture row, and any area-page row all.
   const job = await findJobByPendingBranch(branch);
-  if (job) await clearJobPendingPublish(job.id, "discarded");
+  if (job) {
+    await clearJobPendingPublish(job.id, "discarded");
+    // Record the rejection as a behaviour event for the bot's KB.
+    try {
+      const pp = job.structured_facts?.pending_publish || {};
+      const { recordJobRejected } = require("../lib/behaviour-kb.js");
+      recordJobRejected({
+        clientId: job.client_id,
+        jobId: job.id,
+        jobTitle: pp.job_title,
+        suburb: pp.suburb_name || pp.suburb_slug,
+        jobType: job.structured_facts?.job_type,
+        products: job.structured_facts?.brands_used,
+      }).catch(() => {});
+    } catch {}
+  }
   const cap = await captures.getActiveCapture(phone).catch(() => null);
   if (cap) await captures.markStatus(cap.id, "abandoned").catch(() => {});
   const areaPages = require("../lib/area-pages.js");
