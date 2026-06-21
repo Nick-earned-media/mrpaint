@@ -144,6 +144,8 @@ canonical: /painter-trinity-beach/
     <h2 class="sec-head">Recent jobs in Trinity Beach</h2>
     <p style="color:var(--ink-2);font-size:14px;margin-top:-6px">Real jobs from the team in Trinity Beach. Tap a card to read more.</p>
 
+    {%- set pack_total = (trinity_beach_recent_jobs | batch(5)) | length -%}
+    <div class="cairns-jobs-slider" data-pack-total="{{ pack_total }}">
     <div class="cairns-jobs-strip">
       {% for pack in trinity_beach_recent_jobs | batch(5) %}
       <div class="cairns-jobs-pack" aria-label="Recent Trinity Beach jobs page {{ loop.index }} of {{ loop.length }}">
@@ -193,6 +195,15 @@ canonical: /painter-trinity-beach/
       </div>
       {% endfor %}
     </div>
+
+    {% if pack_total > 1 %}
+    <div class="cairns-jobs-controls" role="group" aria-label="Recent jobs navigation">
+      <button type="button" class="cairns-jobs-nav cairns-jobs-prev" aria-label="Previous page of jobs" disabled>←</button>
+      <span class="cairns-jobs-counter"><span data-current>1</span> / {{ pack_total }}</span>
+      <button type="button" class="cairns-jobs-nav cairns-jobs-next" aria-label="Next page of jobs">→</button>
+    </div>
+    {% endif %}
+    </div>{# /.cairns-jobs-slider #}
   </div>
 </section>
 
@@ -222,7 +233,41 @@ canonical: /painter-trinity-beach/
     .job-meta h3 { font-size:15px; }
     .job-meta p { -webkit-line-clamp:2; font-size:13px; }
   }
+  .cairns-jobs-controls { display:flex; align-items:center; justify-content:center; gap:16px; margin-top:18px; }
+  .cairns-jobs-nav { width:40px; height:40px; border-radius:999px; border:1px solid var(--rule); background:#fff; color:var(--ink); font-size:18px; line-height:1; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:background .15s ease, transform .15s ease; }
+  .cairns-jobs-nav:hover:not(:disabled) { background:var(--bg-soft); transform:translateY(-1px); }
+  .cairns-jobs-nav:disabled { opacity:0.35; cursor:not-allowed; }
+  .cairns-jobs-counter { font-size:13px; color:var(--ink-2); font-variant-numeric:tabular-nums; }
 </style>
+<script>
+  (function() {
+    document.querySelectorAll('.cairns-jobs-slider').forEach(function (slider) {
+      var strip = slider.querySelector('.cairns-jobs-strip');
+      var prev = slider.querySelector('.cairns-jobs-prev');
+      var next = slider.querySelector('.cairns-jobs-next');
+      var counter = slider.querySelector('[data-current]');
+      var total = parseInt(slider.getAttribute('data-pack-total'), 10) || 1;
+      if (!strip || !prev || !next) return;
+      function pageWidth() {
+        var pack = strip.querySelector('.cairns-jobs-pack');
+        return pack ? pack.getBoundingClientRect().width + 24 : strip.clientWidth;
+      }
+      function updateState() {
+        var idx = Math.round(strip.scrollLeft / pageWidth());
+        if (idx < 0) idx = 0;
+        if (idx > total - 1) idx = total - 1;
+        prev.disabled = idx <= 0;
+        next.disabled = idx >= total - 1;
+        if (counter) counter.textContent = String(idx + 1);
+      }
+      prev.addEventListener('click', function () { strip.scrollBy({ left: -pageWidth(), behavior: 'smooth' }); });
+      next.addEventListener('click', function () { strip.scrollBy({ left: pageWidth(), behavior: 'smooth' }); });
+      strip.addEventListener('scroll', updateState, { passive: true });
+      window.addEventListener('resize', updateState);
+      updateState();
+    });
+  })();
+</script>
 {% endif %}
 
 {# ─── CTA + AREA CHIPS ─── #}
