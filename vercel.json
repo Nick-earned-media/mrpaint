@@ -22,6 +22,8 @@
     { "source": "/contact", "destination": "/contact-us", "permanent": true },
     { "source": "/category/:path*", "destination": "/blog", "permanent": true },
     { "source": "/tag/:path*", "destination": "/blog", "permanent": true },
+    { "source": "/blog/category/:path*", "destination": "/blog", "permanent": true },
+    { "source": "/blog/tag/:path*", "destination": "/blog", "permanent": true },
     { "source": "/blog/page/:n", "destination": "/blog", "permanent": true }
   ],
   "headers": [
