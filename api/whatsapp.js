@@ -14,7 +14,7 @@
 //
 // Env vars:
 //   TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID
-//   TWILIO_FROM            — optional, defaults to sandbox "whatsapp:+14155238886"
+//   TWILIO_FROM            — "whatsapp:+XXXXXXXXXX" for WhatsApp, "+XXXXXXXXXX" for SMS
 //   ANTHROPIC_API_KEY
 //   GITHUB_TOKEN, GITHUB_REPO   ("Nick-earned-media/mrpaint")
 //   ALLOWED_PHONES         — E.164, comma-separated
@@ -1895,9 +1895,13 @@ function reply(res, message) {
 async function sendMessage(toWa, text) {
   const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
   const auth = "Basic " + Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
+  const isWhatsApp = TWILIO_FROM.startsWith("whatsapp:");
+  const To = isWhatsApp
+    ? (toWa.startsWith("whatsapp:") ? toWa : `whatsapp:${toWa}`)
+    : toWa.replace(/^whatsapp:/, "");
   const body = new URLSearchParams({
     From: TWILIO_FROM,
-    To: toWa.startsWith("whatsapp:") ? toWa : `whatsapp:${toWa}`,
+    To,
     Body: text,
   });
   const r = await fetch(url, {
