@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{% if title %}{{ title }} · {% endif %}{{ site.name }}</title>
-  <meta name="description" content="{{ description or site.tagline_long }}" />
+  <meta name="description" content="{{ description or summary or site.tagline_long }}" />
   {% if canonical %}<link rel="canonical" href="{{ site.url }}{{ canonical }}" />{% endif %}
 
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon.png" />
@@ -27,9 +27,16 @@
   {% endif %}
 
   <meta property="og:title" content="{% if title %}{{ title }} · {% endif %}{{ site.name }}" />
-  <meta property="og:description" content="{{ description or site.tagline_long }}" />
-  <meta property="og:type" content="website" />
+  <meta property="og:description" content="{{ description or summary or site.tagline_long }}" />
+  <meta property="og:type" content="{{ og_type or 'website' }}" />
+  <meta property="og:url" content="{{ site.url }}{{ canonical or page.url }}" />
+  <meta property="og:image" content="{{ site.url }}{{ image or '/assets/images/team-crew-with-ute.jpg' }}" />
+  <meta property="og:locale" content="en_AU" />
   <meta property="og:site_name" content="{{ site.name }}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{% if title %}{{ title }} · {% endif %}{{ site.name }}" />
+  <meta name="twitter:description" content="{{ description or summary or site.tagline_long }}" />
+  <meta name="twitter:image" content="{{ site.url }}{{ image or '/assets/images/team-crew-with-ute.jpg' }}" />
 
   <script type="application/ld+json">
   {
@@ -38,6 +45,7 @@
     "name": "{{ site.name }}",
     "url": "{{ site.url }}",
     "telephone": "{{ site.phone }}",
+    "image": "{{ site.url }}/assets/images/team-crew-with-ute.jpg",
     "priceRange": "$$",
     "address": {
       "@type": "PostalAddress",
@@ -48,7 +56,8 @@
       "addressCountry": "{{ site.address.country }}"
     },
     "areaServed": "{{ site.service_area }}",
-    "openingHours": "Mo-Sa 07:00-17:00"
+    "openingHours": "Mo-Sa 07:00-17:00"{% if site.social.facebook or site.social.instagram or site.social.google_business %},
+    "sameAs": [{% if site.social.facebook %}"{{ site.social.facebook }}"{% endif %}{% if site.social.instagram %}{% if site.social.facebook %},{% endif %}"{{ site.social.instagram }}"{% endif %}{% if site.social.google_business %}{% if site.social.facebook or site.social.instagram %},{% endif %}"{{ site.social.google_business }}"{% endif %}]{% endif %}
   }
   </script>
 </head>
