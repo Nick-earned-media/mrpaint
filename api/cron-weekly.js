@@ -14,13 +14,13 @@
 //   ALLOWED_PHONES        — comma-separated E.164 list
 //   CRON_SECRET           — Vercel auto-sets for cron auth
 //   ANTHROPIC_API_KEY     — optional, used to write the intro line in voice
-//   PUBLIC_BASE_URL       — defaults to https://mrpaint.vercel.app
+//   PUBLIC_BASE_URL       — defaults to https://mrpaint.com.au
 
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const TWILIO_FROM = process.env.TWILIO_FROM || "whatsapp:+14155238886";
 const CRON_SECRET = process.env.CRON_SECRET || "";
-const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || "https://mrpaint.vercel.app";
+const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || "https://mrpaint.com.au";
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";
 
 module.exports = async function handler(req, res) {

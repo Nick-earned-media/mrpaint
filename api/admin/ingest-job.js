@@ -377,8 +377,9 @@ module.exports = async function handler(req, res) {
         .from("clients").select("id").contains("allowed_phones", [phone]).maybeSingle();
       if (client?.id) {
         const primarySrc = primary.src.replace(/^\//, "");
-        const liveMediaUrl = `https://mrpaint.vercel.app/${primarySrc}`;
-        const livePageUrl = `https://mrpaint.vercel.app${commitContextLabel}`;
+        const siteBase = process.env.PUBLIC_BASE_URL || "https://mrpaint.com.au";
+        const liveMediaUrl = `${siteBase}/${primarySrc}`;
+        const livePageUrl = `${siteBase}${commitContextLabel}`;
         await supa()
           .from("jobs")
           .insert({

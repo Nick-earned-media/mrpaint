@@ -35,6 +35,7 @@ const VERCEL_TEAM_ID = process.env.VERCEL_TEAM_ID || ""; // optional, only neede
 const ALLOWED_PHONES = (process.env.ALLOWED_PHONES || "")
   .split(",").map((s) => s.trim()).filter(Boolean);
 const SKIP_SIGNATURE_CHECK = process.env.SKIP_SIGNATURE_CHECK === "1";
+const SITE_BASE = process.env.PUBLIC_BASE_URL || "https://mrpaint.com.au";
 
 const VERCEL_TEAM_SLUG = "nick-brogdens-projects";
 
@@ -444,9 +445,8 @@ async function executeSemrushKw(fromWa, phrase) {
 
 async function executeDigest(fromWa) {
   await sendMessage(fromWa, "📊 On it chief — pulling this week's report for you now…");
-  const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || "https://mrpaint.vercel.app";
   const today = new Date().toISOString().slice(0, 10);
-  const url = `${PUBLIC_BASE_URL}/reports/cairns/${today}`;
+  const url = `${SITE_BASE}/reports/cairns/${today}`;
   await sendMessage(fromWa,
     `📊 Friday digest — Cairns week ending ${today}.\n\n${url}\n\nReply with a question if you want me to dig into anything.`
   );
@@ -952,8 +952,8 @@ async function publishCairnsHubJob({ fromWa, phone, mediaItems, description, cap
     const { data: client } = await supa()
       .from("clients").select("id, display_name").contains("allowed_phones", [phone]).maybeSingle();
     if (client?.id) {
-      const liveMediaUrl = `https://mrpaint.vercel.app${primary.src}`;
-      const livePageUrl = `https://mrpaint.vercel.app${targetPageUrl}`;
+      const liveMediaUrl = `${SITE_BASE}${primary.src}`;
+      const livePageUrl = `${SITE_BASE}${targetPageUrl}`;
       await supa()
         .from("jobs").insert({
           client_id: client.id,
@@ -1191,7 +1191,7 @@ async function finaliseAreaPage(fromWa, areaPage, transcript) {
 
   await sendMessage(fromWa,
     `✅ Drafted boss — *${drafted.title}*\n\n` +
-    `🌐 Preview: https://mrpaint.vercel.app/preview\n\n` +
+    `🌐 Preview: ${SITE_BASE}/preview\n\n` +
     `Reply YES to publish, NO to bin it.`
   );
 }
@@ -1351,7 +1351,7 @@ async function executeAddPhotoJob(fromWa, caption, media) {
       const { data: client } = await supa()
         .from("clients").select("id").contains("allowed_phones", [phone]).maybeSingle();
       if (client?.id) {
-        const liveMediaUrl = `https://mrpaint.vercel.app/${mediaPath}`;
+        const liveMediaUrl = `${SITE_BASE}/${mediaPath}`;
         const pending_publish = {
           branch,
           sha,
@@ -1577,7 +1577,7 @@ async function handleApprove(fromWa, originalMessage) {
   const ap = await areaPages.getActiveAreaPage(phone).catch(() => null);
   if (ap && ap.draft_branch === branch) {
     await areaPages.markStatus(ap.id, "completed").catch(() => {});
-    const liveUrl = `https://mrpaint.vercel.app/painter-${ap.suburb_slug}/`;
+    const liveUrl = `${SITE_BASE}/painter-${ap.suburb_slug}/`;
     return sendMessage(fromWa,
       `🎉 ${ap.suburb} page is live in about a minute boss — that's done.\n\n` +
       `If you want to see the live version it's here — ${liveUrl}`
@@ -1595,7 +1595,7 @@ async function handleApprove(fromWa, originalMessage) {
         .eq("id", job.client_id).maybeSingle();
       const { notifyGbpPost } = require("../lib/slack.js");
       const previewUrl = pp.page_url
-        || `https://mrpaint.vercel.app/areas/${pp.suburb_slug}/`;
+        || `${SITE_BASE}/areas/${pp.suburb_slug}/`;
       await notifyGbpPost({
         clientName: client?.display_name || "client",
         suburb: pp.suburb_name || pp.suburb_slug,
@@ -1622,7 +1622,7 @@ async function handleApprove(fromWa, originalMessage) {
           mediaType: pp.media_type || (pp.video_url ? "video" : "image"),
         }).catch(() => {});
       } catch {}
-      const liveUrl = pp.page_url || "https://mrpaint.vercel.app/painter-cairns/";
+      const liveUrl = pp.page_url || `${SITE_BASE}/painter-cairns/`;
       return sendMessage(fromWa,
         `🎉 Live in about a minute boss — that's done.\n\n` +
         `If you want to see the live version it's here — ${liveUrl}`
@@ -1630,7 +1630,7 @@ async function handleApprove(fromWa, originalMessage) {
     } catch (err) {
       console.error("GBP Slack post failed:", err);
       await clearJobPendingPublish(job.id, "published");
-      const liveUrl = pp.page_url || "https://mrpaint.vercel.app/painter-cairns/";
+      const liveUrl = pp.page_url || `${SITE_BASE}/painter-cairns/`;
       return sendMessage(fromWa,
         `🎉 Live in about a minute boss — that's done.\n\n` +
         `If you want to see the live version it's here — ${liveUrl}`
@@ -1640,7 +1640,7 @@ async function handleApprove(fromWa, originalMessage) {
 
   return sendMessage(fromWa,
     `🎉 Live in about a minute boss — that's done.\n\n` +
-    `If you want to see the live version it's here — https://mrpaint.vercel.app/painter-cairns/`
+    `If you want to see the live version it's here — ${SITE_BASE}/painter-cairns/`
   );
 }
 
@@ -1691,7 +1691,7 @@ async function sendPreviewMessage(fromWa, { summary, buildOffer }) {
   // Preview is rendered on-demand by /api/preview from the latest bot/*
   // branch, so the URL is stable and works the instant the commit lands.
   let msg = `${summary}\n\n` +
-    `🌐 Preview: https://mrpaint.vercel.app/preview\n\n` +
+    `🌐 Preview: ${SITE_BASE}/preview\n\n` +
     `Reply YES to publish, NO to bin it.`;
   if (buildOffer) {
     msg += `\n\n_${buildOffer} doesn't have its own page yet — reply *BUILD ${buildOffer.toUpperCase()}* if you want me to make one (takes a few mins, I'll ask you a quick voice note about the suburb)._`;

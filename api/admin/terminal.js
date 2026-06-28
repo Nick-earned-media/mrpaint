@@ -24,7 +24,7 @@ const { isAuthed } = require("../../lib/admin-session.js");
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const MODEL = "claude-sonnet-4-6";
-const SITE_URL = "https://mrpaint.vercel.app";
+const SITE_URL = process.env.PUBLIC_BASE_URL || "https://mrpaint.com.au";
 const MAX_TOOL_ITERATIONS = 8;
 const MAX_HISTORY = 30;
 
