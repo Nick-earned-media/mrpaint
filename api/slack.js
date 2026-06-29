@@ -9,6 +9,7 @@
 // using AsyncLocalStorage to inject Slack-specific send/download functions.
 
 const crypto = require("node:crypto");
+const { waitUntil } = require("@vercel/functions");
 const { runWithContext } = require("./whatsapp.js");
 
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || "";
@@ -64,13 +65,12 @@ module.exports = async function handler(req, res) {
   // Respond 200 immediately — Slack requires a response within 3 seconds
   res.status(200).end("ok");
 
-  // Build the channel context: Slack-specific send and (no-op) downloadMedia
+  // Build the channel context: Slack-specific send and downloadMedia
   const ctx = {
     sendMessage: async (_toIgnored, messageText) => {
       await slackPostMessage(channelId, messageText);
     },
     downloadMedia: async (url) => {
-      // Download Slack-hosted files using the bot token for auth
       const r = await fetch(url, {
         headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}` },
       });
@@ -80,16 +80,15 @@ module.exports = async function handler(req, res) {
     },
   };
 
-  // Use userId as the "fromId" so the bot's allow-list and per-user KB work.
-  // Prefix with "slack:" to keep the namespace distinct from phone numbers.
   const fromId = `slack:${userId}`;
 
-  try {
-    await runWithContext(fromId, text, null, ctx);
-  } catch (err) {
-    console.error("slack handler error:", err);
-    await slackPostMessage(channelId, "Sorry, something went wrong. Please try again.");
-  }
+  // waitUntil keeps the function alive after res.end() so the bot can reply
+  waitUntil(
+    runWithContext(fromId, text, null, ctx).catch(async (err) => {
+      console.error("slack handler error:", err);
+      await slackPostMessage(channelId, "Sorry, something went wrong. Please try again.");
+    })
+  );
 };
 
 // ─── Slack Web API helpers ────────────────────────────────────────────────────
