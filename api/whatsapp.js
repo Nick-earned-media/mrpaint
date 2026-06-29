@@ -41,6 +41,9 @@ const ALLOWED_PHONES = (process.env.ALLOWED_PHONES || "")
   .split(",").map((s) => s.trim()).filter(Boolean);
 const SKIP_SIGNATURE_CHECK = process.env.SKIP_SIGNATURE_CHECK === "1";
 const SITE_BASE = process.env.PUBLIC_BASE_URL || "https://mrpaint.com.au";
+const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || "";
+const SLACK_NOTIFY_CHANNEL = process.env.SLACK_NOTIFY_CHANNEL || "";
+const SLACK_NOTIFY_USER_ID = process.env.SLACK_NOTIFY_USER_ID || "";
 
 const VERCEL_TEAM_SLUG = "nick-brogdens-projects";
 
@@ -278,6 +281,8 @@ async function routeIntent(fromWa, intent) {
       return executeAddBlogPost(fromWa, intent);
     case "new_area_page":
       return executeNewAreaPage(fromWa, fromWa.replace(/^whatsapp:/, ""), intent.suburb);
+    case "escalate":
+      return executeEscalate(fromWa, intent.summary || intent._original_message || "");
     case "approve":
       return handleApprove(fromWa, intent._original_message);
     case "discard":
@@ -312,6 +317,7 @@ Operations:
 - update_text: change specific text on the site (hero copy, an FAQ answer, a button label, etc.). {"operation":"update_text","description":string}
 - approve: user is confirming a pending change ("yes", "publish", "ship", "ok go", "yes please"). {"operation":"approve"}
 - discard: user is cancelling a pending change ("no", "cancel", "discard", "nope", "scrap it"). {"operation":"discard"}
+- escalate: user wants to speak to a human / is stuck and asking for help. {"operation":"escalate","summary":string}. Triggers: "get Nick", "call Nick", "need help", "speak to someone", "contact the agency", "I'm confused", "not sure what to do", "can you get someone". Extract a one-sentence summary of what they were trying to do.
 - unknown: doesn't match any operation. {"operation":"unknown","reason":string}
 
 Examples:
@@ -510,6 +516,33 @@ async function executeReset(fromWa) {
 
 // ─── chat (conversational strategist with retrieval + tools) ─────────────
 
+async function executeEscalate(fromWa, summary) {
+  const phone = fromWa.replace(/^whatsapp:/, "").replace(/^slack:/, "");
+  const mention = SLACK_NOTIFY_USER_ID ? `<@${SLACK_NOTIFY_USER_ID}>` : "Nick";
+  const slackText = `🆘 *Adrian needs a hand*\n${mention} — he's stuck and asked to be connected.\n\n*What he was trying to do:* ${summary}\n*His number:* ${phone}`;
+
+  if (SLACK_NOTIFY_CHANNEL && SLACK_BOT_TOKEN) {
+    await postSlackAlert(slackText);
+    return sendMessage(fromWa, `Done — I've pinged Nick in Slack. He'll be in touch shortly. 👍`);
+  } else {
+    console.warn("executeEscalate: SLACK_NOTIFY_CHANNEL or SLACK_BOT_TOKEN not set");
+    return sendMessage(fromWa, `I wasn't able to reach Nick right now — try calling him directly on 0416 168 991.`);
+  }
+}
+
+async function postSlackAlert(text) {
+  const r = await fetch("https://slack.com/api/chat.postMessage", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${SLACK_BOT_TOKEN}`,
+      "Content-Type": "application/json; charset=utf-8",
+    },
+    body: JSON.stringify({ channel: SLACK_NOTIFY_CHANNEL, text }),
+  });
+  const data = await r.json();
+  if (!data.ok) console.error("postSlackAlert failed:", data.error);
+}
+
 async function executeChat(fromWa, message) {
   if (!message) {
     return sendMessage(fromWa, "Got an empty message — what's on your mind?");
@@ -541,7 +574,12 @@ async function executeChat(fromWa, message) {
       message,
       clientRow,
     });
-    return sendMessage(fromWa, reply);
+    // If the bot's reply signals uncertainty, offer escalation
+    const uncertain = /not sure|can't help|unable to|don't know|outside.*scope|can't answer|not able to/i.test(reply);
+    const suffix = uncertain && SLACK_NOTIFY_CHANNEL
+      ? "\n\nNeed a hand? Just reply *get Nick* and I'll ping him now."
+      : "";
+    return sendMessage(fromWa, reply + suffix);
   } catch (err) {
     console.error("chat error:", err);
     return sendMessage(fromWa, `⚠️ ${truncate(String(err.message || err), 400)}`);
