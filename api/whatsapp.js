@@ -21,7 +21,12 @@
 //   SKIP_SIGNATURE_CHECK=1 — for local testing
 
 const crypto = require("node:crypto");
+const { AsyncLocalStorage } = require("async_hooks");
 const { waitUntil } = require("@vercel/functions");
+
+// Per-request channel context — lets Slack (or any other channel) inject its
+// own sendMessage / downloadMedia without touching any execute* functions.
+const channelCtx = new AsyncLocalStorage();
 
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
@@ -1893,6 +1898,9 @@ function reply(res, message) {
 }
 
 async function sendMessage(toWa, text) {
+  const ctx = channelCtx.getStore();
+  if (ctx?.sendMessage) return ctx.sendMessage(toWa, text);
+
   const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
   const auth = "Basic " + Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
   const isWhatsApp = TWILIO_FROM.startsWith("whatsapp:");
@@ -1917,6 +1925,9 @@ async function sendMessage(toWa, text) {
 
 // Fetch a Twilio MediaUrl (signed; requires basic auth with Account SID+Token).
 async function downloadTwilioMedia(url) {
+  const ctx = channelCtx.getStore();
+  if (ctx?.downloadMedia) return ctx.downloadMedia(url);
+
   const auth = "Basic " + Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
   const r = await fetch(url, { headers: { Authorization: auth }, redirect: "follow" });
   if (!r.ok) throw new Error(`Twilio media download ${r.status} ${url}`);
@@ -1935,3 +1946,10 @@ function slug(s) {
   return String(s).toLowerCase().trim()
     .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
 }
+
+// Allows other channel handlers (e.g. api/slack.js) to run handleMessage
+// with their own sendMessage/downloadMedia implementations injected via
+// AsyncLocalStorage, without modifying any execute* functions.
+module.exports.runWithContext = function runWithContext(fromId, message, media, ctx) {
+  return channelCtx.run(ctx, () => handleMessage(fromId, message, media));
+};
