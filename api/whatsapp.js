@@ -101,6 +101,9 @@ async function handleMessage(fromWa, message, media) {
     return sendMessage(fromWa, "⚠️ ANTHROPIC_API_KEY isn't set on the server.");
   }
 
+  // Log inbound — fire-and-forget so it never blocks the bot
+  require("../lib/message-log.js").logInbound(fromWa, message, { hasMedia: !!media?.url }).catch(() => {});
+
   const phone = fromWa.replace(/^whatsapp:/, "");
   const captures = require("../lib/captures.js");
   const areaPages = require("../lib/area-pages.js");
@@ -1938,6 +1941,9 @@ function reply(res, message) {
 async function sendMessage(toWa, text) {
   const ctx = channelCtx.getStore();
   if (ctx?.sendMessage) return ctx.sendMessage(toWa, text);
+
+  // Log outbound — fire-and-forget
+  require("../lib/message-log.js").logOutbound(toWa, text).catch(() => {});
 
   const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
   const auth = "Basic " + Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
