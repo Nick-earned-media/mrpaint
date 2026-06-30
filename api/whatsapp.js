@@ -221,6 +221,13 @@ async function handleMessage(fromWa, message, media) {
   }
   if (capture && message && message.trim()) {
     if (capture.status === "awaiting_description") {
+      // Don't treat short greetings/single words as job descriptions
+      const isGreeting = /^(hi|hey|hello|g'day|yo|sup|test|ok|okay|thanks|cheers|yep|nope|yes|no)[\s!?.]*$/i.test(message.trim());
+      if (isGreeting) {
+        return sendMessage(fromWa,
+          `👋 Hey boss — you've got a photo waiting for a description. Tell me about the job (location, what was done, anything special) and I'll write it up.`
+        );
+      }
       return finaliseCapture(fromWa, capture, message.trim());
     }
     if (capture.status === "awaiting_same_or_new") {
