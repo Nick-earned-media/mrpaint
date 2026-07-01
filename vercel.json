@@ -13,7 +13,8 @@
   ],
   "rewrites": [
     { "source": "/reports/:scope/:date", "destination": "/api/reports/:scope/:date" },
-    { "source": "/preview", "destination": "/api/preview" }
+    { "source": "/preview", "destination": "/api/preview" },
+    { "source": "/chat", "destination": "/api/chat-web" }
   ],
   "redirects": [
     { "source": "/areas/trinity-beach", "destination": "/painter-trinity-beach/", "permanent": true },
