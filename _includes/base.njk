@@ -208,6 +208,10 @@
   // Form interactions on the quote forms (which POST to /api/contact).
   var started = false;
   document.querySelectorAll('form[action="/api/contact"]').forEach(function (f) {
+    // Stamp each form with load time for bot timing check
+    var ts = document.createElement('input');
+    ts.type = 'hidden'; ts.name = '_t'; ts.value = Date.now();
+    f.appendChild(ts);
     f.addEventListener("input", function () {
       if (!started) { started = true; send("form_start", { page_path: location.pathname }); }
     }, { once: false });
