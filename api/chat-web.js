@@ -179,7 +179,7 @@ const HTML = `<!DOCTYPE html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1a1a1a">
-<title>MrPaint OS v8</title>
+<title>MrPaint OS v9</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -278,8 +278,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
   <div id="pin-logo">🎨</div>
   <div id="pin-title">MrPaint OS</div>
   <div id="pin-sub">Enter your 4-digit PIN to continue</div>
-  <input id="pin-input" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="••••" maxlength="4" autocomplete="off" />
-  <button id="pin-btn">Unlock</button>
+  <input id="pin-input" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="••••" maxlength="4" autocomplete="off" onkeydown="if(event.key==='Enter')doSubmitPin()" />
+  <button id="pin-btn" onclick="doSubmitPin()">Unlock</button>
   <div id="pin-error"></div>
 </div>
 
@@ -303,71 +303,65 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
 </div>
 
 <script>
+// Synchronous diagnostic — visible before any async code or DOMContentLoaded
+document.getElementById('pin-error').textContent = 'v9 — tap Unlock to continue';
+
 window.onerror = function(msg, src, line) {
   var el = document.getElementById('pin-error');
-  if (el) el.textContent = 'JS error: ' + msg + ' (line ' + line + ')';
+  if (el) el.textContent = 'Error (line ' + line + '): ' + msg;
 };
-document.addEventListener('DOMContentLoaded', function() {
-  var el = document.getElementById('pin-error');
-  if (el) el.textContent = 'v8 — JS running OK';
-});
+
+// ── PIN globals — must be at script scope so onclick="doSubmitPin()" works ──
+var _PIN_KEY = 'mrpaint_pin';
+var _pinBusy = false;
+
+function doSubmitPin() {
+  if (_pinBusy) return;
+  var inp = document.getElementById('pin-input');
+  var btn = document.getElementById('pin-btn');
+  var err = document.getElementById('pin-error');
+  var pin = inp.value.replace(/\D/g, '');
+  err.textContent = 'Checking…';
+  if (pin.length < 4) { err.textContent = 'Need 4 digits (got ' + pin.length + ')'; return; }
+  _pinBusy = true;
+  btn.textContent = '…';
+  fetch('/api/chat-web', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin: pin, pin_check: true }),
+  }).then(function(r) {
+    if (r.status === 401) {
+      err.textContent = 'Incorrect PIN — try again';
+      inp.value = '';
+      btn.textContent = 'Unlock';
+      _pinBusy = false;
+      return null;
+    }
+    return r.json();
+  }).then(function(data) {
+    if (!data) return;
+    if (data.testMode) localStorage.setItem(_PIN_KEY + '_test', '1');
+    else localStorage.removeItem(_PIN_KEY + '_test');
+    localStorage.setItem(_PIN_KEY, pin);
+    document.getElementById('pin-screen').classList.add('hidden');
+    if (data.testMode) document.getElementById('header-name').innerHTML = 'MrPaint OS <span style="background:#f5c518;color:#000;font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;vertical-align:middle;letter-spacing:.05em">TEST</span>';
+    if (typeof _chatWelcome === 'function') setTimeout(_chatWelcome, 300);
+  }).catch(function(e) {
+    document.getElementById('pin-error').textContent = 'Connection error — check internet';
+    document.getElementById('pin-btn').textContent = 'Unlock';
+    _pinBusy = false;
+  });
+}
+
 (function(){
-  const PIN_KEY = 'mrpaint_pin';
+  const PIN_KEY = _PIN_KEY;
   const API = '/api/chat-web';
 
-  // ── PIN ──────────────────────────────────────────────────────────────────
+  // ── PIN screen ────────────────────────────────────────────────────────────
   let savedPin = localStorage.getItem(PIN_KEY);
   const pinScreen = document.getElementById('pin-screen');
-  const pinInput = document.getElementById('pin-input');
-  const pinBtn = document.getElementById('pin-btn');
-  const pinError = document.getElementById('pin-error');
 
   if (savedPin) pinScreen.classList.add('hidden');
-
-  // All vars declared first, then the function, to avoid any TDZ issues
-  var pinBusy = false;
-
-  function doSubmitPin() {
-    if (pinBusy) return;
-    var pin = pinInput.value.replace(/\D/g, '');
-    pinError.textContent = 'Trying PIN: [' + pin + '] length=' + pin.length;
-    if (pin.length < 4) { pinError.textContent = 'Enter all 4 digits (got: ' + pin + ')'; return; }
-    pinBusy = true;
-    pinError.textContent = '';
-    pinBtn.textContent = '…';
-    fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin: pin, pin_check: true }),
-    }).then(function(r) {
-      if (r.status === 401) {
-        pinError.textContent = 'Incorrect PIN — try again';
-        pinInput.value = '';
-        pinBtn.textContent = 'Unlock';
-        pinBusy = false;
-        return null;
-      }
-      return r.json();
-    }).then(function(data) {
-      if (!data) return;
-      if (data.testMode) localStorage.setItem(PIN_KEY + '_test', '1');
-      else localStorage.removeItem(PIN_KEY + '_test');
-      savedPin = pin;
-      localStorage.setItem(PIN_KEY, pin);
-      pinScreen.classList.add('hidden');
-      if (data.testMode) document.getElementById('header-name').innerHTML = 'MrPaint OS <span style="background:#f5c518;color:#000;font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;vertical-align:middle;letter-spacing:.05em">TEST</span>';
-      setTimeout(function() {
-        addMsg("G'day boss — ready when you are. Send a photo, voice note, or just type.", 'in');
-      }, 300);
-    }).catch(function(err) {
-      pinError.textContent = 'Connection error — check your internet';
-      pinBtn.textContent = 'Unlock';
-      pinBusy = false;
-    });
-  }
-
-  pinBtn.onclick = doSubmitPin;
-  pinInput.onkeydown = function(e) { if (e.key === 'Enter') doSubmitPin(); };
 
   // ── Messages ─────────────────────────────────────────────────────────────
   const msgList = document.getElementById('messages');
@@ -438,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const thinking = addThinking();
 
-    const payload = { pin: savedPin, message };
+    const payload = { pin: localStorage.getItem(PIN_KEY) || savedPin, message };
     if (media) payload.media = { data: media.data, contentType: media.contentType };
 
     try {
@@ -629,15 +623,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ── Welcome (already unlocked from a previous session) ───────────────────
-  if (savedPin) {
+  // ── Welcome message — called on new login OR returning session ───────────
+  function chatWelcome() {
     if (localStorage.getItem(PIN_KEY + '_test')) {
       document.getElementById('header-name').innerHTML = 'MrPaint OS <span style="background:#f5c518;color:#000;font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;vertical-align:middle;letter-spacing:.05em">TEST</span>';
     }
-    setTimeout(() => {
-      addMsg("G'day boss — ready when you are. Send a photo, voice note, or just type.", 'in');
-    }, 300);
+    addMsg("G'day boss — ready when you are. Send a photo, voice note, or just type.", 'in');
   }
+  window._chatWelcome = chatWelcome;
+
+  if (savedPin) setTimeout(chatWelcome, 300);
 
 })();
 </script>
