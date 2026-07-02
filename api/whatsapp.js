@@ -154,12 +154,18 @@ async function handleMessage(fromWa, message, media) {
       }
 
       if (capture.status === "awaiting_description") {
-        // Silent append — the initial prompt already told Adrian we're
-        // collecting. Sending an "added (N)" message per photo turns a
-        // 5-photo batch into 5 chatty acks.
+        // Silent append for multi-photo batches — the initial prompt already
+        // told Adrian we're collecting. On channels with a synchronous reply
+        // loop (web chat) we send a brief ack so it never looks broken.
         await captures.appendMediaToCapture(capture.id, {
           url: media.url, contentType: media.contentType,
         });
+        const ctx = channelCtx.getStore();
+        if (ctx) {
+          const updated = await captures.getActiveCapture(phone);
+          const n = updated?.media_items?.length || 1;
+          return sendMessage(fromWa, `📸 Photo ${n} added — keep them coming, or describe the job when you're ready.`);
+        }
         return;
       }
 
