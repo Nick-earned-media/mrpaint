@@ -303,6 +303,10 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
 </div>
 
 <script>
+window.onerror = function(msg, src, line) {
+  var el = document.getElementById('pin-error');
+  if (el) el.textContent = 'JS error: ' + msg + ' (line ' + line + ')';
+};
 (function(){
   const PIN_KEY = 'mrpaint_pin';
   const API = '/api/chat-web';
@@ -316,51 +320,49 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
 
   if (savedPin) pinScreen.classList.add('hidden');
 
-  async function submitPin() {
-    if (submitting) return;
-    const pin = pinInput.value.replace(/\D/g, '');
-    if (pin.length < 4) return;
-    submitting = true;
+  // All vars declared first, then the function, to avoid any TDZ issues
+  var pinBusy = false;
+
+  function doSubmitPin() {
+    if (pinBusy) return;
+    var pin = pinInput.value.replace(/\D/g, '');
+    if (pin.length < 4) { pinError.textContent = 'Enter all 4 digits'; return; }
+    pinBusy = true;
     pinError.textContent = '';
     pinBtn.textContent = '…';
-    try {
-      const r = await fetch(API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pin, pin_check: true }),
-      });
+    fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: pin, pin_check: true }),
+    }).then(function(r) {
       if (r.status === 401) {
         pinError.textContent = 'Incorrect PIN — try again';
         pinInput.value = '';
         pinBtn.textContent = 'Unlock';
-        submitting = false;
-        return;
+        pinBusy = false;
+        return null;
       }
-      const data = await r.json();
+      return r.json();
+    }).then(function(data) {
+      if (!data) return;
       if (data.testMode) localStorage.setItem(PIN_KEY + '_test', '1');
       else localStorage.removeItem(PIN_KEY + '_test');
       savedPin = pin;
       localStorage.setItem(PIN_KEY, pin);
       pinScreen.classList.add('hidden');
       if (data.testMode) document.getElementById('header-name').innerHTML = 'MrPaint OS <span style="background:#f5c518;color:#000;font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;vertical-align:middle;letter-spacing:.05em">TEST</span>';
-      setTimeout(() => {
+      setTimeout(function() {
         addMsg("G'day boss — ready when you are. Send a photo, voice note, or just type.", 'in');
       }, 300);
-    } catch (err) {
-      pinError.textContent = 'Connection error — check your internet and try again';
+    }).catch(function(err) {
+      pinError.textContent = 'Connection error — check your internet';
       pinBtn.textContent = 'Unlock';
-      submitting = false;
-    }
+      pinBusy = false;
+    });
   }
 
-  let submitting = false;
-  pinBtn.addEventListener('click', submitPin);
-  pinInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitPin(); });
-  pinInput.addEventListener('input', () => {
-    // Strip non-digits (tel input can accept other chars)
-    pinInput.value = pinInput.value.replace(/\D/g, '').slice(0, 4);
-    if (pinInput.value.length === 4) submitPin();
-  });
+  pinBtn.onclick = doSubmitPin;
+  pinInput.onkeydown = function(e) { if (e.key === 'Enter') doSubmitPin(); };
 
   // ── Messages ─────────────────────────────────────────────────────────────
   const msgList = document.getElementById('messages');
