@@ -111,6 +111,7 @@ async function handleChat(req, res) {
 function serveUI(res) {
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  res.setHeader("Cache-Control", "no-store");
   res.status(200).end(HTML);
 }
 
@@ -277,7 +278,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
   <div id="pin-logo">🎨</div>
   <div id="pin-title">MrPaint OS</div>
   <div id="pin-sub">Enter your 4-digit PIN to continue</div>
-  <input id="pin-input" type="number" inputmode="numeric" placeholder="••••" maxlength="4" autocomplete="off" />
+  <input id="pin-input" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="••••" maxlength="4" autocomplete="off" />
   <button id="pin-btn">Unlock</button>
   <div id="pin-error"></div>
 </div>
@@ -316,35 +317,50 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
   if (savedPin) pinScreen.classList.add('hidden');
 
   async function submitPin() {
-    const pin = pinInput.value.trim();
-    if (!pin) return;
+    if (submitting) return;
+    const pin = pinInput.value.replace(/\D/g, '');
+    if (pin.length < 4) return;
+    submitting = true;
     pinError.textContent = '';
-    // Validate PIN silently without triggering the bot
-    const r = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin, pin_check: true }),
-    });
-    if (r.status === 401) {
-      pinError.textContent = 'Incorrect PIN — try again';
-      pinInput.value = '';
-      return;
+    pinBtn.textContent = '…';
+    try {
+      const r = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin, pin_check: true }),
+      });
+      if (r.status === 401) {
+        pinError.textContent = 'Incorrect PIN — try again';
+        pinInput.value = '';
+        pinBtn.textContent = 'Unlock';
+        submitting = false;
+        return;
+      }
+      const data = await r.json();
+      if (data.testMode) localStorage.setItem(PIN_KEY + '_test', '1');
+      else localStorage.removeItem(PIN_KEY + '_test');
+      savedPin = pin;
+      localStorage.setItem(PIN_KEY, pin);
+      pinScreen.classList.add('hidden');
+      if (data.testMode) document.getElementById('header-name').innerHTML = 'MrPaint OS <span style="background:#f5c518;color:#000;font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;vertical-align:middle;letter-spacing:.05em">TEST</span>';
+      setTimeout(() => {
+        addMsg("G'day boss — ready when you are. Send a photo, voice note, or just type.", 'in');
+      }, 300);
+    } catch (err) {
+      pinError.textContent = 'Connection error — check your internet and try again';
+      pinBtn.textContent = 'Unlock';
+      submitting = false;
     }
-    savedPin = pin;
-    const data = await r.json();
-    if (data.testMode) localStorage.setItem(PIN_KEY + '_test', '1');
-    else localStorage.removeItem(PIN_KEY + '_test');
-    localStorage.setItem(PIN_KEY, pin);
-    pinScreen.classList.add('hidden');
-    if (data.testMode) document.getElementById('header-name').innerHTML = 'MrPaint OS <span style="background:#f5c518;color:#000;font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;vertical-align:middle;letter-spacing:.05em">TEST</span>';
-    setTimeout(() => {
-      addMsg("G'day boss — ready when you are. Send a photo, voice note, or just type.", 'in');
-    }, 300);
   }
 
+  let submitting = false;
   pinBtn.addEventListener('click', submitPin);
   pinInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitPin(); });
-  pinInput.addEventListener('input', () => { if (pinInput.value.length >= 4) submitPin(); });
+  pinInput.addEventListener('input', () => {
+    // Strip non-digits (tel input can accept other chars)
+    pinInput.value = pinInput.value.replace(/\D/g, '').slice(0, 4);
+    if (pinInput.value.length === 4) submitPin();
+  });
 
   // ── Messages ─────────────────────────────────────────────────────────────
   const msgList = document.getElementById('messages');
