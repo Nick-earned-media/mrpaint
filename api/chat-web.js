@@ -326,7 +326,8 @@ window.onerror = function(msg, src, line) {
   function doSubmitPin() {
     if (pinBusy) return;
     var pin = pinInput.value.replace(/\D/g, '');
-    if (pin.length < 4) { pinError.textContent = 'Enter all 4 digits'; return; }
+    pinError.textContent = 'Trying PIN: [' + pin + '] length=' + pin.length;
+    if (pin.length < 4) { pinError.textContent = 'Enter all 4 digits (got: ' + pin + ')'; return; }
     pinBusy = true;
     pinError.textContent = '';
     pinBtn.textContent = '…';
