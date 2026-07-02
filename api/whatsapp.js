@@ -187,7 +187,11 @@ async function handleMessage(fromWa, message, media) {
     if (ct.startsWith("audio/")) {
       sendMessage(fromWa, "🎙️ Got your voice note — transcribing…").catch(() => {});
       const { transcribeTwilioAudio } = require("../lib/transcribe.js");
-      const result = await transcribeTwilioAudio(media.url, media.contentType);
+      // For non-Twilio channels (e.g. web), pre-fetch the buffer via the
+      // channel context so transcribe.js doesn't try to parse a fake URL.
+      const _audioCtx = channelCtx.getStore();
+      const _audioBuf = _audioCtx?.downloadMedia ? await _audioCtx.downloadMedia(media.url) : null;
+      const result = await transcribeTwilioAudio(media.url, media.contentType, _audioBuf);
       if (!result.ok) {
         return sendMessage(fromWa, `⚠️ Couldn't transcribe that voice note: ${result.error}`);
       }
