@@ -21,7 +21,11 @@ const WEBCHAT_CLIENT_PHONE =
   "";
 
 module.exports = async function handler(req, res) {
-  if (req.method === "GET") return serveUI(res);
+  if (req.method === "GET") {
+    const qs = new URL(req.url, "http://x").searchParams;
+    if (qs.get("draft") === "1") return handleGetDraft(req, res, qs);
+    return serveUI(res);
+  }
   if (req.method === "POST") return handleChat(req, res);
   res.setHeader("Allow", "GET, POST");
   return res.status(405).end("Method Not Allowed");
@@ -58,20 +62,35 @@ async function handleChat(req, res) {
 
   // Collect all bot replies synchronously
   const replies = [];
-  const mediaBuffer = mediaData?.data ? Buffer.from(mediaData.data, "base64") : null;
+  const contentType = mediaData?.contentType || "image/jpeg";
+  const isImage = contentType.startsWith("image/");
+
+  // For images: store as a data URI so the URL survives beyond this request.
+  // When the bot later re-downloads the image (e.g. from a voice-note request),
+  // downloadTwilioMedia detects "data:" and decodes it directly — no buffer needed.
+  // For audio: keep "web-upload" so the ctx buffer is used within this request.
+  const mediaUrl = (mediaData && isImage)
+    ? `data:${contentType};base64,${mediaData.data}`
+    : "web-upload";
+
+  const mediaBuffer = (mediaData && !isImage && mediaData.data)
+    ? Buffer.from(mediaData.data, "base64")
+    : null;
 
   const ctx = {
     sendMessage: async (_toIgnored, text) => {
       replies.push(text);
     },
-    downloadMedia: async (_url) => {
-      if (!mediaBuffer) throw new Error("No media buffer available");
-      return mediaBuffer;
+    downloadMedia: async (url) => {
+      // Only handle the audio "web-upload" case — images are self-contained data URIs
+      // handled by downloadTwilioMedia before it reaches this ctx.
+      if (url === "web-upload" && mediaBuffer) return mediaBuffer;
+      throw new Error(`Unexpected downloadMedia call for: ${url}`);
     },
   };
 
   const media = mediaData
-    ? { url: "web-upload", contentType: mediaData.contentType || "image/jpeg" }
+    ? { url: mediaUrl, contentType }
     : null;
 
   // Use the client phone as fromId so Supabase lookups work
@@ -93,6 +112,46 @@ function serveUI(res) {
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.setHeader("X-Robots-Tag", "noindex, nofollow");
   res.status(200).end(HTML);
+}
+
+// ─── GET draft endpoint ────────────────────────────────────────────────────────
+// Returns the body text of the current preview_pending draft for the client.
+// Used by the web chat UI to pre-fill the edit textarea.
+
+async function handleGetDraft(req, res, qs) {
+  const pin = qs.get("pin") || "";
+  const isTest = WEBCHAT_TEST_PIN && pin === WEBCHAT_TEST_PIN;
+  const isProd = WEBCHAT_PIN && pin === WEBCHAT_PIN;
+  if (!isTest && !isProd) return res.status(401).json({ ok: false, error: "Invalid PIN" });
+
+  try {
+    const { createClient } = require("@supabase/supabase-js");
+    const db = createClient(
+      process.env.SUPABASE_URL || "",
+      process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+      { auth: { persistSession: false } }
+    );
+    const phone = WEBCHAT_CLIENT_PHONE.replace(/^whatsapp:/, "");
+    const { data } = await db
+      .from("pending_captures")
+      .select("draft_payload")
+      .eq("status", "preview_pending")
+      .or(`phone.eq.${phone},phone.eq.whatsapp:${phone}`)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!data?.draft_payload) {
+      return res.status(404).json({ ok: false, error: "No draft found" });
+    }
+    return res.status(200).json({
+      ok: true,
+      title: data.draft_payload.title || "",
+      body: data.draft_payload.body || "",
+    });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: err.message });
+  }
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -294,7 +353,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
     return new Date().toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' });
   }
 
-  function addMsg(content, type, isMedia, mediaType) {
+  function addMsg(content, type, isMedia) {
     const div = document.createElement('div');
     div.className = 'msg msg-' + type;
     if (isMedia === 'image') {
@@ -306,11 +365,22 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
       audio.src = content; audio.controls = true; audio.className = 'msg-audio';
       div.appendChild(audio);
     } else {
-      // Render *bold* and newlines
-      div.innerHTML = content
+      // Render *bold*, newlines, and clickable https:// links
+      const html = content
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
         .replace(/\\*(.*?)\\*/g,'<strong>$1</strong>')
+        .replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener" style="color:#1a73e8;word-break:break-all">$1</a>')
         .replace(/\\n/g,'<br>');
+      div.innerHTML = html;
+
+      // If this is a draft confirmation message, add an Edit button
+      if (type === 'in' && content.includes('Preview:') && content.includes('YES')) {
+        const editBtn = document.createElement('button');
+        editBtn.textContent = '✏️ Edit text';
+        editBtn.style.cssText = 'display:block;margin-top:8px;background:#f0f0f0;border:none;border-radius:14px;padding:6px 14px;font-size:13px;cursor:pointer;';
+        editBtn.addEventListener('click', openEditOverlay);
+        div.appendChild(editBtn);
+      }
     }
     const time = document.createElement('div');
     time.className = 'msg-time'; time.textContent = now();
@@ -491,6 +561,50 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
       alert('Microphone access denied. Check browser permissions.');
     }
   });
+
+  // ── Edit overlay ─────────────────────────────────────────────────────────
+  async function openEditOverlay() {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:200;display:flex;flex-direction:column;';
+
+    const header = document.createElement('div');
+    header.style.cssText = 'background:#1a1a1a;color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;';
+    header.innerHTML = '<button id="edit-cancel" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0">←</button><span style="font-weight:600;font-size:16px;flex:1">Edit post text</span><button id="edit-send" style="background:#f5c518;color:#000;border:none;border-radius:20px;padding:8px 18px;font-weight:700;font-size:14px;cursor:pointer">Send</button>';
+    overlay.appendChild(header);
+
+    const loading = document.createElement('div');
+    loading.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;color:#666;font-size:15px;';
+    loading.textContent = 'Loading draft…';
+    overlay.appendChild(loading);
+
+    document.body.appendChild(overlay);
+
+    header.querySelector('#edit-cancel').addEventListener('click', () => overlay.remove());
+
+    // Fetch current draft body
+    let draftBody = '';
+    try {
+      const r = await fetch('/api/chat-web?draft=1&pin=' + encodeURIComponent(savedPin));
+      const d = await r.json();
+      if (d.ok) draftBody = d.body;
+      else { loading.textContent = 'No draft found — send a photo first.'; return; }
+    } catch { loading.textContent = 'Could not load draft.'; return; }
+
+    // Replace loading with textarea
+    loading.remove();
+    const ta = document.createElement('textarea');
+    ta.value = draftBody;
+    ta.style.cssText = 'flex:1;border:none;outline:none;padding:16px;font-size:15px;font-family:-apple-system,sans-serif;line-height:1.5;resize:none;';
+    overlay.appendChild(ta);
+    setTimeout(() => ta.focus(), 50);
+
+    header.querySelector('#edit-send').addEventListener('click', () => {
+      const newBody = ta.value.trim();
+      if (!newBody) return;
+      overlay.remove();
+      send('EDIT: ' + newBody, null);
+    });
+  }
 
   // ── Welcome (already unlocked from a previous session) ───────────────────
   if (savedPin) {

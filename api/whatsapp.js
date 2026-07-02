@@ -243,6 +243,11 @@ async function handleMessage(fromWa, message, media) {
     if (capture.status === "awaiting_same_or_new") {
       return handleSameOrNew(fromWa, capture, message.trim());
     }
+    // EDIT: prefix — direct body replacement without re-running the AI.
+    if (capture.status === "preview_pending" && /^EDIT:/i.test(message.trim())) {
+      const newBody = message.trim().replace(/^EDIT:\s*/i, "").trim();
+      if (newBody) return executeEditDraft(fromWa, capture, newBody);
+    }
     // status === preview_pending: fall through. The user might be sending
     // YES/NO (handled by classifyIntent → routeIntent → handleApprove/Discard)
     // or a different command (slash, audit, etc.).
@@ -1594,6 +1599,54 @@ async function clearJobPendingPublish(jobId, finalStatus) {
   }
 }
 
+// Direct body edit — updates _data/cairns_recent_jobs.json on the draft
+// branch in-place without re-running the AI. Called when the user sends
+// "EDIT: <new body>" while a capture is in preview_pending status.
+async function executeEditDraft(fromWa, capture, newBody) {
+  const captures = require("../lib/captures.js");
+  const branch = capture.draft_branch;
+  if (!branch) {
+    return sendMessage(fromWa, "⚠️ No draft branch found — try sending the photo again.");
+  }
+  await sendMessage(fromWa, "✏️ Updating the post now…");
+  try {
+    // Read the current data file from the draft branch.
+    const file = await ghGetContents("_data/cairns_recent_jobs.json", branch);
+    const data = JSON.parse(Buffer.from(file.content, "base64").toString("utf-8"));
+    if (!Array.isArray(data) || !data[0]) throw new Error("Entry not found in draft");
+
+    // Swap the body, leave everything else untouched.
+    data[0].body = newBody;
+    const updatedContent = Buffer.from(JSON.stringify(data, null, 2), "utf-8").toString("base64");
+
+    // Commit the updated file back onto the same branch.
+    await ghJson("PUT", `/repos/${GITHUB_REPO}/contents/${encodeURIComponent("_data/cairns_recent_jobs.json")}`, {
+      message: "edit: update post body",
+      content: updatedContent,
+      branch,
+      sha: file.sha,
+    });
+
+    // Keep draft_payload in sync so the GET /chat-web?draft=1 endpoint stays fresh.
+    const payload = { ...(capture.draft_payload || {}), body: newBody };
+    await captures.setDraft(capture.id, {
+      draft_branch: capture.draft_branch,
+      draft_sha: capture.draft_sha,
+      draft_target_page: capture.draft_target_page,
+      draft_payload: payload,
+    });
+
+    return sendMessage(fromWa,
+      `✅ Done boss — post updated.\n\n` +
+      `🌐 Preview: ${SITE_BASE}/preview\n\n` +
+      `Reply YES to publish, NO to bin it.`
+    );
+  } catch (err) {
+    console.error("executeEditDraft failed:", err);
+    return sendMessage(fromWa, `⚠️ Couldn't update the draft: ${err.message?.slice(0, 120)}`);
+  }
+}
+
 async function handleApprove(fromWa, originalMessage) {
   const phone = fromWa.replace(/^whatsapp:/, "");
   const captures = require("../lib/captures.js");
@@ -1985,7 +2038,15 @@ async function sendMessage(toWa, text) {
 }
 
 // Fetch a Twilio MediaUrl (signed; requires basic auth with Account SID+Token).
+// Also handles data: URIs (web chat uploads stored inline in pending_captures).
 async function downloadTwilioMedia(url) {
+  // Data URIs are self-contained — decode directly without any network call.
+  if (url && url.startsWith("data:")) {
+    const comma = url.indexOf(",");
+    if (comma === -1) throw new Error("Invalid data URI");
+    return Buffer.from(url.slice(comma + 1), "base64");
+  }
+
   const ctx = channelCtx.getStore();
   if (ctx?.downloadMedia) return ctx.downloadMedia(url);
 
