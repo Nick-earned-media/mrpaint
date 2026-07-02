@@ -179,7 +179,7 @@ const HTML = `<!DOCTYPE html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1a1a1a">
-<title>MrPaint OS</title>
+<title>MrPaint OS v8</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -307,6 +307,10 @@ window.onerror = function(msg, src, line) {
   var el = document.getElementById('pin-error');
   if (el) el.textContent = 'JS error: ' + msg + ' (line ' + line + ')';
 };
+document.addEventListener('DOMContentLoaded', function() {
+  var el = document.getElementById('pin-error');
+  if (el) el.textContent = 'v8 — JS running OK';
+});
 (function(){
   const PIN_KEY = 'mrpaint_pin';
   const API = '/api/chat-web';
