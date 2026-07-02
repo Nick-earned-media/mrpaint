@@ -14,9 +14,12 @@ const { runWithContext } = require('./whatsapp.js');
 
 const WEBCHAT_PIN = process.env.WEBCHAT_PIN || '';
 const WEBCHAT_TEST_PIN = process.env.WEBCHAT_TEST_PIN || '';
-// WEBCHAT_CLIENT_ID is preferred — a Supabase client UUID, no phone needed.
-// WEBCHAT_CLIENT_PHONE is the legacy fallback (still works if set).
-const WEBCHAT_CLIENT_ID = process.env.WEBCHAT_CLIENT_ID || '';
+// WEBCHAT_CLIENT_ID     — Supabase client UUID for the production user (Adrian)
+// WEBCHAT_TEST_CLIENT_ID — Supabase client UUID for the dev/test user (Nick)
+//                          If unset, test PIN falls back to the production client.
+// WEBCHAT_CLIENT_PHONE  — legacy fallback if neither CLIENT_ID is set
+const WEBCHAT_CLIENT_ID      = process.env.WEBCHAT_CLIENT_ID || '';
+const WEBCHAT_TEST_CLIENT_ID = process.env.WEBCHAT_TEST_CLIENT_ID || '';
 const WEBCHAT_CLIENT_PHONE =
   process.env.WEBCHAT_CLIENT_PHONE ||
   (process.env.ALLOWED_PHONES || '').split(',').map(s => s.trim()).filter(Boolean)[0] ||
@@ -24,23 +27,27 @@ const WEBCHAT_CLIENT_PHONE =
 const COOKIE_NAME = 'mrpaint_auth';
 const COOKIE_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 
-// Resolve the phone identifier the bot uses internally.
-// When WEBCHAT_CLIENT_ID is set we look up the client row once and cache the phone.
-let _resolvedFromId = null;
-async function resolveFromId() {
-  if (_resolvedFromId) return _resolvedFromId;
-  if (WEBCHAT_CLIENT_ID) {
+// Resolve the phone the bot uses as the account key.
+// Cached per warm instance; re-resolves on cold start (one extra DB call).
+const _fromIdCache = {};
+async function resolveFromId(isTest) {
+  const cacheKey = isTest ? 'test' : 'prod';
+  if (_fromIdCache[cacheKey]) return _fromIdCache[cacheKey];
+
+  const clientId = (isTest && WEBCHAT_TEST_CLIENT_ID) ? WEBCHAT_TEST_CLIENT_ID : WEBCHAT_CLIENT_ID;
+
+  if (clientId) {
     try {
       const { getClientById } = require('../lib/supabase.js');
-      const row = await getClientById(WEBCHAT_CLIENT_ID);
-      _resolvedFromId = row?.primary_phone || (row?.allowed_phones || [])[0] || WEBCHAT_CLIENT_PHONE || 'web:unknown';
+      const row = await getClientById(clientId);
+      _fromIdCache[cacheKey] = row?.primary_phone || (row?.allowed_phones || [])[0] || WEBCHAT_CLIENT_PHONE || 'web:unknown';
     } catch {
-      _resolvedFromId = WEBCHAT_CLIENT_PHONE || 'web:unknown';
+      _fromIdCache[cacheKey] = WEBCHAT_CLIENT_PHONE || 'web:unknown';
     }
   } else {
-    _resolvedFromId = WEBCHAT_CLIENT_PHONE || 'web:unknown';
+    _fromIdCache[cacheKey] = WEBCHAT_CLIENT_PHONE || 'web:unknown';
   }
-  return _resolvedFromId;
+  return _fromIdCache[cacheKey];
 }
 
 // ─── Crypto helpers ───────────────────────────────────────────────────────────
@@ -155,7 +162,7 @@ async function handleChat(req, res) {
     },
   };
 
-  const fromId = await resolveFromId();
+  const fromId = await resolveFromId(auth.isTest);
 
   try {
     await runWithContext(fromId, message, mediaData ? { url: mediaUrl, contentType } : null, ctx);
@@ -180,7 +187,7 @@ async function handleGetDraft(req, res) {
       process.env.SUPABASE_SERVICE_ROLE_KEY || '',
       { auth: { persistSession: false } }
     );
-    const phone = (await resolveFromId()).replace(/^whatsapp:/, '');
+    const phone = (await resolveFromId(auth.isTest)).replace(/^whatsapp:/, '');
     const { data } = await db
       .from('pending_captures')
       .select('draft_payload')
