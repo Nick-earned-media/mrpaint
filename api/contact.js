@@ -7,12 +7,13 @@
 //   3. Rate limit: max 3 submissions per IP per hour (Supabase)
 //
 // Delivery: WhatsApp to Adrian + email to adrian@mrpaint.com.au + Slack copy for Nick
+//           All submissions also saved to Supabase `form_submissions` table.
 //
 // Env vars:
 //   TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM
 //   LEADS_WHATSAPP_TO   — override WhatsApp target (falls back to ALLOWED_PHONES[0])
 //   RESEND_API_KEY      — for email delivery (resend.com)
-//   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY — for rate limiting
+//   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY — for rate limiting + submission storage
 
 const { createClient } = require("@supabase/supabase-js");
 const { postToSlack } = require("../lib/slack.js");
@@ -87,6 +88,9 @@ module.exports = async function handler(req, res) {
   ].filter(Boolean);
   const text = lines.join("\n");
 
+  // ── Save to database (always, before delivery attempts) ───────────────
+  await saveSubmission({ name, phone, email: form.email, suburb: form.suburb, postcode: form.pcode, job: form.job || form.site_type, when: form.when, message: form.msg, page: req.headers.referer || '', ip }).catch((e) => console.error("saveSubmission failed:", e?.message));
+
   // ── Deliver (all channels in parallel, best-effort) ────────────────────
   const [wa, email, slack] = await Promise.all([
     sendWhatsApp(ADRIAN_WA, text).catch((e) => ({ ok: false, error: String(e?.message || e) })),
@@ -100,6 +104,26 @@ module.exports = async function handler(req, res) {
 
   return redirect(res);
 };
+
+// ─── Database save ────────────────────────────────────────────────────────────
+
+async function saveSubmission({ name, phone, email, suburb, postcode, job, when, message, page, ip }) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return;
+  const db = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
+  const { error } = await db.from("form_submissions").insert({
+    name: name || null,
+    phone: phone || null,
+    email: email || null,
+    suburb: suburb || null,
+    postcode: postcode || null,
+    job: job || null,
+    timeframe: when || null,
+    message: message || null,
+    page: page || null,
+    ip: ip || null,
+  });
+  if (error) throw new Error(error.message);
+}
 
 // ─── Rate limiting ────────────────────────────────────────────────────────────
 
