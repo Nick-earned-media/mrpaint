@@ -3,7 +3,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "_site",
   "cleanUrls": true,
-  "trailingSlash": false,
+  "trailingSlash": true,
   "crons": [
     { "path": "/api/cron-gsc-ingest", "schedule": "0 4 * * 5" },
     { "path": "/api/cron-weekly", "schedule": "45 6 * * 5" },
@@ -19,8 +19,8 @@
   "redirects": [
     { "source": "/areas/trinity-beach", "destination": "/painter-trinity-beach/", "permanent": true },
     { "source": "/areas/cairns-cbd", "destination": "/painter-cairns/", "permanent": true },
-    { "source": "/about", "destination": "/about-us", "permanent": true },
-    { "source": "/contact", "destination": "/contact-us", "permanent": true },
+    { "source": "/about", "destination": "/about-us/", "permanent": true },
+    { "source": "/contact", "destination": "/contact-us/", "permanent": true },
     { "source": "/category/:path*", "destination": "/blog", "permanent": true },
     { "source": "/tag/:path*", "destination": "/blog", "permanent": true },
     { "source": "/blog/category/:path*", "destination": "/blog", "permanent": true },
