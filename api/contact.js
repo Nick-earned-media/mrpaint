@@ -181,7 +181,7 @@ async function sendWhatsApp(to, body) {
   const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
   const auth = "Basic " + Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
   const params = new URLSearchParams({
-    From: TWILIO_FROM,
+    From: TWILIO_FROM.startsWith("whatsapp:") ? TWILIO_FROM : `whatsapp:${TWILIO_FROM}`,
     To: to.startsWith("whatsapp:") ? to : `whatsapp:${to}`,
     Body: body,
   });
