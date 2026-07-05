@@ -342,8 +342,10 @@ Operations:
 - update_text: change specific text on the site (hero copy, an FAQ answer, a button label, etc.). {"operation":"update_text","description":string}
 - approve: user is confirming a pending change ("yes", "publish", "ship", "ok go", "yes please"). {"operation":"approve"}
 - discard: user is cancelling a pending change ("no", "cancel", "discard", "nope", "scrap it"). {"operation":"discard"}
-- escalate: user wants to speak to a human / is stuck and asking for help. {"operation":"escalate","summary":string}. Triggers: "get Nick", "call Nick", "need help", "speak to someone", "contact the agency", "I'm confused", "not sure what to do", "can you get someone". Extract a one-sentence summary of what they were trying to do.
-- unknown: doesn't match any operation. {"operation":"unknown","reason":string}
+- escalate: ONLY when the user explicitly asks to speak to a human. {"operation":"escalate","summary":string}. Triggers (exact phrases only): "get Nick", "call Nick", "speak to someone", "contact the agency", "can you get someone", "talk to a human". DO NOT use escalate for questions, strategy requests, SEO questions, ranking questions, competitor questions, or any request for information/advice — those are always "unknown".
+- unknown: ANY question, request for information, strategy advice, SEO/ranking/competitor analysis, AI visibility questions, reporting questions, job logging, or anything not clearly a website edit or explicit escalation. {"operation":"unknown","reason":string}
+
+CRITICAL RULE: Questions are ALWAYS "unknown". If the message contains a "?" or is asking for information, analysis, advice, or recommendations — classify as unknown. Only classify as escalate if the user explicitly says they want to talk to Nick or a human.
 
 Examples:
 "change the phone to 0412 345 678" → {"operation":"update_business_info","field":"phone","value":"0412 345 678"}
@@ -355,7 +357,15 @@ Examples:
 "do a suburb page for Brinsmead" → {"operation":"new_area_page","suburb":"Brinsmead"}
 "swap the hero photo on the homepage" → {"operation":"needs_image","message":"send me the photo to use"}
 "add a . at the end of the homepage h1" → {"operation":"update_text","description":"add a period at the end of the homepage h1"}
-"when will it be done" → {"operation":"unknown","reason":"question about timeline/status, not a website edit request"}
+"when will it be done" → {"operation":"unknown","reason":"question about timeline"}
+"how are my rankings?" → {"operation":"unknown","reason":"SEO question"}
+"can you review my competition and tell me what I need to do to rank number 1 for painter cairns?" → {"operation":"unknown","reason":"competitor analysis and ranking strategy question"}
+"what's my AI visibility?" → {"operation":"unknown","reason":"AI search question"}
+"who's beating me on Google?" → {"operation":"unknown","reason":"competitor ranking question"}
+"what should I do to get more leads?" → {"operation":"unknown","reason":"strategy question"}
+"how do I get into the map pack?" → {"operation":"unknown","reason":"GBP strategy question"}
+"I'm confused" → {"operation":"escalate","summary":"user is confused and needs human help"}
+"get Nick" → {"operation":"escalate","summary":"user wants to speak to Nick"}
 
 Reply with the JSON object only.`;
 
