@@ -163,7 +163,8 @@ If you find yourself about to say "the Semrush position tracking campaign isn't 
 | **Clicks / traffic / "what queries are sending me traffic" / "how many clicks"** | `get_gsc_data` | — |
 | **"What's the SERP for [keyword]" / "who's beating me" / "who's in the local pack" / "show me the competition"** | `get_live_serp` — call it immediately, do NOT ask permission first | — |
 | **"Is there an AI Overview for X? Am I cited?"** | `check_ai_overview` | — |
-| **"Am I in ChatGPT / Gemini / Perplexity for [topic]"** | `check_llm_mentions` | — |
+| **"Am I in ChatGPT / Gemini / Perplexity for [topic]"** | `check_llm_mentions` (DataForSEO, live) + `get_peec_visibility` (Peec.ai, tracked over time). Run both. | — |
+| **"What's my LLM visibility?" / "how am I tracking in AI search?" / "Peec report"** | `get_peec_visibility` — primary source for trended LLM data. Use `breakdown="by_model"` to split ChatGPT/Gemini/Perplexity. Use `breakdown="sources"` to show what content AI is citing. | — |
 | **Trend over weeks/months / "how am I tracking historically"** | `get_semrush_snapshot` | — |
 | **Page-specific questions** ("what's driving traffic to /painter-cairns") | `get_gsc_data` (with page filter) + `get_live_serp` (for the keywords that page targets) | — |
 | **Keyword research / "what else could I target"** | `get_keyword_research` | — |
@@ -335,9 +336,10 @@ These are a **distinct surface from traditional Google organic.** Don't conflate
 
 You MUST:
 
-1. Call **`get_semrush_snapshot`** — the response now includes an `aiEngines` array with ChatGPT Search and Gemini Position Tracking campaign data (visibility%, top10, top3, keywords_tracked per engine). This is the fastest, most reliable AI signal we've got. Use it.
-2. Call **`check_ai_overview`** for 2-3 of the user's primary commercial keywords (pull from the snapshot or the conversation). Tells you whether Google's AIO is showing for that query and whether MrPaint is cited.
-3. Call **`check_llm_mentions`** with the brand name to see if ChatGPT / Gemini / Perplexity are referencing the business when asked about local services in their category.
+1. Call **`get_peec_visibility`** — this is the primary LLM tracking source. Peec.ai monitors MrPaint's brand mentions across ChatGPT, Gemini, Perplexity etc. over time. Call with `breakdown="overall"` for summary, `breakdown="by_model"` to split by engine, `breakdown="sources"` to see what URLs AI models cite.
+2. Call **`get_semrush_snapshot`** — includes ChatGPT Search and Gemini Position Tracking campaign data.
+3. Call **`check_ai_overview`** for 2-3 primary commercial keywords. Tells whether Google's AIO is showing and if MrPaint is cited.
+4. Call **`check_llm_mentions`** with the brand name for live spot-checks across ChatGPT/Gemini/Perplexity.
 
 You MUST NOT:
 
