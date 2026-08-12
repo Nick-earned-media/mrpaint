@@ -9,8 +9,13 @@
     { "path": "/api/cron-weekly", "schedule": "45 6 * * 5" },
     { "path": "/api/cron-weekly-synthesis", "schedule": "0 7 * * 6" },
     { "path": "/api/cron-keyword-sync", "schedule": "0 20 * * *" },
-    { "path": "/api/cron-capture-reminders", "schedule": "*/5 * * * *" }
+    { "path": "/api/cron-capture-reminders", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron-merge-bot-branches", "schedule": "10 17 * * *" },
+    { "path": "/api/cron-daily-backup", "schedule": "20 17 * * *" }
   ],
+  "functions": {
+    "api/cron-daily-backup.js": { "maxDuration": 120 }
+  },
   "rewrites": [
     { "source": "/reports/:scope/:date", "destination": "/api/reports/:scope/:date" },
     { "source": "/preview", "destination": "/api/preview" },
