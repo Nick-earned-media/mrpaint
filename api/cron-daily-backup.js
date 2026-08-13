@@ -25,6 +25,11 @@ module.exports = async function handler(req, res) {
 
   const dateStr = new Date().toISOString().slice(0, 10);
 
+  if (req.query && req.query.debug === "1") {
+    const tok = process.env.BLOB_READ_WRITE_TOKEN || "";
+    return res.status(200).json({ tokenPrefix: tok.slice(0, 24), tokenLen: tok.length });
+  }
+
   try {
     const { dump, errors } = await dumpAllTables();
     const tarball = await fetchRepoTarball("main");
