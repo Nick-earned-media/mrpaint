@@ -25,30 +25,6 @@ module.exports = async function handler(req, res) {
 
   const dateStr = new Date().toISOString().slice(0, 10);
 
-  if (req.query && req.query.debug === "1") {
-    const steps = {};
-    try {
-      const { dump, errors } = await dumpAllTables();
-      steps.dumpAllTables = { ok: true, errors, tableCounts: Object.fromEntries(Object.entries(dump).map(([t, r]) => [t, r ? r.length : null])) };
-
-      const tarball = await fetchRepoTarball("main");
-      steps.fetchRepoTarball = { ok: true, bytes: tarball.length };
-
-      const { put } = require("@vercel/blob");
-      const putResult = await put(`backups/debug-manual-test.json`, JSON.stringify({ t: Date.now() }), {
-        access: "private", contentType: "application/json", addRandomSuffix: false, allowOverwrite: true,
-      });
-      steps.manualPut = { ok: true, result: putResult };
-
-      const { list } = require("@vercel/blob");
-      const listResult = await list({ prefix: "backups/" });
-      steps.manualList = { ok: true, count: listResult.blobs.length, paths: listResult.blobs.map((b) => b.pathname) };
-    } catch (err) {
-      steps.error = String(err?.stack || err?.message || err);
-    }
-    return res.status(200).json(steps);
-  }
-
   try {
     const { dump, errors } = await dumpAllTables();
     const tarball = await fetchRepoTarball("main");
